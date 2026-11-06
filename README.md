@@ -47,3 +47,7 @@ npx skills add Leonxlnx/taste-skill
 ```
 
 Stack: Vite, React, Tailwind CSS v4, `@noble/curves` for signatures.
+
+## GitHub Developer Program
+
+This project is built on the GitHub REST API: the browser app reads users, orgs, search, repos and pulls, and the certify workflow does the same server-side. To join the [Developer Program](https://github.com/developer/register) you need an integration using the API and a support email. Set the repository variable `SUPPORT_EMAIL` (Settings > Secrets and variables > Actions > Variables) and re-run the deploy workflow so the footer shows it.
