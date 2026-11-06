@@ -104,24 +104,54 @@ const STEPS = [
   { icon: 'pin', title: 'Pins a badge to your README', body: 'Paste one line of Markdown. The badge links to your certificate and shows your current grade.' },
 ]
 
+const NODES = [
+  { x: 20, label: 'Your merged PRs', sub: 'GitHub API' },
+  { x: 260, label: 'Filter', sub: 'Not yours, not self-merged' },
+  { x: 500, label: 'Score', sub: 'Impact, breadth, trust' },
+  { x: 740, label: 'Signed certificate', sub: 'Ed25519, in this repo' },
+]
+
+function Pipeline() {
+  return (
+    <svg viewBox="0 0 960 150" className="w-full h-auto" role="img" aria-label="Pull requests are filtered, scored and signed into a certificate.">
+      {NODES.slice(0, -1).map((n, i) => (
+        <g key={n.x}>
+          <path className="flow-line" d={`M${n.x + 200} 75 H${NODES[i + 1].x}`} />
+          <path className="flow-dash" d={`M${n.x + 200} 75 H${NODES[i + 1].x}`} />
+        </g>
+      ))}
+      {NODES.map((n, i) => (
+        <g key={n.label} className="flow-node" style={{ '--n': i }}>
+          <rect x={n.x} y="35" width="200" height="80" rx="6" fill="var(--bg)" stroke="var(--line)" strokeWidth="1.5" />
+          <text x={n.x + 100} y="70" textAnchor="middle" fontSize="16" fontWeight="500" fill="var(--ink)">{n.label}</text>
+          <text x={n.x + 100} y="92" textAnchor="middle" fontSize="12.5" fill="var(--muted)">{n.sub}</text>
+        </g>
+      ))}
+    </svg>
+  )
+}
+
 function How() {
   return (
     <section id="how" className="screen">
       <div className="wrap">
-        <h2 className="h2 m-0 max-w-[18ch]">How a certificate is made</h2>
-        <p className="lead mt-5 mb-0">
-          No database and no server. Certificates are files in this repository, written by a GitHub Action when you open an issue.
-        </p>
-        <ul className="mt-12 m-0 p-0 list-none grid md:grid-cols-3 gap-6">
+        <Reveal><h2 className="h2 m-0 max-w-[18ch]">How a certificate is made</h2></Reveal>
+        <Reveal i={1}>
+          <p className="lead mt-5 mb-0">
+            No database and no server. Certificates are files in this repository, written by a GitHub Action when you open an issue.
+          </p>
+        </Reveal>
+        <Reveal i={2}><div className="mt-10 card px-4 py-5 sm:px-8"><Pipeline /></div></Reveal>
+        <ul className="mt-6 m-0 p-0 list-none grid md:grid-cols-3 gap-6">
           {STEPS.map((s, i) => (
-            <li key={s.title} className="card card--lift p-6 flex flex-col gap-4">
+            <Reveal as="li" i={i + 3} key={s.title} className="card card--lift p-6 flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <span className="grid place-items-center h-11 w-11 rounded-md bg-surface border border-line"><Icon name={s.icon} size={22} /></span>
                 <span className="mono label">0{i + 1}</span>
               </div>
               <h3 className="h3 m-0">{s.title}</h3>
               <p className="m-0 muted">{s.body}</p>
-            </li>
+            </Reveal>
           ))}
         </ul>
       </div>
