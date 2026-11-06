@@ -1,5 +1,7 @@
 name: Deploy to GitHub Pages
 
+# No third-party actions: this repo only allows actions owned by its own account.
+# The site is built here and pushed to the gh-pages branch with plain git.
 on:
   push:
     branches: [main]
@@ -8,40 +10,50 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
-  group: pages
+  group: pages-deploy
   cancel-in-progress: true
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npm test
-      - run: node scripts/test-analyze.mjs
-      - run: npm run build
+      - name: Check out the repository
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git clone --depth 1 --branch "$GITHUB_REF_NAME" "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" site
+
+      - name: Install Node 22
+        run: |
+          curl -fsSL https://nodejs.org/dist/v22.12.0/node-v22.12.0-linux-x64.tar.xz | tar -xJ -C "$HOME"
+          echo "$HOME/node-v22.12.0-linux-x64/bin" >> "$GITHUB_PATH"
+
+      - name: Install, test and build
+        working-directory: site
         env:
           VITE_REPO: ${{ github.repository }}
           VITE_BRANCH: ${{ github.event.repository.default_branch }}
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
+          VITE_SUPPORT_EMAIL: ${{ vars.SUPPORT_EMAIL }}
+        run: |
+          node -v
+          npm ci
+          npm test
+          node scripts/test-analyze.mjs
+          npm run build
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Publish to the gh-pages branch
+        working-directory: site/dist
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          touch .nojekyll
+          git init -q -b gh-pages
+          git config user.name "oss-proof[bot]"
+          git config user.email "oss-proof-bot@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Deploy ${GITHUB_SHA::7}"
+          git push -f "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" gh-pages
