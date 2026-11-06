@@ -3,7 +3,7 @@ import { useCountUp, useInView, useScrollProgress, prefersReduced } from '../lib
 import { GRADES } from '../../shared/config.mjs'
 import { Badge, AppFrame, Btn, Icon, Mark } from '../components/ui'
 import { go, scrollToId } from '../lib/router'
-import { REPO_URL } from '../lib/config'
+import { REPO_URL, SUPPORT_EMAIL, SUPPORT_URL } from '../lib/config'
 
 const COUNTS = [
   'Merged by someone other than you',
@@ -266,8 +266,9 @@ function Closing() {
           </div>
         </div>
         <footer className="pt-10 mt-12 border-t flex flex-wrap items-center justify-between gap-4 text-[14px]" style={{ borderColor: 'rgb(247 249 250 / .18)', color: 'var(--inv-muted)' }}>
-          <span className="inline-flex items-center gap-2"><Mark size={22} /> OSS Proof is open source and not affiliated with GitHub.</span>
+          <span className="inline-flex items-center gap-2"><Mark size={22} /> OSS Proof is open source, built on the GitHub API, and not affiliated with GitHub.</span>
           <span className="flex gap-6">
+            <a className="link" href={SUPPORT_URL} {...(SUPPORT_EMAIL ? {} : { target: '_blank', rel: 'noreferrer noopener' })}>{SUPPORT_EMAIL ? `Support: ${SUPPORT_EMAIL}` : 'Support'}</a>
             <a className="link" href={REPO_URL} target="_blank" rel="noreferrer noopener">Source on GitHub</a>
             <a className="link" href="#/explore">Developers</a>
           </span>

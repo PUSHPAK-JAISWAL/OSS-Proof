@@ -22,3 +22,7 @@ export const requestCertificateUrl = () => `${REPO_URL}/issues/new?template=cert
 
 export const badgeUrl = (login) => `${RAW_BASE}/badges/${login.toLowerCase()}.svg`
 export const certificateLink = (login) => `${SITE_URL}#/verify/${login}`
+
+// Shown in the footer so GitHub users can reach the maintainer. Set the repository variable SUPPORT_EMAIL.
+export const SUPPORT_EMAIL = import.meta.env.VITE_SUPPORT_EMAIL || ''
+export const SUPPORT_URL = SUPPORT_EMAIL ? `mailto:${SUPPORT_EMAIL}` : `${REPO_URL}/issues`
