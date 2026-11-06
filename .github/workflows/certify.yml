@@ -1,6 +1,7 @@
 name: Issue certificate
 
 # Runs when someone opens a "Certificate request" issue. The issue author is the account being graded.
+# No third-party actions: this repo only allows actions owned by its own account.
 on:
   issues:
     types: [opened]
@@ -20,15 +21,25 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
+      - name: Check out the repository
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          git clone --depth 1 --branch "$BRANCH" "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" repo
+
+      - name: Install Node 22
+        run: |
+          curl -fsSL https://nodejs.org/dist/v22.12.0/node-v22.12.0-linux-x64.tar.xz | tar -xJ -C "$HOME"
+          echo "$HOME/node-v22.12.0-linux-x64/bin" >> "$GITHUB_PATH"
+
+      - name: Install dependencies
+        working-directory: repo
+        run: npm ci
 
       - name: Grade and sign
         id: cert
+        working-directory: repo
         env:
           # Passed as environment variables, never pasted into the script, so issue text cannot inject commands.
           LOGIN: ${{ github.event.issue.user.login }}
@@ -39,20 +50,25 @@ jobs:
 
       - name: Commit certificate
         if: steps.cert.outputs.status == 'ok'
+        working-directory: repo
+        env:
+          FILE: ${{ steps.cert.outputs.file }}
+          BRANCH: ${{ github.event.repository.default_branch }}
         run: |
           git config user.name "oss-proof[bot]"
           git config user.email "oss-proof-bot@users.noreply.github.com"
           git add data
-          git commit -m "Certificate for ${{ steps.cert.outputs.file }}" || exit 0
+          git commit -m "Certificate for ${FILE}" || exit 0
           for i in 1 2 3; do
-            git push && break
-            git pull --rebase
+            git push origin "HEAD:${BRANCH}" && break
+            git pull --rebase origin "${BRANCH}"
           done
 
       - name: Reply on the issue
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
+          BRANCH: ${{ github.event.repository.default_branch }}
           NUMBER: ${{ github.event.issue.number }}
           STATUS: ${{ steps.cert.outputs.status }}
           GRADE: ${{ steps.cert.outputs.grade }}
@@ -74,7 +90,7 @@ jobs:
               echo "Add this to your profile README:"
               echo
               echo '```markdown'
-              echo "[![OSS Proof](https://raw.githubusercontent.com/${REPO}/${{ github.event.repository.default_branch }}/data/badges/${F}.svg)](${SITE}#/verify/${LOGIN})"
+              echo "[![OSS Proof](https://raw.githubusercontent.com/${REPO}/${BRANCH}/data/badges/${F}.svg)](${SITE}#/verify/${LOGIN})"
               echo '```'
             } > reply.md
             gh issue comment "$NUMBER" --repo "$REPO" --body-file reply.md
