@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useCountUp, useInView, useScrollProgress, prefersReduced } from '../lib/motion'
 import { GRADES } from '../../shared/config.mjs'
 import { Badge, AppFrame, Btn, Icon, Mark } from '../components/ui'
 import { go, scrollToId } from '../lib/router'
@@ -20,11 +21,16 @@ function Hero() {
   }
   return (
     <section className="screen screen--hero relative overflow-hidden">
+      <div className="mesh" aria-hidden="true"><i /><i /><i /></div>
       <div className="ground-dots absolute inset-0 pointer-events-none" aria-hidden="true" />
       <div className="wrap relative grid lg:grid-cols-[1.05fr_1fr] gap-12 lg:gap-16 items-center">
         <div>
           <p className="chip mb-6">Scored from public GitHub data only</p>
-          <h1 className="h1 m-0">Contribution certificates for open source developers</h1>
+          <h1 className="h1 m-0" aria-label="Contribution certificates for open source developers">
+            {'Contribution certificates for open source developers'.split(' ').map((w, i) => (
+              <span key={i} aria-hidden="true"><span className="hw" style={{ '--w': i }}>{w}</span>{' '}</span>
+            ))}
+          </h1>
           <p className="lead mt-6 mb-0">
             OSS Proof grades the pull requests that other maintainers merged into repositories you do not own,
             then signs the result so anyone can check it.
@@ -35,6 +41,9 @@ function Hero() {
           </div>
         </div>
 
+        <Tilt className="relative">
+          <span className="float absolute -top-5 -left-4 z-10 hidden sm:block" style={{ '--d': 0, '--r': '-3deg' }}><Badge grade="S" score={85} height={26} /></span>
+          <span className="float absolute -bottom-5 -right-3 z-10 hidden sm:block" style={{ '--d': 2, '--r': '3deg' }}><Badge grade="A" score={72} height={26} /></span>
         <AppFrame title="Check a GitHub profile">
           <form onSubmit={submit} className="p-5 sm:p-6 grid gap-5">
             <label className="grid gap-2">
@@ -64,9 +73,29 @@ function Hero() {
             </div>
           </form>
         </AppFrame>
+        </Tilt>
       </div>
     </section>
   )
+}
+
+function Tilt({ children, className = '' }) {
+  const [t, setT] = useState({ rx: 0, ry: 0 })
+  const move = (e) => {
+    if (prefersReduced() || e.pointerType === 'touch') return
+    const r = e.currentTarget.getBoundingClientRect()
+    setT({ rx: -((e.clientY - r.top) / r.height - 0.5) * 6, ry: ((e.clientX - r.left) / r.width - 0.5) * 8 })
+  }
+  return (
+    <div className={`tilt ${className}`} style={{ '--rx': `${t.rx}deg`, '--ry': `${t.ry}deg` }} onPointerMove={move} onPointerLeave={() => setT({ rx: 0, ry: 0 })}>
+      {children}
+    </div>
+  )
+}
+
+function Reveal({ children, i = 0, className = '', as: Tag = 'div' }) {
+  const [ref, seen] = useInView()
+  return <Tag ref={ref} className={`rv ${seen ? 'in' : ''} ${className}`} style={{ '--i': i }}>{children}</Tag>
 }
 
 const STEPS = [
