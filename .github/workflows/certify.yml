@@ -1,0 +1,86 @@
+name: Issue certificate
+
+# Runs when someone opens a "Certificate request" issue. The issue author is the account being graded.
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+
+# One at a time, so index.json never gets two writers.
+concurrency:
+  group: certify
+  cancel-in-progress: false
+
+jobs:
+  certify:
+    if: startsWith(github.event.issue.title, 'Certificate request')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - name: Grade and sign
+        id: cert
+        env:
+          # Passed as environment variables, never pasted into the script, so issue text cannot inject commands.
+          LOGIN: ${{ github.event.issue.user.login }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CERT_SIGNING_KEY: ${{ secrets.CERT_SIGNING_KEY }}
+        run: node scripts/certify.mjs
+        continue-on-error: true
+
+      - name: Commit certificate
+        if: steps.cert.outputs.status == 'ok'
+        run: |
+          git config user.name "oss-proof[bot]"
+          git config user.email "oss-proof-bot@users.noreply.github.com"
+          git add data
+          git commit -m "Certificate for ${{ steps.cert.outputs.file }}" || exit 0
+          for i in 1 2 3; do
+            git push && break
+            git pull --rebase
+          done
+
+      - name: Reply on the issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.issue.number }}
+          STATUS: ${{ steps.cert.outputs.status }}
+          GRADE: ${{ steps.cert.outputs.grade }}
+          SCORE: ${{ steps.cert.outputs.score }}
+          FILE: ${{ steps.cert.outputs.file }}
+          LOGIN: ${{ github.event.issue.user.login }}
+          MESSAGE: ${{ steps.cert.outputs.message }}
+        run: |
+          OWNER="${REPO%%/*}"
+          NAME="${REPO##*/}"
+          SITE="https://${OWNER,,}.github.io/${NAME}/"
+          if [ "$STATUS" = "ok" ] || [ "$STATUS" = "recent" ]; then
+            F="${FILE:-${LOGIN,,}}"
+            {
+              if [ "$STATUS" = "ok" ]; then echo "Grade **$GRADE**, score **$SCORE**."; else echo "A certificate was issued less than an hour ago, so it was kept."; fi
+              echo
+              echo "Certificate: ${SITE}#/verify/${LOGIN}"
+              echo
+              echo "Add this to your profile README:"
+              echo
+              echo '```markdown'
+              echo "[![OSS Proof](https://raw.githubusercontent.com/${REPO}/${{ github.event.repository.default_branch }}/data/badges/${F}.svg)](${SITE}#/verify/${LOGIN})"
+              echo '```'
+            } > reply.md
+            gh issue comment "$NUMBER" --repo "$REPO" --body-file reply.md
+            gh issue close "$NUMBER" --repo "$REPO" --reason completed
+          else
+            printf 'The certificate could not be created.\n\n%s\n' "${MESSAGE:-See the workflow run for details.}" > reply.md
+            gh issue comment "$NUMBER" --repo "$REPO" --body-file reply.md
+            gh issue close "$NUMBER" --repo "$REPO" --reason "not planned"
+          fi
