@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { GRADES } from '../../shared/config.mjs'
+import { BADGE_THEMES, THEME_IDS } from '../../shared/badge.mjs'
 import { AppFrame, Badge, Btn, Icon, Mark } from '../components/ui'
 import { REPO_URL, SUPPORT_EMAIL, SUPPORT_URL } from '../lib/config'
 import { go, scrollToId } from '../lib/router'
@@ -11,7 +12,58 @@ const SAMPLE = [
   ['vitejs/vite', '71k', '4 PRs'],
 ]
 
+const reduced = () => typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches
+
+/** Pointer position over an element becomes --px/--py in the range -1..1 for the floating pieces. */
+function useParallax(ref) {
+  useEffect(() => {
+    const el = ref.current
+    if (!el || reduced()) return
+    const move = (e) => {
+      const r = el.getBoundingClientRect()
+      el.style.setProperty('--px', (((e.clientX - r.left) / r.width) * 2 - 1).toFixed(3))
+      el.style.setProperty('--py', (((e.clientY - r.top) / r.height) * 2 - 1).toFixed(3))
+    }
+    el.addEventListener('pointermove', move, { passive: true })
+    return () => el.removeEventListener('pointermove', move)
+  }, [ref])
+}
+
+/** Counts up once to `to`. */
+function Count({ to, ms = 1400 }) {
+  const [n, setN] = useState(reduced() ? to : 0)
+  useEffect(() => {
+    if (reduced()) return
+    let raf
+    const t0 = performance.now()
+    const tick = (t) => {
+      const k = Math.min(1, (t - t0) / ms)
+      setN(Math.round(to * (1 - Math.pow(1 - k, 3))))
+      if (k < 1) raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [to, ms])
+  return <>{n}</>
+}
+
+/** Marks elements with .rv as visible once, when they first scroll into view. Without JS everything stays visible. */
+function useReveal() {
+  useEffect(() => {
+    if (reduced() || !('IntersectionObserver' in window)) return
+    const root = document.documentElement
+    root.classList.add('rv-on')
+    const io = new IntersectionObserver((entries) => {
+      for (const en of entries) if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target) }
+    }, { threshold: 0.12 })
+    document.querySelectorAll('.rv').forEach((n) => io.observe(n))
+    return () => { io.disconnect(); root.classList.remove('rv-on') }
+  }, [])
+}
+
 function Hero() {
+  const heroRef = useRef(null)
+  useParallax(heroRef)
   const [user, setUser] = useState('')
   const submit = (e) => {
     e.preventDefault()
@@ -20,8 +72,9 @@ function Hero() {
   }
   const title = 'Proof of the open source projects you ship to'.split(' ')
   return (
-    <section className="screen screen--hero hero-ground">
-      <div className="wrap grid lg:grid-cols-[1fr_1.05fr] gap-12 lg:gap-14 items-center">
+    <section ref={heroRef} className="screen screen--hero hero-ground">
+      <span className="blob blob--1" aria-hidden="true" /><span className="blob blob--2" aria-hidden="true" /><span className="blob blob--3" aria-hidden="true" />
+      <div className="wrap grid grid-cols-[minmax(0,1fr)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] gap-12 lg:gap-14 items-center">
         <div>
           <p className="kicker mb-6">oss-proof v1.2 · verified by GitHub</p>
           <h1 className="h1 m-0" aria-label={title.join(' ')}>
@@ -40,15 +93,17 @@ function Hero() {
             <Btn variant="secondary" onClick={() => scrollToId('how')} className="btn--block-sm">See the pipeline</Btn>
           </div>
           <div className="mt-9 flex flex-wrap gap-x-8 gap-y-3">
-            <span className="stat"><b>0</b> databases</span>
-            <span className="stat"><b>4</b> signals</span>
-            <span className="stat"><b>100</b> points</span>
-            <span className="stat"><b>1</b> issue to certify</span>
+            <span className="stat"><b><Count to={0} /></b> databases</span>
+            <span className="stat"><b><Count to={4} /></b> signals</span>
+            <span className="stat"><b><Count to={100} /></b> points</span>
+            <span className="stat"><b><Count to={8} /></b> badge styles</span>
           </div>
         </div>
 
-        <div className="grid gap-5 min-w-0">
-          <div className="term" data-ui>
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-5 min-w-0 relative">
+          <div className="fl par" style={{ '--z': 22, left: '-46px', top: '38px' }} aria-hidden="true"><div className="float" style={{ '--d': '6.5s', '--r': '-2deg' }}><span className="fchip"><b>★</b> 235k · facebook/react</span></div></div>
+          <div className="fl par" style={{ '--z': 30, right: '-26px', top: '-22px' }} aria-hidden="true"><div className="float" style={{ '--d': '8s', '--dl': '-2s', '--r': '2deg', '--amp': '16px' }}><span className="fchip"><b>24</b> open source projects</span></div></div>
+          <div className="glowframe"><div className="term" data-ui>
             <div className="term__bar"><i /><i /><i /><span className="ml-2 truncate">zsh · sample output</span></div>
             <div className="term__body">
               <form onSubmit={submit} className="flex items-center flex-wrap gap-y-2">
@@ -74,10 +129,10 @@ function Hero() {
                 <span className="tok-k">grade</span> <span className="tok-n">S</span> <span className="tok-c">·</span> <span className="tok-n">91.3</span><span className="tok-c">/100</span> <span className="tok-c">·</span> <span className="tok-s">verified</span>
               </div>
             </div>
-          </div>
+          </div></div>
           <div className="grid grid-cols-2 gap-4">
-            <a href="#/explore" className="badge-tile" aria-label="Browse certified developers"><Badge grade="S" score={91.3} login="you" projects={24} height={92} /></a>
-            <a href="#/explore" className="badge-tile" aria-label="Browse certified developers"><Badge grade="A" score={76.4} login="you" projects={11} height={92} /></a>
+            <div className="par" style={{ '--z': 14 }}><div className="float" style={{ '--d': '7s', '--amp': '10px' }}><a href="#/explore" className="badge-tile" aria-label="Browse certified developers"><Badge grade="S" score={91.3} login="you" projects={24} height={92} theme="grade" /></a></div></div>
+            <div className="par" style={{ '--z': 20 }}><div className="float" style={{ '--d': '8.4s', '--dl': '-3s', '--amp': '14px' }}><a href="#/explore" className="badge-tile" aria-label="Browse certified developers"><Badge grade="A" score={76.4} login="you" projects={11} height={92} theme="aurora" /></a></div></div>
           </div>
         </div>
       </div>
@@ -103,7 +158,7 @@ function How() {
         </p>
         <div className="pipe mt-10">
           {PIPE.map((p, i) => (
-            <div key={p.n} className="pipe__step">
+            <div key={p.n} className="pipe__step rv" style={{ '--s': i, '--i': i }}>
               <div className="flex items-center justify-between"><span className="pipe__no">{p.n}</span><h3 className="h3 m-0">{p.title}</h3></div>
               <pre className="pipe__code m-0">{p.code}</pre>
               <span className="pipe__out"><Icon name="check" size={16} />{p.out}</span>
@@ -140,7 +195,7 @@ function Grading() {
           </dl>
         </div>
 
-        <AppFrame title="Grade ladder, scoring version 1.2.0">
+        <div className="rv"><AppFrame title="Grade ladder, scoring version 1.2.0">
           <ol className="m-0 p-0 list-none divide-y divide-line">
             {GRADES.filter((g) => g.grade !== '-').map((g, gi) => (
               <li key={g.grade} className="grid grid-cols-[56px_1fr_auto] items-center gap-4 px-5 py-4 hover:bg-surface transition-colors">
@@ -153,7 +208,29 @@ function Grading() {
               </li>
             ))}
           </ol>
-        </AppFrame>
+        </AppFrame></div>
+      </div>
+    </section>
+  )
+}
+
+function Styles() {
+  return (
+    <section id="styles" className="screen">
+      <div className="wrap">
+        <p className="kicker mb-4 rv">04 / styles</p>
+        <h2 className="h2 m-0 max-w-[24ch] rv" style={{ '--i': 1 }}>Eight badge styles. Pick the one that fits your profile.</h2>
+        <p className="lead mt-4 mb-0 rv" style={{ '--i': 2 }}>Every certificate comes with all of them. Switch by changing one word in the link, or choose on your certificate page.</p>
+        <div className="themes mt-10">
+          {THEME_IDS.map((id, i) => (
+            <div key={id} className="tile rv" style={{ '--i': i }}>
+              <div className="float w-full" style={{ '--d': `${6 + (i % 4)}s`, '--dl': `${-i * 0.9}s`, '--amp': '7px' }}>
+                <Badge grade={['S', 'A', 'A', 'S', 'S', 'A', 'B', 'A'][i]} score={[91.3, 78.2, 74.9, 88.6, 90.1, 72.0, 61.4, 79.5][i]} login="you" projects={[24, 14, 17, 21, 26, 12, 9, 15][i]} theme={id} height={120} />
+              </div>
+              <span className="label mono">{BADGE_THEMES[id].label}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   )
@@ -220,12 +297,14 @@ function Closing() {
 }
 
 export default function Home() {
+  useReveal()
   return (
     <main>
       <Hero />
       <How />
       <Grading />
       <Pin />
+      <Styles />
       <Closing />
     </main>
   )
