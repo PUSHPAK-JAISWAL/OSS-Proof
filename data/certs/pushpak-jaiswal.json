@@ -3,53 +3,364 @@
   "payload": {
     "schema": 1,
     "scoringVersion": "1.2.0",
-    "mode": "certificate",
+    "mode": "deep",
     "login": "PUSHPAK-JAISWAL",
     "githubId": 149317014,
     "name": "Pushpak Jaiswal",
-    "avatarUrl": "https://avatars.githubusercontent.com/u/149317014?v=4",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/149317014?u=1f086c14c610bcf8746141a62a6476db6172c08b&v=4",
     "profileUrl": "https://github.com/PUSHPAK-JAISWAL",
     "location": "INDIA",
-    "profile": null,
+    "profile": {
+      "bio": null,
+      "company": "@TechAmigo2k25",
+      "website": "https://pushpak-jaiswal.github.io/portfolio-website/",
+      "followers": 30,
+      "following": 24,
+      "publicRepos": 80,
+      "orgs": [],
+      "topOwn": [
+        {
+          "repo": "PUSHPAK-JAISWAL/AgroML-Hub",
+          "stars": 4,
+          "description": "AgroML-Hub is a comparative machine learning platform for agricultural datasets (mushroom, forest, and seeds) featuring Random Forest, XGBoo",
+          "language": "Jupyter Notebook"
+        },
+        {
+          "repo": "PUSHPAK-JAISWAL/ML_LAB",
+          "stars": 3,
+          "description": "ML Lab is a comprehensive learning repository containing practical machine learning implementations, algorithm tutorials, data processing sc",
+          "language": "Jupyter Notebook"
+        },
+        {
+          "repo": "PUSHPAK-JAISWAL/Eye-Controlled-Mouse",
+          "stars": 3,
+          "description": "A hands-free PC mouse that translates smoothed head-gaze movement into cursor position and uses single-eye blinks for reliable left and righ",
+          "language": "HTML"
+        },
+        {
+          "repo": "PUSHPAK-JAISWAL/OSS-Proof",
+          "stars": 2,
+          "description": "Contribution certificates for open source developers. It grades the pull requests that other maintainers merged into repositories you do not",
+          "language": "JavaScript"
+        },
+        {
+          "repo": "PUSHPAK-JAISWAL/DBATU-CP",
+          "stars": 2,
+          "description": "This repository consists of Archive of DBATU COMPETITIVE PROGRAMMING LAB solution in multiple languages making with CI/CD PIPELINE  to a Web",
+          "language": "HTML"
+        },
+        {
+          "repo": "PUSHPAK-JAISWAL/CyberMaze-3D",
+          "stars": 1,
+          "description": "This is the GAME to make people go out of there houses and Touch some grass ",
+          "language": "Kotlin"
+        }
+      ]
+    },
+    "activity": {
+      "commitsLastYear": 1271,
+      "prsLastYear": 129,
+      "reviewsLastYear": 192,
+      "issuesLastYear": 180,
+      "privateLastYear": 6217,
+      "reviewsGiven": 147,
+      "issuesOpened": 51
+    },
     "country": "India",
     "countryCode": "IN",
     "accountCreatedAt": "2023-10-29T15:14:59Z",
-    "issuedAt": "2026-11-07T14:11:29.335Z",
-    "score": 28,
-    "grade": "D",
-    "gradeLabel": "Started",
+    "issuedAt": "2026-11-07T18:20:05.399Z",
+    "score": 62,
+    "grade": "B",
+    "gradeLabel": "Solid",
     "breakdown": {
-      "impact": 9.7,
-      "breadth": 6.3,
-      "consistency": 4.4,
-      "trust": 7.6
+      "impact": 30.6,
+      "breadth": 18.4,
+      "consistency": 7.8,
+      "trust": 5.2
     },
     "counts": {
       "mergedFound": 66,
       "outsideOwnRepos": 66,
-      "sampled": 26,
-      "counted": 26,
-      "selfMerged": 0,
+      "sampled": 66,
+      "counted": 47,
+      "selfMerged": 19,
       "unverifiable": 0,
-      "repos": 3,
-      "activeMonths24": 4,
+      "repos": 20,
+      "activeMonths24": 7,
       "orgs": 0,
       "truncated": false,
-      "foundProjects": 27,
-      "partial": true
+      "foundProjects": 20,
+      "partial": false
     },
     "languages": [
       {
         "name": "Java",
-        "weight": 26.9
+        "weight": 32.4
       },
       {
         "name": "Python",
-        "weight": 5.6
+        "weight": 23.9
+      },
+      {
+        "name": "TypeScript",
+        "weight": 6.1
+      },
+      {
+        "name": "V",
+        "weight": 4.6
+      },
+      {
+        "name": "C++",
+        "weight": 2.5
+      },
+      {
+        "name": "JavaScript",
+        "weight": 1.8
       }
     ],
     "lastMergedAt": "2026-11-07T05:30:41Z",
     "repos": [
+      {
+        "repo": "ckan/ckan",
+        "stars": 5152,
+        "language": "Python",
+        "class": "external",
+        "prs": 1,
+        "lines": 2,
+        "first": "2026-09-29T13:07:54Z",
+        "last": "2026-09-29T13:07:54Z",
+        "ownerType": "Organization",
+        "description": "CKAN is an open-source DMS (data management system) for powering data hubs and data portals. CKAN makes it easy to publish, share and use da",
+        "license": "NOASSERTION",
+        "forks": 2123,
+        "list": [
+          {
+            "number": 9560,
+            "title": "chore: changed accepts from accpets",
+            "url": "https://github.com/ckan/ckan/pull/9560",
+            "mergedAt": "2026-09-29T13:07:54Z",
+            "mergedBy": "wardi",
+            "lines": 2
+          }
+        ]
+      },
+      {
+        "repo": "lingdojo/kana-dojo",
+        "stars": 3819,
+        "language": "TypeScript",
+        "class": "external",
+        "prs": 1,
+        "lines": 29,
+        "first": "2026-09-26T05:43:34Z",
+        "last": "2026-09-26T05:43:34Z",
+        "ownerType": "Organization",
+        "description": "Aesthetic, minimalist platform for learning Japanese inspired by Duolingo and Monkeytype, built with Next.js and sponsored by Vercel. Beginn",
+        "license": "AGPL-3.0",
+        "forks": 3847,
+        "list": [
+          {
+            "number": 31004,
+            "title": "content: add new common mistake",
+            "url": "https://github.com/lingdojo/kana-dojo/pull/31004",
+            "mergedAt": "2026-09-26T05:43:34Z",
+            "mergedBy": "tentoumushii",
+            "lines": 29
+          }
+        ]
+      },
+      {
+        "repo": "IBM/AssetOpsBench",
+        "stars": 2412,
+        "language": "Python",
+        "class": "external",
+        "prs": 3,
+        "lines": 357,
+        "first": "2025-08-15T04:13:30Z",
+        "last": "2025-09-23T03:10:09Z",
+        "ownerType": "Organization",
+        "description": "AssetOpsBench - Industry 4.0: A unified benchmark and framework for building, orchestrating, and evaluating domain-specific AI agents for In",
+        "license": "Apache-2.0",
+        "forks": 359,
+        "list": [
+          {
+            "number": 54,
+            "title": "Fixed Git pull and Git Clone issues for windows",
+            "url": "https://github.com/IBM/AssetOpsBench/pull/54",
+            "mergedAt": "2025-09-23T03:10:09Z",
+            "mergedBy": "DhavalRepo18",
+            "lines": 0
+          },
+          {
+            "number": 26,
+            "title": "Added validation and general scenarios class using pydantic",
+            "url": "https://github.com/IBM/AssetOpsBench/pull/26",
+            "mergedAt": "2025-08-21T13:20:20Z",
+            "mergedBy": "DhavalRepo18",
+            "lines": 144
+          },
+          {
+            "number": 24,
+            "title": "Added MetaData",
+            "url": "https://github.com/IBM/AssetOpsBench/pull/24",
+            "mergedAt": "2025-08-15T04:13:30Z",
+            "mergedBy": "DhavalRepo18",
+            "lines": 213
+          }
+        ]
+      },
+      {
+        "repo": "jonathanwvd/awesome-industrial-datasets",
+        "stars": 623,
+        "language": null,
+        "class": "external",
+        "prs": 1,
+        "lines": 51480,
+        "first": "2025-08-12T10:18:19Z",
+        "last": "2025-08-12T10:18:19Z",
+        "ownerType": "User",
+        "description": "A curated collection of public industrial datasets.",
+        "license": "NOASSERTION",
+        "forks": 86,
+        "list": [
+          {
+            "number": 5,
+            "title": "Added LLM Centric FailureSensorIQ dataset",
+            "url": "https://github.com/jonathanwvd/awesome-industrial-datasets/pull/5",
+            "mergedAt": "2025-08-12T10:18:19Z",
+            "mergedBy": "jonathanwvd",
+            "lines": 51480
+          }
+        ]
+      },
+      {
+        "repo": "ghostmkg/dsa-code",
+        "stars": 339,
+        "language": "C++",
+        "class": "external",
+        "prs": 1,
+        "lines": 247,
+        "first": "2025-10-06T05:02:25Z",
+        "last": "2025-10-06T05:02:25Z",
+        "ownerType": "User",
+        "description": null,
+        "license": "MIT",
+        "forks": 805,
+        "list": [
+          {
+            "number": 500,
+            "title": "Create mergeSort1.java",
+            "url": "https://github.com/ghostmkg/dsa-code/pull/500",
+            "mergedAt": "2025-10-06T05:02:25Z",
+            "mergedBy": "ghostmkg",
+            "lines": 247
+          }
+        ]
+      },
+      {
+        "repo": "ghostmkg/Learning-Stories-Repository",
+        "stars": 155,
+        "language": "Python",
+        "class": "external",
+        "prs": 1,
+        "lines": 15,
+        "first": "2025-10-05T15:55:22Z",
+        "last": "2025-10-05T15:55:22Z",
+        "ownerType": "User",
+        "description": null,
+        "license": null,
+        "forks": 342,
+        "list": [
+          {
+            "number": 109,
+            "title": "Create PUSHPAK-JAISWAL.md",
+            "url": "https://github.com/ghostmkg/Learning-Stories-Repository/pull/109",
+            "mergedAt": "2025-10-05T15:55:22Z",
+            "mergedBy": "ghostmkg",
+            "lines": 15
+          }
+        ]
+      },
+      {
+        "repo": "TanbirRamim/open-source-radar",
+        "stars": 54,
+        "language": "JavaScript",
+        "class": "external",
+        "prs": 1,
+        "lines": 54,
+        "first": "2026-10-11T14:48:34Z",
+        "last": "2026-10-11T14:48:34Z",
+        "ownerType": "User",
+        "description": "Good first issues you can start today: unclaimed beginner issues from active open source projects, by language and topic, refreshed every 12",
+        "license": "MIT",
+        "forks": 103,
+        "list": [
+          {
+            "number": 106,
+            "title": "json helper tests",
+            "url": "https://github.com/TanbirRamim/open-source-radar/pull/106",
+            "mergedAt": "2026-10-11T14:48:34Z",
+            "mergedBy": "TanbirRamim",
+            "lines": 54
+          }
+        ]
+      },
+      {
+        "repo": "Tuntii/viltrum",
+        "stars": 48,
+        "language": "V",
+        "class": "external",
+        "prs": 2,
+        "lines": 34,
+        "first": "2026-10-16T14:15:24Z",
+        "last": "2026-10-17T18:11:15Z",
+        "ownerType": "User",
+        "description": "A web framework for V that owns the wire: its own HTTP/1.1, HTTP/2, WebSocket and TLS 1.3 engine, one epoll worker per CPU, no allocation pe",
+        "license": "MIT",
+        "forks": 4,
+        "list": [
+          {
+            "number": 66,
+            "title": "fix(test): fix parser fuzz double-eval crash and add non-Linux engine stubs (#64)",
+            "url": "https://github.com/Tuntii/viltrum/pull/66",
+            "mergedAt": "2026-10-17T18:11:15Z",
+            "mergedBy": "Tuntii",
+            "lines": 19
+          },
+          {
+            "number": 62,
+            "title": "chore: format V sources and enforce formatting in CI",
+            "url": "https://github.com/Tuntii/viltrum/pull/62",
+            "mergedAt": "2026-10-16T14:15:24Z",
+            "mergedBy": "Tuntii",
+            "lines": 15
+          }
+        ]
+      },
+      {
+        "repo": "johnSamilin/solo",
+        "stars": 21,
+        "language": "TypeScript",
+        "class": "external",
+        "prs": 1,
+        "lines": 66,
+        "first": "2026-09-26T10:45:28Z",
+        "last": "2026-09-26T10:45:28Z",
+        "ownerType": "User",
+        "description": "Minimalistic private note-taking app with focus on typography",
+        "license": null,
+        "forks": 2,
+        "list": [
+          {
+            "number": 68,
+            "title": "Optimized Sorting to reduce startup",
+            "url": "https://github.com/johnSamilin/solo/pull/68",
+            "mergedAt": "2026-09-26T10:45:28Z",
+            "mergedBy": "johnSamilin",
+            "lines": 66
+          }
+        ]
+      },
       {
         "repo": "seleniumboot/selenium-boot",
         "stars": 17,
@@ -59,6 +370,10 @@
         "lines": 5709,
         "first": "2026-10-10T17:37:25Z",
         "last": "2026-11-07T05:30:41Z",
+        "ownerType": "Organization",
+        "description": "The Spring Boot of Selenium — conventions and sensible defaults for Java test automation, without hiding WebDriver.",
+        "license": "Apache-2.0",
+        "forks": 19,
         "list": [
           {
             "number": 242,
@@ -167,6 +482,30 @@
         ]
       },
       {
+        "repo": "alirux/tandem-transactional-outbox-kafka",
+        "stars": 9,
+        "language": "Java",
+        "class": "external",
+        "prs": 1,
+        "lines": 74,
+        "first": "2026-09-25T19:47:36Z",
+        "last": "2026-09-25T19:47:36Z",
+        "ownerType": "User",
+        "description": "Transactional Outbox Pattern for Java: reliable, ordered event delivery from PostgreSQL to Kafka, with Spring Boot autoconfiguration. No CDC",
+        "license": "Apache-2.0",
+        "forks": 11,
+        "list": [
+          {
+            "number": 18,
+            "title": "feat: added ProblemTypePagesTest.java",
+            "url": "https://github.com/alirux/tandem-transactional-outbox-kafka/pull/18",
+            "mergedAt": "2026-09-25T19:47:36Z",
+            "mergedBy": "alirux",
+            "lines": 74
+          }
+        ]
+      },
+      {
         "repo": "Create-Python-App/cpa-templates",
         "stars": 3,
         "language": "Python",
@@ -175,6 +514,10 @@
         "lines": 1660,
         "first": "2026-07-17T02:43:34Z",
         "last": "2026-10-05T15:38:38Z",
+        "ownerType": "Organization",
+        "description": null,
+        "license": "MIT",
+        "forks": 7,
         "list": [
           {
             "number": 244,
@@ -219,6 +562,86 @@
         ]
       },
       {
+        "repo": "Create-Python-App/create-python-app",
+        "stars": 3,
+        "language": "Python",
+        "class": "external",
+        "prs": 2,
+        "lines": 165,
+        "first": "2026-07-17T02:43:38Z",
+        "last": "2026-07-24T13:57:12Z",
+        "ownerType": "Organization",
+        "description": "Composable scaffolding CLI for production-ready Python apps (uv workspaces monorepo). Parity with Create-Node-App.",
+        "license": "MIT",
+        "forks": 3,
+        "list": [
+          {
+            "number": 257,
+            "title": "Docs: add fixture-based offline testing guidance and expand Hacktoberfest onboarding",
+            "url": "https://github.com/Create-Python-App/create-python-app/pull/257",
+            "mergedAt": "2026-07-24T13:57:12Z",
+            "mergedBy": "ulises-jeremias",
+            "lines": 145
+          },
+          {
+            "number": 186,
+            "title": "added tests and fastapi typed version",
+            "url": "https://github.com/Create-Python-App/create-python-app/pull/186",
+            "mergedAt": "2026-07-17T02:43:38Z",
+            "mergedBy": "ulises-jeremias",
+            "lines": 20
+          }
+        ]
+      },
+      {
+        "repo": "enghitalo/vcsr",
+        "stars": 2,
+        "language": "V",
+        "class": "external",
+        "prs": 1,
+        "lines": 274,
+        "first": "2026-10-16T12:27:16Z",
+        "last": "2026-10-16T12:27:16Z",
+        "ownerType": "User",
+        "description": null,
+        "license": "MIT",
+        "forks": 1,
+        "list": [
+          {
+            "number": 53,
+            "title": "chore: reformat tracked files to match V v3 fmt style (cycle 1) (#50)",
+            "url": "https://github.com/enghitalo/vcsr/pull/53",
+            "mergedAt": "2026-10-16T12:27:16Z",
+            "mergedBy": "enghitalo",
+            "lines": 274
+          }
+        ]
+      },
+      {
+        "repo": "maize-genetics/tassel",
+        "stars": 2,
+        "language": "Java",
+        "class": "external",
+        "prs": 1,
+        "lines": 44,
+        "first": "2026-10-22T17:03:40Z",
+        "last": "2026-10-22T17:03:40Z",
+        "ownerType": "Organization",
+        "description": "Trait Analysis by aSSociation, Evolution and Linkage",
+        "license": "Apache-2.0",
+        "forks": 3,
+        "list": [
+          {
+            "number": 47,
+            "title": "Statistics gate: re-enable 4 of the 8 skipped tests (#38)",
+            "url": "https://github.com/maize-genetics/tassel/pull/47",
+            "mergedAt": "2026-10-22T17:03:40Z",
+            "mergedBy": "btmonier",
+            "lines": 44
+          }
+        ]
+      },
+      {
         "repo": "seleniumboot/selenium-boot-migrator",
         "stars": 1,
         "language": "Java",
@@ -227,6 +650,10 @@
         "lines": 2799,
         "first": "2026-09-26T15:49:44Z",
         "last": "2026-10-03T17:23:39Z",
+        "ownerType": "Organization",
+        "description": "Migrate existing Selenium projects to Selenium Boot — analyze, detect migration opportunities, and automate the transition.",
+        "license": "NOASSERTION",
+        "forks": 3,
         "list": [
           {
             "number": 31,
@@ -293,106 +720,106 @@
             "lines": 72
           }
         ]
-      }
-    ],
-    "unchecked": [
-      {
-        "repo": "SciLab-GUI-Verse/guiverse-hackathon-submission",
-        "prs": 5
-      },
-      {
-        "repo": "Distributed-VCS/contracts",
-        "prs": 4
-      },
-      {
-        "repo": "TechAmigo2k25/create-server-startup",
-        "prs": 4
-      },
-      {
-        "repo": "IBM/AssetOpsBench",
-        "prs": 3
-      },
-      {
-        "repo": "Tuntii/viltrum",
-        "prs": 2
-      },
-      {
-        "repo": "Distributed-VCS/test",
-        "prs": 2
-      },
-      {
-        "repo": "Distributed-VCS/scripts",
-        "prs": 2
-      },
-      {
-        "repo": "Create-Python-App/create-python-app",
-        "prs": 2
-      },
-      {
-        "repo": "maize-genetics/tassel",
-        "prs": 1
-      },
-      {
-        "repo": "seleniumboot/selenium-boot-starter",
-        "prs": 1
-      },
-      {
-        "repo": "Distributed-VCS/cli",
-        "prs": 1
-      },
-      {
-        "repo": "enghitalo/vcsr",
-        "prs": 1
       },
       {
         "repo": "bundlab/finance-coach",
-        "prs": 1
-      },
-      {
-        "repo": "TanbirRamim/open-source-radar",
-        "prs": 1
-      },
-      {
-        "repo": "ckan/ckan",
-        "prs": 1
+        "stars": 1,
+        "language": "Java",
+        "class": "external",
+        "prs": 1,
+        "lines": 418,
+        "first": "2026-10-14T19:35:18Z",
+        "last": "2026-10-14T19:35:18Z",
+        "ownerType": "User",
+        "description": "A lightweight terminal-base Java application that helps users manage personal finances using the 50/30/20 budgeting rule. Features transacti",
+        "license": "MIT",
+        "forks": 12,
+        "list": [
+          {
+            "number": 13,
+            "title": "Reports",
+            "url": "https://github.com/bundlab/finance-coach/pull/13",
+            "mergedAt": "2026-10-14T19:35:18Z",
+            "mergedBy": "bundlab",
+            "lines": 418
+          }
+        ]
       },
       {
         "repo": "arkaslittlemind/ScholarLens",
-        "prs": 1
-      },
-      {
-        "repo": "johnSamilin/solo",
-        "prs": 1
-      },
-      {
-        "repo": "lingdojo/kana-dojo",
-        "prs": 1
-      },
-      {
-        "repo": "alirux/tandem-transactional-outbox-kafka",
-        "prs": 1
+        "stars": 1,
+        "language": "TypeScript",
+        "class": "external",
+        "prs": 1,
+        "lines": 4,
+        "first": "2026-09-27T20:10:29Z",
+        "last": "2026-09-27T20:10:29Z",
+        "ownerType": "User",
+        "description": "A scholarship and grant eligibility checker that cites the exact program rule behind every answer.",
+        "license": null,
+        "forks": 0,
+        "list": [
+          {
+            "number": 28,
+            "title": "remove em dashes",
+            "url": "https://github.com/arkaslittlemind/ScholarLens/pull/28",
+            "mergedAt": "2026-09-27T20:10:29Z",
+            "mergedBy": "arkaslittlemind",
+            "lines": 4
+          }
+        ]
       },
       {
         "repo": "Stock-Trading/data-loader-1",
-        "prs": 1
+        "stars": 1,
+        "language": "Java",
+        "class": "external",
+        "prs": 1,
+        "lines": 74,
+        "first": "2026-09-24T15:13:27Z",
+        "last": "2026-09-24T15:13:27Z",
+        "ownerType": "Organization",
+        "description": null,
+        "license": null,
+        "forks": 3,
+        "list": [
+          {
+            "number": 34,
+            "title": "chore: Rename Package to LowerCase",
+            "url": "https://github.com/Stock-Trading/data-loader-1/pull/34",
+            "mergedAt": "2026-09-24T15:13:27Z",
+            "mergedBy": "piotrgrochowiecki",
+            "lines": 74
+          }
+        ]
       },
       {
-        "repo": "RevCraft/SB-001",
-        "prs": 1
-      },
-      {
-        "repo": "ghostmkg/dsa-code",
-        "prs": 1
-      },
-      {
-        "repo": "ghostmkg/Learning-Stories-Repository",
-        "prs": 1
-      },
-      {
-        "repo": "jonathanwvd/awesome-industrial-datasets",
-        "prs": 1
+        "repo": "seleniumboot/selenium-boot-starter",
+        "stars": 0,
+        "language": "Java",
+        "class": "external",
+        "prs": 1,
+        "lines": 497,
+        "first": "2026-10-21T03:35:29Z",
+        "last": "2026-10-21T03:35:29Z",
+        "ownerType": "Organization",
+        "description": "Ready-to-run Selenium Boot starter: Maven, TestNG, one config file, passing tests. Use this template.",
+        "license": "NOASSERTION",
+        "forks": 1,
+        "list": [
+          {
+            "number": 2,
+            "title": "feat/add-maven-wrapper",
+            "url": "https://github.com/seleniumboot/selenium-boot-starter/pull/2",
+            "mergedAt": "2026-10-21T03:35:29Z",
+            "mergedBy": "shossain786",
+            "lines": 497
+          }
+        ]
       }
     ],
+    "unchecked": [],
+    "restrictedOrgs": [],
     "timeline": [
       {
         "month": "2024-12",
@@ -428,15 +855,15 @@
       },
       {
         "month": "2025-08",
-        "prs": 0
+        "prs": 3
       },
       {
         "month": "2025-09",
-        "prs": 0
+        "prs": 1
       },
       {
         "month": "2025-10",
-        "prs": 0
+        "prs": 2
       },
       {
         "month": "2025-11",
@@ -472,7 +899,7 @@
       },
       {
         "month": "2026-07",
-        "prs": 3
+        "prs": 5
       },
       {
         "month": "2026-08",
@@ -480,18 +907,177 @@
       },
       {
         "month": "2026-09",
-        "prs": 5
+        "prs": 11
       },
       {
         "month": "2026-10",
-        "prs": 16
+        "prs": 23
       },
       {
         "month": "2026-11",
         "prs": 2
       }
     ],
+    "stats": {
+      "additions": 62116,
+      "deletions": 1886,
+      "filesChanged": 297,
+      "medianDaysToMerge": 0.8,
+      "maintainers": 16,
+      "orgProjects": 10,
+      "userProjects": 10,
+      "licenses": [
+        "Apache-2.0",
+        "NOASSERTION",
+        "MIT",
+        "AGPL-3.0"
+      ]
+    },
     "evidence": [
+      {
+        "repo": "ckan/ckan",
+        "stars": 5152,
+        "language": "Python",
+        "class": "external",
+        "number": 9560,
+        "title": "chore: changed accepts from accpets",
+        "url": "https://github.com/ckan/ckan/pull/9560",
+        "mergedAt": "2026-09-29T13:07:54Z",
+        "mergedBy": "wardi",
+        "lines": 2
+      },
+      {
+        "repo": "lingdojo/kana-dojo",
+        "stars": 3819,
+        "language": "TypeScript",
+        "class": "external",
+        "number": 31004,
+        "title": "content: add new common mistake",
+        "url": "https://github.com/lingdojo/kana-dojo/pull/31004",
+        "mergedAt": "2026-09-26T05:43:34Z",
+        "mergedBy": "tentoumushii",
+        "lines": 29
+      },
+      {
+        "repo": "IBM/AssetOpsBench",
+        "stars": 2412,
+        "language": "Python",
+        "class": "external",
+        "number": 54,
+        "title": "Fixed Git pull and Git Clone issues for windows",
+        "url": "https://github.com/IBM/AssetOpsBench/pull/54",
+        "mergedAt": "2025-09-23T03:10:09Z",
+        "mergedBy": "DhavalRepo18",
+        "lines": 0
+      },
+      {
+        "repo": "IBM/AssetOpsBench",
+        "stars": 2412,
+        "language": "Python",
+        "class": "external",
+        "number": 26,
+        "title": "Added validation and general scenarios class using pydantic",
+        "url": "https://github.com/IBM/AssetOpsBench/pull/26",
+        "mergedAt": "2025-08-21T13:20:20Z",
+        "mergedBy": "DhavalRepo18",
+        "lines": 144
+      },
+      {
+        "repo": "IBM/AssetOpsBench",
+        "stars": 2412,
+        "language": "Python",
+        "class": "external",
+        "number": 24,
+        "title": "Added MetaData",
+        "url": "https://github.com/IBM/AssetOpsBench/pull/24",
+        "mergedAt": "2025-08-15T04:13:30Z",
+        "mergedBy": "DhavalRepo18",
+        "lines": 213
+      },
+      {
+        "repo": "jonathanwvd/awesome-industrial-datasets",
+        "stars": 623,
+        "language": null,
+        "class": "external",
+        "number": 5,
+        "title": "Added LLM Centric FailureSensorIQ dataset",
+        "url": "https://github.com/jonathanwvd/awesome-industrial-datasets/pull/5",
+        "mergedAt": "2025-08-12T10:18:19Z",
+        "mergedBy": "jonathanwvd",
+        "lines": 51480
+      },
+      {
+        "repo": "ghostmkg/dsa-code",
+        "stars": 339,
+        "language": "C++",
+        "class": "external",
+        "number": 500,
+        "title": "Create mergeSort1.java",
+        "url": "https://github.com/ghostmkg/dsa-code/pull/500",
+        "mergedAt": "2025-10-06T05:02:25Z",
+        "mergedBy": "ghostmkg",
+        "lines": 247
+      },
+      {
+        "repo": "ghostmkg/Learning-Stories-Repository",
+        "stars": 155,
+        "language": "Python",
+        "class": "external",
+        "number": 109,
+        "title": "Create PUSHPAK-JAISWAL.md",
+        "url": "https://github.com/ghostmkg/Learning-Stories-Repository/pull/109",
+        "mergedAt": "2025-10-05T15:55:22Z",
+        "mergedBy": "ghostmkg",
+        "lines": 15
+      },
+      {
+        "repo": "TanbirRamim/open-source-radar",
+        "stars": 54,
+        "language": "JavaScript",
+        "class": "external",
+        "number": 106,
+        "title": "json helper tests",
+        "url": "https://github.com/TanbirRamim/open-source-radar/pull/106",
+        "mergedAt": "2026-10-11T14:48:34Z",
+        "mergedBy": "TanbirRamim",
+        "lines": 54
+      },
+      {
+        "repo": "Tuntii/viltrum",
+        "stars": 48,
+        "language": "V",
+        "class": "external",
+        "number": 66,
+        "title": "fix(test): fix parser fuzz double-eval crash and add non-Linux engine stubs (#64)",
+        "url": "https://github.com/Tuntii/viltrum/pull/66",
+        "mergedAt": "2026-10-17T18:11:15Z",
+        "mergedBy": "Tuntii",
+        "lines": 19
+      },
+      {
+        "repo": "Tuntii/viltrum",
+        "stars": 48,
+        "language": "V",
+        "class": "external",
+        "number": 62,
+        "title": "chore: format V sources and enforce formatting in CI",
+        "url": "https://github.com/Tuntii/viltrum/pull/62",
+        "mergedAt": "2026-10-16T14:15:24Z",
+        "mergedBy": "Tuntii",
+        "lines": 15
+      },
+      {
+        "repo": "johnSamilin/solo",
+        "stars": 21,
+        "language": "TypeScript",
+        "class": "external",
+        "number": 68,
+        "title": "Optimized Sorting to reduce startup",
+        "url": "https://github.com/johnSamilin/solo/pull/68",
+        "mergedAt": "2026-09-26T10:45:28Z",
+        "mergedBy": "johnSamilin",
+        "lines": 66
+      },
       {
         "repo": "seleniumboot/selenium-boot",
         "stars": 17,
@@ -527,150 +1113,6 @@
         "mergedAt": "2026-10-30T01:35:34Z",
         "mergedBy": "shossain786",
         "lines": 295
-      },
-      {
-        "repo": "seleniumboot/selenium-boot",
-        "stars": 17,
-        "language": "Java",
-        "class": "external",
-        "number": 199,
-        "title": "feat(network): support network mocking on Firefox via WebDriver BiDi …",
-        "url": "https://github.com/seleniumboot/selenium-boot/pull/199",
-        "mergedAt": "2026-10-25T01:25:10Z",
-        "mergedBy": "shossain786",
-        "lines": 871
-      },
-      {
-        "repo": "seleniumboot/selenium-boot",
-        "stars": 17,
-        "language": "Java",
-        "class": "external",
-        "number": 189,
-        "title": "Feat/167 results by tag",
-        "url": "https://github.com/seleniumboot/selenium-boot/pull/189",
-        "mergedAt": "2026-10-22T01:25:47Z",
-        "mergedBy": "shossain786",
-        "lines": 628
-      },
-      {
-        "repo": "seleniumboot/selenium-boot",
-        "stars": 17,
-        "language": "Java",
-        "class": "external",
-        "number": 177,
-        "title": "feat: feature added failure intelligence",
-        "url": "https://github.com/seleniumboot/selenium-boot/pull/177",
-        "mergedAt": "2026-10-21T03:12:13Z",
-        "mergedBy": "shossain786",
-        "lines": 611
-      },
-      {
-        "repo": "seleniumboot/selenium-boot",
-        "stars": 17,
-        "language": "Java",
-        "class": "external",
-        "number": 169,
-        "title": "feat: add focused empty and regex assertions (#136)",
-        "url": "https://github.com/seleniumboot/selenium-boot/pull/169",
-        "mergedAt": "2026-10-19T01:18:45Z",
-        "mergedBy": "shossain786",
-        "lines": 223
-      },
-      {
-        "repo": "seleniumboot/selenium-boot",
-        "stars": 17,
-        "language": "Java",
-        "class": "external",
-        "number": 158,
-        "title": "feat(cucumber): add JUnit Platform engine support and runner parity (…",
-        "url": "https://github.com/seleniumboot/selenium-boot/pull/158",
-        "mergedAt": "2026-10-18T01:47:28Z",
-        "mergedBy": "shossain786",
-        "lines": 381
-      },
-      {
-        "repo": "seleniumboot/selenium-boot",
-        "stars": 17,
-        "language": "Java",
-        "class": "external",
-        "number": 157,
-        "title": "fix(chore): test-cleanup",
-        "url": "https://github.com/seleniumboot/selenium-boot/pull/157",
-        "mergedAt": "2026-10-17T01:26:17Z",
-        "mergedBy": "shossain786",
-        "lines": 195
-      },
-      {
-        "repo": "seleniumboot/selenium-boot",
-        "stars": 17,
-        "language": "Java",
-        "class": "external",
-        "number": 154,
-        "title": "Feat/ci list failed tests",
-        "url": "https://github.com/seleniumboot/selenium-boot/pull/154",
-        "mergedAt": "2026-10-15T03:29:28Z",
-        "mergedBy": "shossain786",
-        "lines": 620
-      },
-      {
-        "repo": "seleniumboot/selenium-boot",
-        "stars": 17,
-        "language": "Java",
-        "class": "external",
-        "number": 150,
-        "title": "feat(locator): waitFor, allTextContents, element screenshot (#135)",
-        "url": "https://github.com/seleniumboot/selenium-boot/pull/150",
-        "mergedAt": "2026-10-14T01:24:30Z",
-        "mergedBy": "shossain786",
-        "lines": 494
-      },
-      {
-        "repo": "seleniumboot/selenium-boot",
-        "stars": 17,
-        "language": "Java",
-        "class": "external",
-        "number": 147,
-        "title": "feat(locator): form actions: clear, check, uncheck, isChecked, select…",
-        "url": "https://github.com/seleniumboot/selenium-boot/pull/147",
-        "mergedAt": "2026-10-12T01:28:00Z",
-        "mergedBy": "shossain786",
-        "lines": 425
-      },
-      {
-        "repo": "seleniumboot/selenium-boot",
-        "stars": 17,
-        "language": "Java",
-        "class": "external",
-        "number": 143,
-        "title": "feat(locator): add first() and last() narrowing methods (#132)",
-        "url": "https://github.com/seleniumboot/selenium-boot/pull/143",
-        "mergedAt": "2026-10-10T17:37:25Z",
-        "mergedBy": "shossain786",
-        "lines": 271
-      },
-      {
-        "repo": "Create-Python-App/cpa-templates",
-        "stars": 3,
-        "language": "Python",
-        "class": "external",
-        "number": 244,
-        "title": "docs: refresh security maintenance guide (#228)",
-        "url": "https://github.com/Create-Python-App/cpa-templates/pull/244",
-        "mergedAt": "2026-10-05T15:38:38Z",
-        "mergedBy": "ulises-jeremias",
-        "lines": 15
-      },
-      {
-        "repo": "Create-Python-App/cpa-templates",
-        "stars": 3,
-        "language": "Python",
-        "class": "external",
-        "number": 241,
-        "title": "docs: refresh maintenance and template quality guides",
-        "url": "https://github.com/Create-Python-App/cpa-templates/pull/241",
-        "mergedAt": "2026-10-04T07:00:41Z",
-        "mergedBy": "ulises-jeremias",
-        "lines": 392
       }
     ]
   }
