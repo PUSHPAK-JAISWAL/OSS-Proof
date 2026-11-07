@@ -12,10 +12,10 @@ const token = process.env.GH_TOKEN
 const secret = process.env.CERT_SIGNING_KEY
 const COOLDOWN_MS = process.env.COOLDOWN_MS !== undefined ? Number(process.env.COOLDOWN_MS) : 60 * 60 * 1000
 
-function fail(msg) {
+function fail(msg, code = 1) {
   console.error(msg)
   writeFileSync(process.env.GITHUB_OUTPUT || '/dev/null', `status=failed\nmessage=${msg.replace(/\n/g, ' ')}\n`, { flag: 'a' })
-  process.exit(1)
+  process.exit(code)
 }
 
 if (!isValidLogin(login)) fail('The issue author is not a valid personal account.')
@@ -88,7 +88,7 @@ try {
     payload = await analyzeUser(login, { api, mode: 'certificate', onProgress: (m) => console.log(m) })
   }
 } catch (err) {
-  fail(err.message)
+  fail(err.message, err.rateLimited ? 75 : 1)
 }
 
 let cert

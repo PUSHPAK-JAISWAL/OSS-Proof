@@ -162,6 +162,7 @@ export async function analyzeUser(login, { api, mode = 'anonymous', now = new Da
     selfMerged,
     sampled: sample.length,
     unverifiable,
+    full: mode === 'certificate',
     mergedFound: totalMerged,
     outsideOwn: candidates.length,
     foundProjects: byRepo.size,
@@ -171,7 +172,7 @@ export async function analyzeUser(login, { api, mode = 'anonymous', now = new Da
 }
 
 /** Turns verified evidence into the result object that certificates and the UI share. */
-export function buildResult({ mode, now, user, orgs, evidence, selfMerged, sampled, unverifiable, mergedFound, outsideOwn, truncated = false, foundProjects = 0, unchecked = [], partial = false }) {
+export function buildResult({ mode, now, user, profile = null, full = false, orgs, evidence, selfMerged, sampled, unverifiable, mergedFound, outsideOwn, truncated = false, foundProjects = 0, unchecked = [], partial = false }) {
   const scored = scoreEvidence(evidence, { now, accountCreatedAt: user.createdAt, selfMerged, sampled })
 
   // Languages: weight each counted PR by its repo weight, so one popular repo outweighs ten tiny ones.
@@ -182,7 +183,7 @@ export function buildResult({ mode, now, user, orgs, evidence, selfMerged, sampl
   }
   const languages = [...langWeight.entries()]
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 6)
+    .slice(0, full ? 12 : 6)
     .map(([name, w]) => ({ name, weight: Math.round(w * 10) / 10 }))
 
   const lastMergedAt = evidence.map((p) => p.mergedAt).sort().pop() || null
@@ -201,12 +202,22 @@ export function buildResult({ mode, now, user, orgs, evidence, selfMerged, sampl
     const k = pr.repo.toLowerCase()
     const r = perRepo.get(k) || { repo: pr.repo, stars: pr.stars, language: pr.language, class: pr.class, prs: 0, lines: 0, first: pr.mergedAt, last: pr.mergedAt }
     r.prs++
+    if (full) (r.list ||= []).push({ number: pr.number, title: String(pr.title || '').slice(0, 100), url: pr.url, mergedAt: pr.mergedAt, mergedBy: pr.mergedBy, lines: pr.lines })
     r.lines += pr.lines || 0
     if (pr.mergedAt < r.first) r.first = pr.mergedAt
     if (pr.mergedAt > r.last) r.last = pr.mergedAt
     perRepo.set(k, r)
   }
-  const repos = [...perRepo.values()].sort((a, b) => b.stars - a.stars || b.prs - a.prs).slice(0, 40)
+  const repos = [...perRepo.values()].sort((a, b) => b.stars - a.stars || b.prs - a.prs).slice(0, full ? 300 : 40)
+  if (full) for (const r of repos) r.list = (r.list || []).sort((a, b) => b.mergedAt.localeCompare(a.mergedAt)).slice(0, 30)
+
+  // Merged PRs per month for the last 24 months, oldest first, so the shape of the activity is visible.
+  const nowD = new Date(now)
+  const timeline = Array.from({ length: 24 }, (_, i) => {
+    const d = new Date(Date.UTC(nowD.getUTCFullYear(), nowD.getUTCMonth() - (23 - i), 1))
+    const key = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`
+    return { month: key, prs: evidence.filter((p) => String(p.mergedAt).slice(0, 7) === key).length }
+  })
 
   return {
     schema: 1,
@@ -218,6 +229,7 @@ export function buildResult({ mode, now, user, orgs, evidence, selfMerged, sampl
     avatarUrl: user.avatarUrl,
     profileUrl: user.profileUrl,
     location: user.location || null,
+    profile,
     country,
     countryCode: code,
     accountCreatedAt: user.createdAt,
@@ -244,6 +256,7 @@ export function buildResult({ mode, now, user, orgs, evidence, selfMerged, sampl
     lastMergedAt,
     repos,
     unchecked,
+    timeline,
     evidence: top,
   }
 }

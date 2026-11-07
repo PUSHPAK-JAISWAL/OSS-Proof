@@ -4,5 +4,5 @@ import { isValidLogin } from '../shared/analyze.mjs'
 import { pickStale } from '../shared/mergeindex.mjs'
 
 const index = existsSync('data/index.json') ? JSON.parse(readFileSync('data/index.json', 'utf8')) : { entries: [] }
-const batch = Math.max(1, Math.min(60, Number(process.env.BATCH) || 25))
+const batch = Math.max(1, Math.min(300, Number(process.env.BATCH) || 100))
 for (const login of pickStale(index, { batch, days: Number(process.env.DAYS) || 6 })) if (isValidLogin(login)) console.log(login)
