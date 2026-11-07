@@ -15,6 +15,22 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Answers at once, outside the queue, so nobody wonders whether the request arrived.
+  acknowledge:
+    if: startsWith(github.event.issue.title, 'Certificate request')
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Say we got it
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.issue.number }}
+          LOGIN: ${{ github.event.issue.user.login }}
+        run: |
+          printf 'Request received for @%s.\n\nRequests run one at a time through the GitHub Actions queue, so this can take a few minutes when many people ask at once. This comment thread will get your README tags as soon as the certificate is ready. You do not need to do anything else.\n' "$LOGIN" > ack.md
+          gh issue comment "$NUMBER" --repo "$REPO" --body-file ack.md
+
   certify:
     if: startsWith(github.event.issue.title, 'Certificate request')
     runs-on: ubuntu-latest
@@ -38,19 +54,15 @@ jobs:
         continue-on-error: true
 
       - name: Commit certificate
+        id: commit
+        continue-on-error: true
         if: steps.cert.outputs.status == 'ok'
         env:
-          FILE: ${{ steps.cert.outputs.file }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
           BRANCH: ${{ github.event.repository.default_branch }}
-        run: |
-          git config user.name "oss-proof[bot]"
-          git config user.email "oss-proof-bot@users.noreply.github.com"
-          git add data
-          git commit -m "Certificate for ${FILE}" || exit 0
-          for i in 1 2 3; do
-            git push origin "HEAD:${BRANCH}" && break
-            git pull --rebase origin "${BRANCH}"
-          done
+          MESSAGE: Certificate for ${{ steps.cert.outputs.file }}
+        run: node scripts/commit.mjs
 
       - name: Reply on the issue
         env:
@@ -58,28 +70,41 @@ jobs:
           REPO: ${{ github.repository }}
           BRANCH: ${{ github.event.repository.default_branch }}
           NUMBER: ${{ github.event.issue.number }}
-          STATUS: ${{ steps.cert.outputs.status }}
+          STATUS: ${{ steps.commit.outcome == 'failure' && 'failed' || steps.cert.outputs.status }}
           GRADE: ${{ steps.cert.outputs.grade }}
           SCORE: ${{ steps.cert.outputs.score }}
           FILE: ${{ steps.cert.outputs.file }}
           LOGIN: ${{ github.event.issue.user.login }}
-          MESSAGE: ${{ steps.cert.outputs.message }}
+          MESSAGE: ${{ steps.cert.outputs.message || 'Saving the certificate to the repository failed. Check that Settings > Actions > General > Workflow permissions is set to Read and write.' }}
         run: |
           OWNER="${REPO%%/*}"
           NAME="${REPO##*/}"
           SITE="https://${OWNER,,}.github.io/${NAME}/"
           if [ "$STATUS" = "ok" ] || [ "$STATUS" = "recent" ]; then
             F="${FILE:-${LOGIN,,}}"
+            RAW="https://raw.githubusercontent.com/${REPO}/${BRANCH}/data/badges"
+            LINK="${SITE}#/verify/${LOGIN}"
             {
-              if [ "$STATUS" = "ok" ]; then echo "Grade **$GRADE**, score **$SCORE**."; else echo "A certificate was issued less than an hour ago, so it was kept."; fi
+              if [ "$STATUS" = "ok" ]; then echo "Certificate ready: grade **$GRADE**, score **$SCORE**."; else echo "A certificate was issued less than an hour ago, so it was kept."; fi
               echo
-              echo "Certificate: ${SITE}#/verify/${LOGIN}"
+              echo "Certificate page: ${LINK}"
               echo
-              echo "Add this to your profile README:"
+              echo "Copy one of these into your profile README (the repository named \`${LOGIN}/${LOGIN}\`):"
               echo
+              echo "**Card badge, Markdown**"
               echo '```markdown'
-              echo "[![OSS Proof](https://raw.githubusercontent.com/${REPO}/${BRANCH}/data/badges/${F}.svg)](${SITE}#/verify/${LOGIN})"
+              echo "[![OSS Proof](${RAW}/${F}.svg)](${LINK})"
               echo '```'
+              echo "**Compact badge, Markdown**"
+              echo '```markdown'
+              echo "[![OSS Proof](${RAW}/${F}-mini.svg)](${LINK})"
+              echo '```'
+              echo "**Card badge, HTML**"
+              echo '```html'
+              echo "<a href=\"${LINK}\"><img src=\"${RAW}/${F}.svg\" alt=\"OSS Proof\" width=\"380\" /></a>"
+              echo '```'
+              echo
+              echo "The badge can take a minute to appear because GitHub caches images. Ask for a new certificate any time your work changes (once an hour at most)."
             } > reply.md
             gh issue comment "$NUMBER" --repo "$REPO" --body-file reply.md
             gh issue close "$NUMBER" --repo "$REPO" --reason completed

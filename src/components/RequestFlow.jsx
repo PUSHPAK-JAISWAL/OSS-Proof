@@ -5,7 +5,7 @@ import { PinPanel } from './cert'
 import { Btn, fmtDate, Icon } from './ui'
 
 const POLL_MS = 10000
-const GIVE_UP_MS = 8 * 60 * 1000
+const GIVE_UP_MS = 15 * 60 * 1000
 
 // Does the special repository named after the user exist? GitHub shows its README on the profile page.
 async function profileRepoState(login) {
@@ -91,7 +91,7 @@ export default function RequestFlow({ login }) {
     return () => clearInterval(id)
   }, [waiting, login])
 
-  const signed = cert && checkSignature(cert, login) === 'valid'
+  const signed = cert && (cert.alg === 'github-actions' || checkSignature(cert, login) === 'valid')
   const p = cert?.payload
   const issueLine = !issue ? 'No request found yet.' : issue.state === 'closed' ? 'Request closed. The reply on it has your links.' : 'Request open. The workflow is grading your pull requests.'
 
@@ -132,22 +132,22 @@ export default function RequestFlow({ login }) {
           {waiting && (
             <div className="flex items-center gap-3" role="status" aria-live="polite">
               <span className="h-4 w-4 rounded-full border-2 border-line border-t-accent animate-spin" />
-              <span>Waiting for the workflow. This usually takes one to three minutes. {issueLine}</span>
+              <span>Waiting for the workflow. A request takes one to three minutes, but requests run one at a time through the GitHub Actions queue, so it can take longer when many people ask at once. You can close this page: the reply on your issue will have your README tags. {issueLine}</span>
             </div>
           )}
           {!waiting && !signed && !gaveUp && <p className="m-0 muted">{issue ? issueLine : 'Press the button above, then come back to this page. It checks every ten seconds.'}</p>}
           {gaveUp && (
             <p className="m-0 text-warn max-w-[62ch]">
-              Nothing arrived in eight minutes. Open <a className="link" href={`${REPO_URL}/actions`} target="_blank" rel="noreferrer noopener">the Actions tab</a> to see the run, or <a className="link" href={`${REPO_URL}/issues`} target="_blank" rel="noreferrer noopener">the issue</a> for its reply.
+              Nothing arrived yet. The queue may be busy. Open <a className="link" href={`${REPO_URL}/actions`} target="_blank" rel="noreferrer noopener">the Actions tab</a> to see the run, or <a className="link" href={`${REPO_URL}/issues`} target="_blank" rel="noreferrer noopener">the issue</a> for its reply.
             </p>
           )}
           {signed && p && (
             <div className="grid gap-4">
-              <p className="m-0">Signed. Grade <span className="text-ink font-medium">{p.grade}</span>, score <span className="mono">{p.score.toFixed(1)}</span>, issued {fmtDate(p.issuedAt)}. Read {p.counts.counted} merged pull requests.</p>
+              <p className="m-0">Certified. Grade <span className="text-ink font-medium">{p.grade}</span>, score <span className="mono">{p.score.toFixed(1)}</span>, issued {fmtDate(p.issuedAt)}. {p.counts.repos} open source {p.counts.repos === 1 ? 'project' : 'projects'}, {p.counts.counted} merged pull requests.</p>
               <div className="flex flex-wrap gap-3">
                 <Btn href={`#/verify/${p.login}`}>Open certificate page</Btn>
               </div>
-              <PinPanel login={p.login} grade={p.grade} score={p.score} />
+              <PinPanel login={p.login} grade={p.grade} score={p.score} projects={p.counts.repos} />
             </div>
           )}
         </Step>
