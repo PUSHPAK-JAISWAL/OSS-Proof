@@ -67,6 +67,7 @@ jobs:
           REPO: ${{ github.repository }}
           BRANCH: ${{ github.event.repository.default_branch }}
           NUMBER: ${{ github.event.issue.number }}
+          RESTRICTED: ${{ steps.cert.outputs.restricted }}
           STATUS: ${{ steps.commit.outcome == 'failure' && 'failed' || steps.cert.outputs.status }}
           GRADE: ${{ steps.cert.outputs.grade }}
           SCORE: ${{ steps.cert.outputs.score }}
@@ -83,6 +84,7 @@ jobs:
             LINK="${SITE}#/verify/${LOGIN}"
             {
               if [ "$STATUS" = "ok" ]; then echo "Certificate ready: grade **$GRADE**, score **$SCORE**."; else echo "A certificate was issued less than an hour ago, so it was kept."; fi
+              if [ -n "$RESTRICTED" ]; then echo; echo "> **Heads up:** some pull requests in these organizations could not be read because they block this token: $RESTRICTED. Your grade may be a little low. It is re-graded automatically and will correct itself once the maintainer fixes the token."; fi
               echo
               echo "Certificate page: ${LINK}"
               echo
