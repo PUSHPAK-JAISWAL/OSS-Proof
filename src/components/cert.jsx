@@ -72,7 +72,7 @@ export function PinPanel({ login, grade, score, projects }) {
       <CodeBlock label="Markdown, compact" code={mdMini} />
       <CodeBlock label="HTML, card" code={html} />
       <p className="label">
-        Put it in your profile README: the repository named <span className="mono">{login}/{login}</span>. GitHub shows that file on your profile page.
+        Paste it once. The badge refreshes itself every few days, so the link never changes. Put it in your profile README: the repository named <span className="mono">{login}/{login}</span>. GitHub shows that file on your profile page.
       </p>
     </div>
   )
