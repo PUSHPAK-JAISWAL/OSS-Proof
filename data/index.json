@@ -1,4 +1,21 @@
 {
- "entries": [],
- "updatedAt": "2026-11-07T09:19:46.369Z"
+ "entries": [
+  {
+   "login": "PUSHPAK-JAISWAL",
+   "name": "Pushpak Jaiswal",
+   "avatarUrl": "https://avatars.githubusercontent.com/u/149317014?v=4",
+   "score": 28,
+   "grade": "D",
+   "country": "India",
+   "languages": [
+    "Java",
+    "Python"
+   ],
+   "lastMergedAt": "2026-11-07T05:30:41Z",
+   "issuedAt": "2026-11-07T14:11:29.335Z",
+   "counted": 26,
+   "projects": 3
+  }
+ ],
+ "updatedAt": "2026-11-07T14:11:29.335Z"
 }
