@@ -1,6 +1,7 @@
 // Offline checks for the scoring rules, the signature round trip and the badge. Run: npm test
 import assert from 'node:assert/strict'
 import { ed25519 } from '@noble/curves/ed25519.js'
+import { mergeIndex, pickStale } from '../shared/mergeindex.mjs'
 import { makeBadgeSvg, makeMiniBadgeSvg } from '../shared/badge.mjs'
 import { bytesToHex, hexToBytes, stableStringify } from '../shared/canonical.mjs'
 import { countryFromLocation } from '../shared/country.mjs'
@@ -70,3 +71,21 @@ assert.equal(countryFromLocation('the moon').country, null)
 assert.equal(countryFromLocation('Indiana').country, null)
 
 console.log('All score, signature, badge and country checks passed.')
+
+{
+  const t0 = '2026-11-07T10:00:00.000Z'
+  const remote = { entries: [{ login: 'a', score: 40, issuedAt: '2026-11-07T10:05:00Z' }, { login: 'b', score: 60, issuedAt: '2026-10-01T00:00:00Z' }] }
+  const local = { entries: [{ login: 'a', score: 10, issuedAt: '2026-11-01T00:00:00Z' }, { login: 'c', score: 50, issuedAt: '2026-11-07T10:01:00Z' }] }
+  const m = mergeIndex(remote, local, t0)
+  assert.deepEqual(m.entries.map((e) => e.login), ['b', 'c', 'a'], 'keeps others\' work, adds ours, never overwrites a newer entry with an old copy')
+  const now = Date.parse('2026-11-07T00:00:00Z')
+  const idx = { entries: [
+    { login: 'old', issuedAt: '2026-10-01T00:00:00Z' },
+    { login: 'older', issuedAt: '2026-09-01T00:00:00Z' },
+    { login: 'fresh', issuedAt: '2026-11-06T00:00:00Z' },
+    { login: 'gone', issuedAt: '2026-08-01T00:00:00Z', refreshFailedAt: '2026-11-01T00:00:00Z' },
+  ] }
+  assert.deepEqual(pickStale(idx, { now, batch: 5 }), ['older', 'old'], 'oldest first, skips fresh and recently failed')
+  assert.deepEqual(pickStale(idx, { now, batch: 1 }), ['older'])
+}
+console.log('Refresh picking and index merging checks passed.')

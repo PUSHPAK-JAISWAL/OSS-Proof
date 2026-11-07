@@ -10,7 +10,7 @@ import { bytesToHex, hexToBytes, stableStringify } from '../shared/canonical.mjs
 const login = process.env.LOGIN
 const token = process.env.GH_TOKEN
 const secret = process.env.CERT_SIGNING_KEY
-const COOLDOWN_MS = 60 * 60 * 1000
+const COOLDOWN_MS = process.env.COOLDOWN_MS !== undefined ? Number(process.env.COOLDOWN_MS) : 60 * 60 * 1000
 
 function fail(msg) {
   console.error(msg)
