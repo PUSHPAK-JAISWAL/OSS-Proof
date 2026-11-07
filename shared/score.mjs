@@ -14,6 +14,22 @@ export function prWeight(pr) {
   return w
 }
 
+/** Sum of PR weights where the nth PR in one repo counts repoDecay^(n-1), never below the floor. */
+export function decayedWeight(evidence) {
+  const byRepo = new Map()
+  for (const pr of evidence) {
+    const k = pr.repo.toLowerCase()
+    if (!byRepo.has(k)) byRepo.set(k, [])
+    byRepo.get(k).push(prWeight(pr))
+  }
+  let total = 0
+  for (const ws of byRepo.values()) {
+    ws.sort((a, b) => b - a)
+    ws.forEach((w, i) => { total += w * Math.max(SCORING.repoDecayFloor, Math.pow(SCORING.repoDecay, i)) })
+  }
+  return total
+}
+
 export function gradeFor(score) {
   return GRADES.find((g) => score >= g.min) || GRADES[GRADES.length - 1]
 }
@@ -24,7 +40,7 @@ export function gradeFor(score) {
  */
 export function scoreEvidence(evidence, context) {
   const now = new Date(context.now || Date.now())
-  const sumWeight = evidence.reduce((s, pr) => s + prWeight(pr), 0)
+  const sumWeight = decayedWeight(evidence)
   const repos = new Set(evidence.map((pr) => pr.repo.toLowerCase()))
 
   const monthsSeen = new Set()
