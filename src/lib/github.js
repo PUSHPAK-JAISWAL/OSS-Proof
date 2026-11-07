@@ -1,3 +1,4 @@
+import { gqlData } from '../../shared/gqlerrors.mjs'
 // A small GitHub REST client for the browser. The optional token lives in sessionStorage only and is
 // sent to api.github.com and nowhere else.
 const TOKEN_KEY = 'ossproof-token'
@@ -54,12 +55,6 @@ export function makeGql(token) {
       throw err
     }
     if (!res.ok) throw new Error(`GitHub returned an error (${res.status}). Try again in a minute.`)
-    const body = await res.json()
-    if (body.errors?.length) {
-      const err = new Error(body.errors[0].message || 'GitHub could not read that profile.')
-      if (body.errors.some((e) => e.type === 'RATE_LIMITED')) err.rateLimited = true
-      throw err
-    }
-    return body.data
+    return gqlData(await res.json())
   }
 }

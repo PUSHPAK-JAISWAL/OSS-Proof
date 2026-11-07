@@ -2,8 +2,9 @@
 // The requester is the issue author, which GitHub itself authenticates, so no OAuth app is needed.
 import { ed25519 } from '@noble/curves/ed25519.js'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
-import { analyzeUser, isValidLogin, summarize } from '../shared/analyze.mjs'
+import { isValidLogin, summarize } from '../shared/analyze.mjs'
 import { analyzeDeep } from '../shared/deep.mjs'
+import { gqlData } from '../shared/gqlerrors.mjs'
 import { makeBadgeSvg, makeMiniBadgeSvg, THEME_IDS } from '../shared/badge.mjs'
 import { bytesToHex, hexToBytes, stableStringify } from '../shared/canonical.mjs'
 
@@ -69,27 +70,15 @@ async function gql(query, variables) {
     err.rateLimited = true
     throw err
   }
-  const body = await res.json()
-  if (body.errors?.length) {
-    const err = new Error(body.errors[0].message || 'GraphQL error')
-    if (body.errors.some((e) => e.type === 'RATE_LIMITED')) err.rateLimited = true
-    throw err
-  }
-  return body.data
+  return gqlData(await res.json())
 }
 
 let payload
 try {
-  // Deep GraphQL reading first: it checks every merged PR. REST sampling is the fallback.
-  try {
-    payload = await analyzeDeep(login, { gql, onProgress: (m) => console.log(m) })
-  } catch (err) {
-    if (err.rateLimited) throw err
-    console.log(`Deep reading failed (${err.message}). Falling back to sampled reading.`)
-    payload = await analyzeUser(login, { api, mode: 'certificate', onProgress: (m) => console.log(m) })
-  }
+  // Always the full read. A sample would understate the grade and disagree with the website, so there is no fallback.
+  payload = await analyzeDeep(login, { gql, onProgress: (m) => console.log(m) })
 } catch (err) {
-  fail(err.message, err.rateLimited ? 75 : 1)
+  fail(err.rateLimited ? err.message : `The full read of your pull requests failed: ${err.message}`, err.rateLimited ? 75 : 1)
 }
 
 // The Actions built-in token silently sees nothing outside this repository. Never certify "0" because of that.
@@ -120,6 +109,6 @@ writeFileSync(indexPath, JSON.stringify(index, null, 1) + '\n')
 console.log(`Signed ${payload.login}: grade ${payload.grade}, score ${payload.score}`)
 writeFileSync(
   process.env.GITHUB_OUTPUT || '/dev/null',
-  `status=ok\ngrade=${payload.grade}\nscore=${payload.score}\nfile=${file}\n`,
+  `status=ok\ngrade=${payload.grade}\nscore=${payload.score}\nfile=${file}\nrestricted=${(payload.restrictedOrgs || []).join(', ')}\n`,
   { flag: 'a' },
 )
