@@ -26,7 +26,7 @@ const star = (x, y, s, delay) =>
   `<path transform="translate(${x} ${y}) scale(${s})" d="M0-6C.6-2 2 -.6 6 0 2 .6.6 2 0 6-.6 2-2 .6-6 0-2-.6-.6-2 0-6Z" fill="#fff"><animate attributeName="opacity" values="0;1;0.55" dur="1.6s" begin="${delay}s" fill="freeze"/></path>`
 
 /** The large card, 380 x 120. */
-export function makeBadgeSvg({ grade, score, login }) {
+export function makeBadgeSvg({ grade, score, login, projects }) {
   const t = THEME[grade] || THEME['-']
   const g = THEME[grade] ? grade : '-'
   const pct = Math.max(0, Math.min(100, Number(score) || 0))
@@ -58,7 +58,7 @@ export function makeBadgeSvg({ grade, score, login }) {
 ${t.stars ? star(26, 24, 1.1, 0.2) + star(104, 30, 0.8, 0.6) + star(100, 96, 1, 1.0) + star(30, 92, 0.7, 1.4) : ''}
 <text x="124" y="30" font-family="Verdana,'DejaVu Sans',sans-serif" font-size="10" font-weight="700" letter-spacing="2.4" fill="url(#ac)">OSS PROOF · ${esc(t.name.toUpperCase())}</text>
 <text x="124" y="56" font-family="Verdana,'DejaVu Sans',sans-serif" font-size="17" font-weight="700" fill="#fff">${esc(name)}</text>
-<text x="124" y="74" font-family="Verdana,'DejaVu Sans',sans-serif" font-size="10" fill="#9fb2ba">Verified contribution</text>
+<text x="124" y="74" font-family="Verdana,'DejaVu Sans',sans-serif" font-size="10" fill="#9fb2ba">${projects ? `${projects} open source ${projects === 1 ? 'project' : 'projects'}` : 'Verified contribution'}</text>
 <rect x="124" y="88" width="130" height="7" rx="3.5" fill="#ffffff" opacity=".1"/>
 <rect x="124" y="88" width="0" height="7" rx="3.5" fill="url(#ac)"><animate attributeName="width" from="0" to="${(pct * 1.3).toFixed(1)}" dur="1.4s" fill="freeze" calcMode="spline" keySplines=".2 .7 .2 1" keyTimes="0;1"/></rect>
 <text x="346" y="82" text-anchor="end" font-family="Verdana,'DejaVu Sans',sans-serif" font-size="26" font-weight="700" fill="#fff">${pct.toFixed(1)}</text>

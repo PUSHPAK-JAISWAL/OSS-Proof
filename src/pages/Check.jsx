@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { analyzeUser, isValidLogin } from '../../shared/analyze.mjs'
 import { analyzeDeep } from '../../shared/deep.mjs'
 import { Breakdown, Btn, GradeMark, Icon } from '../components/ui'
-import { EvidenceList } from '../components/cert'
+import { EvidenceList, RepoList } from '../components/cert'
 import RequestFlow from '../components/RequestFlow'
 import { getToken, makeApi, makeGql, setToken } from '../lib/github'
 import { go } from '../lib/router'
@@ -139,9 +139,9 @@ export default function Check({ username }) {
                   {[
                     ['Merged PRs found outside own repos', r.counts.mergedFound],
                     ['Checked for who merged them', r.counts.sampled],
-                    ['Counted', r.counts.counted],
+                    ['Merged PRs counted', r.counts.counted],
                     ['Merged by yourself (not counted)', r.counts.selfMerged],
-                    ['Different repos', r.counts.repos],
+                    ['Open source projects', r.counts.repos],
                     ['Active months, last 24', r.counts.activeMonths24],
                   ].map(([k, v]) => (
                     <div key={k} className="flex items-baseline justify-between gap-4 border-b border-line pb-2">
@@ -163,7 +163,12 @@ export default function Check({ username }) {
               )}
 
               <section className="grid gap-4">
-                <h2 className="h3 m-0">Pull requests that counted</h2>
+                <h2 className="h3 m-0">{r.counts.repos} open source {r.counts.repos === 1 ? 'project' : 'projects'} contributed to</h2>
+                <RepoList repos={r.repos} login={r.login} />
+              </section>
+
+              <section className="grid gap-4">
+                <h2 className="h3 m-0">Top merged pull requests</h2>
                 <EvidenceList items={r.evidence} />
               </section>
 
