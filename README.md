@@ -24,9 +24,9 @@ Limits: only public activity is visible, the grade measures accepted PRs and not
 
 1. Create a GitHub repository and push this project to `main`.
 2. `npm install && npm run keygen`. Commit `src/lib/pubkey.json`. Add the printed private key as the repository secret `CERT_SIGNING_KEY`.
-3. Settings > Actions > General > Workflow permissions: **Read and write**.
-4. Push, or run the "Deploy to GitHub Pages" workflow by hand. It tests, builds and pushes the site to a `gh-pages` branch using plain git, so it needs no third-party actions.
-5. Once the `gh-pages` branch exists: Settings > Pages > Source: **Deploy from a branch**, branch `gh-pages`, folder `/ (root)`. The site reads data from `raw.githubusercontent.com/<repo>/main/data`.
+3. Settings > Pages > Source: **GitHub Actions**.
+4. Settings > Actions > General > Workflow permissions: **Read and write**.
+5. Push, or run the "Deploy to GitHub Pages" workflow by hand. It tests, builds and publishes the site with GitHub's official Pages actions. The site reads data from `raw.githubusercontent.com/<repo>/main/data`.
 6. Optional: Settings > Secrets and variables > Actions > Variables > `SUPPORT_EMAIL`, shown on the site as the contact address.
 
 If `main` is protected, allow the Actions bot to push or certificates cannot be committed.
