@@ -6,17 +6,17 @@
     <meta name="page-type" content="software" />
     <meta name="site-kind" content="software" />
     <meta name="description" content="Open source contribution certificates for GitHub developers. Counts pull requests that someone else merged, signs the result and gives you a badge for your README." />
-    <meta name="theme-color" content="#f7f9fa" />
+    <meta name="theme-color" content="#070c10" />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Chivo:wght@400..700&family=Chivo+Mono:wght@400..500&display=swap" rel="stylesheet" />
     <title>OSS Proof: contribution certificates for open source developers</title>
     <script>
-      // Set the theme before first paint so there is no flash.
+      // Dark is the default. Set the theme before first paint so there is no flash.
       try {
         var t = localStorage.getItem('ossproof-theme')
-        if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t
+        document.documentElement.dataset.theme = t === 'light' ? 'light' : 'dark'
       } catch (e) {}
     </script>
   </head>
