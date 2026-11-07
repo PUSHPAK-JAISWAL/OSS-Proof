@@ -4,11 +4,12 @@ import { ed25519 } from '@noble/curves/ed25519.js'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { analyzeUser, isValidLogin, summarize } from '../shared/analyze.mjs'
 import { analyzeDeep } from '../shared/deep.mjs'
-import { makeBadgeSvg, makeMiniBadgeSvg } from '../shared/badge.mjs'
+import { makeBadgeSvg, makeMiniBadgeSvg, THEME_IDS } from '../shared/badge.mjs'
 import { bytesToHex, hexToBytes, stableStringify } from '../shared/canonical.mjs'
 
 const login = process.env.LOGIN
-const token = process.env.GH_TOKEN
+const token = process.env.READ_TOKEN || process.env.GH_TOKEN // READ_TOKEN: a real account's token. GITHUB_TOKEN cannot search other repositories.
+const hasReadToken = Boolean(process.env.READ_TOKEN)
 const secret = process.env.CERT_SIGNING_KEY
 const COOLDOWN_MS = process.env.COOLDOWN_MS !== undefined ? Number(process.env.COOLDOWN_MS) : 60 * 60 * 1000
 
@@ -91,6 +92,11 @@ try {
   fail(err.message, err.rateLimited ? 75 : 1)
 }
 
+// The Actions built-in token silently sees nothing outside this repository. Never certify "0" because of that.
+if (!hasReadToken && payload.counts.mergedFound === 0) {
+  fail('No merged pull requests were visible. The built-in Actions token cannot search other repositories, so the maintainer must add a repository secret named GH_READ_TOKEN (a fine-grained token with public read access). See docs/SETUP.md.')
+}
+
 let cert
 if (hasKey) {
   const secretKey = hexToBytes(secret.trim())
@@ -102,7 +108,7 @@ if (hasKey) {
 }
 writeFileSync(certPath, JSON.stringify(cert, null, 2) + '\n')
 const badgeArgs = { grade: payload.grade, score: payload.score, login: payload.login, projects: payload.counts.repos }
-writeFileSync(`data/badges/${file}.svg`, makeBadgeSvg(badgeArgs))
+for (const theme of THEME_IDS) writeFileSync(`data/badges/${file}${theme === 'grade' ? '' : `.${theme}`}.svg`, makeBadgeSvg({ ...badgeArgs, theme }))
 writeFileSync(`data/badges/${file}-mini.svg`, makeMiniBadgeSvg(badgeArgs))
 
 const indexPath = 'data/index.json'
