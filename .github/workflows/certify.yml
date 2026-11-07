@@ -9,11 +9,6 @@ permissions:
   contents: write
   issues: write
 
-# One at a time, so index.json never gets two writers.
-concurrency:
-  group: certify
-  cancel-in-progress: false
-
 jobs:
   # Answers at once, outside the queue, so nobody wonders whether the request arrived.
   acknowledge:
@@ -28,7 +23,7 @@ jobs:
           NUMBER: ${{ github.event.issue.number }}
           LOGIN: ${{ github.event.issue.user.login }}
         run: |
-          printf 'Request received for @%s.\n\nRequests run one at a time through the GitHub Actions queue, so this can take a few minutes when many people ask at once. This comment thread will get your README tags as soon as the certificate is ready. You do not need to do anything else.\n' "$LOGIN" > ack.md
+          printf 'Request received for @%s.\n\nRequests go through the GitHub Actions queue, so this can take a few minutes when many people ask at once. This comment thread will get your README tags as soon as the certificate is ready. You do not need to do anything else.\n' "$LOGIN" > ack.md
           gh issue comment "$NUMBER" --repo "$REPO" --body-file ack.md
 
   certify:
@@ -42,6 +37,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: echo "RUN_START=$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" >> "$GITHUB_ENV"
 
       - name: Grade and sign
         id: cert
