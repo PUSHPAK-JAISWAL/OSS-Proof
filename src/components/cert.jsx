@@ -27,18 +27,24 @@ export function EvidenceList({ items }) {
 }
 
 export function PinPanel({ login, grade, score }) {
-  const img = badgeUrl(login)
   const link = certificateLink(login)
-  const md = `[![OSS Proof](${img})](${link})`
-  const html = `<a href="${link}"><img src="${img}" alt="OSS Proof grade ${grade}" /></a>`
+  const big = badgeUrl(login)
+  const mini = badgeUrl(login, true)
+  const md = `[![OSS Proof](${big})](${link})`
+  const mdMini = `[![OSS Proof](${mini})](${link})`
+  const html = `<a href="${link}"><img src="${big}" alt="OSS Proof grade ${grade}" width="380" /></a>`
   return (
     <div className="grid gap-4">
-      <div className="card px-4 py-5 flex items-center gap-3 flex-wrap">
-        <Badge grade={grade} score={score} login={login} height={28} />
-        <span className="label">Links to your certificate and updates when you renew it.</span>
+      <div className="card px-4 py-5 grid gap-4 justify-items-start">
+        <Badge grade={grade} score={score} login={login} height={120} />
+        <div className="flex items-center gap-3 flex-wrap">
+          <Badge grade={grade} score={score} login={login} height={24} mini />
+          <span className="label">Card and compact versions. Both link to your certificate.</span>
+        </div>
       </div>
-      <CodeBlock label="Markdown (README.md)" code={md} />
-      <CodeBlock label="HTML" code={html} />
+      <CodeBlock label="Markdown, card (README.md)" code={md} />
+      <CodeBlock label="Markdown, compact" code={mdMini} />
+      <CodeBlock label="HTML, card" code={html} />
       <p className="label">
         Put it in your profile README: the repository named <span className="mono">{login}/{login}</span>. GitHub shows that file on your profile page.
       </p>

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { makeBadgeSvg } from '../../shared/badge.mjs'
+import { makeBadgeSvg, makeMiniBadgeSvg } from '../../shared/badge.mjs'
 
 export function Mark({ size = 28 }) {
   return (
@@ -83,8 +83,8 @@ export function CodeBlock({ code, label }) {
   )
 }
 
-export function Badge({ grade, score, login, height = 22 }) {
-  const svg = makeBadgeSvg({ grade, score, login })
+export function Badge({ grade, score, login, height = 22, mini = false }) {
+  const svg = (mini ? makeMiniBadgeSvg : makeBadgeSvg)({ grade, score, login })
   const src = `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
   return <img src={src} alt={`OSS Proof grade ${grade}`} height={height} style={{ height }} />
 }
