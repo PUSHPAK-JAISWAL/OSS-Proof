@@ -3,6 +3,7 @@
 import { ed25519 } from '@noble/curves/ed25519.js'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { analyzeUser, isValidLogin, summarize } from '../shared/analyze.mjs'
+import { analyzeDeep } from '../shared/deep.mjs'
 import { makeBadgeSvg, makeMiniBadgeSvg } from '../shared/badge.mjs'
 import { bytesToHex, hexToBytes, stableStringify } from '../shared/canonical.mjs'
 
@@ -53,9 +54,36 @@ async function api(path) {
   return res.json()
 }
 
+async function gql(query, variables) {
+  const res = await fetch('https://api.github.com/graphql', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', 'User-Agent': 'oss-proof-certify' },
+    body: JSON.stringify({ query, variables }),
+  })
+  if (res.status === 403 || res.status === 429) {
+    const err = new Error('GitHub rate limit reached. Try again later.')
+    err.rateLimited = true
+    throw err
+  }
+  const body = await res.json()
+  if (body.errors?.length) {
+    const err = new Error(body.errors[0].message || 'GraphQL error')
+    if (body.errors.some((e) => e.type === 'RATE_LIMITED')) err.rateLimited = true
+    throw err
+  }
+  return body.data
+}
+
 let payload
 try {
-  payload = await analyzeUser(login, { api, mode: 'certificate', onProgress: (m) => console.log(m) })
+  // Deep GraphQL reading first: it checks every merged PR. REST sampling is the fallback.
+  try {
+    payload = await analyzeDeep(login, { gql, onProgress: (m) => console.log(m) })
+  } catch (err) {
+    if (err.rateLimited) throw err
+    console.log(`Deep reading failed (${err.message}). Falling back to sampled reading.`)
+    payload = await analyzeUser(login, { api, mode: 'certificate', onProgress: (m) => console.log(m) })
+  }
 } catch (err) {
   fail(err.message)
 }
