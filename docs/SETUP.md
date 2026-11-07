@@ -39,11 +39,12 @@ GitHub's login endpoints do not allow calls from a web page (no CORS), so a tiny
 3. Worker > **Settings** > **Variables and Secrets** > add two plain variables:
    - `CLIENT_ID` = the Client ID from step B11
    - `ALLOWED_ORIGIN` = `https://<your-username>.github.io` (no path, no trailing slash)
-4. Copy the worker URL, for example `https://oss-proof-auth.<you>.workers.dev`.
-5. In this repository: **Settings** > **Secrets and variables** > **Actions** > **Variables** > **New repository variable**:
+4. Open the worker's address in a browser. You should see `{ "ok": true, "clientIdSet": true, "allowedOrigins": ["https://<you>.github.io"] }`. If `allowedOrigins` is empty or wrong, fix `ALLOWED_ORIGIN`.
+5. Copy the worker URL, for example `https://oss-proof-auth.<you>.workers.dev`.
+6. In this repository: **Settings** > **Secrets and variables** > **Actions** > **Variables** > **New repository variable**:
    - `GH_APP_CLIENT_ID` = the Client ID
    - `AUTH_URL` = the worker URL
-6. **Actions** > **Deploy to GitHub Pages** > **Run workflow**. The Check page now shows **Sign in with GitHub**.
+7. **Actions** > **Deploy to GitHub Pages** > **Run workflow**. The Check page now shows **Sign in with GitHub**.
 
 Until B and C are done, the Check page keeps the paste-a-token box, so nothing breaks.
 
