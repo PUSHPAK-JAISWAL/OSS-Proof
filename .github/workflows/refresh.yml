@@ -30,6 +30,7 @@ jobs:
       - name: Re-grade the oldest certificates
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          READ_TOKEN: ${{ secrets.GH_READ_TOKEN }}
           CERT_SIGNING_KEY: ${{ secrets.CERT_SIGNING_KEY }}
           BATCH: ${{ inputs.batch || '100' }}
           COOLDOWN_MS: "0"
