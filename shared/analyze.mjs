@@ -173,14 +173,18 @@ export function buildResult({ mode, now, user, orgs, evidence, selfMerged, sampl
       repo, stars, language, class: cls, number, title, url, mergedAt, mergedBy, lines,
     }))
 
-  // One line per repository, so a reader sees the breadth behind the headline number.
+  // One line per repository: what the developer did in each project, not just how many PRs.
   const perRepo = new Map()
   for (const pr of evidence) {
-    const r = perRepo.get(pr.repo.toLowerCase()) || { repo: pr.repo, stars: pr.stars, language: pr.language, prs: 0 }
+    const k = pr.repo.toLowerCase()
+    const r = perRepo.get(k) || { repo: pr.repo, stars: pr.stars, language: pr.language, class: pr.class, prs: 0, lines: 0, first: pr.mergedAt, last: pr.mergedAt }
     r.prs++
-    perRepo.set(pr.repo.toLowerCase(), r)
+    r.lines += pr.lines || 0
+    if (pr.mergedAt < r.first) r.first = pr.mergedAt
+    if (pr.mergedAt > r.last) r.last = pr.mergedAt
+    perRepo.set(k, r)
   }
-  const repos = [...perRepo.values()].sort((a, b) => b.stars - a.stars || b.prs - a.prs).slice(0, 25)
+  const repos = [...perRepo.values()].sort((a, b) => b.stars - a.stars || b.prs - a.prs).slice(0, 40)
 
   return {
     schema: 1,
@@ -231,5 +235,6 @@ export function summarize(result) {
     lastMergedAt: result.lastMergedAt,
     issuedAt: result.issuedAt,
     counted: result.counts.counted,
+    projects: result.counts.repos,
   }
 }
