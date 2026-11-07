@@ -1,0 +1,677 @@
+{
+  "alg": "github-actions",
+  "payload": {
+    "schema": 1,
+    "scoringVersion": "1.2.0",
+    "mode": "certificate",
+    "login": "PUSHPAK-JAISWAL",
+    "githubId": 149317014,
+    "name": "Pushpak Jaiswal",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/149317014?v=4",
+    "profileUrl": "https://github.com/PUSHPAK-JAISWAL",
+    "location": "INDIA",
+    "profile": null,
+    "country": "India",
+    "countryCode": "IN",
+    "accountCreatedAt": "2023-10-29T15:14:59Z",
+    "issuedAt": "2026-11-07T14:11:29.335Z",
+    "score": 28,
+    "grade": "D",
+    "gradeLabel": "Started",
+    "breakdown": {
+      "impact": 9.7,
+      "breadth": 6.3,
+      "consistency": 4.4,
+      "trust": 7.6
+    },
+    "counts": {
+      "mergedFound": 66,
+      "outsideOwnRepos": 66,
+      "sampled": 26,
+      "counted": 26,
+      "selfMerged": 0,
+      "unverifiable": 0,
+      "repos": 3,
+      "activeMonths24": 4,
+      "orgs": 0,
+      "truncated": false,
+      "foundProjects": 27,
+      "partial": true
+    },
+    "languages": [
+      {
+        "name": "Java",
+        "weight": 26.9
+      },
+      {
+        "name": "Python",
+        "weight": 5.6
+      }
+    ],
+    "lastMergedAt": "2026-11-07T05:30:41Z",
+    "repos": [
+      {
+        "repo": "seleniumboot/selenium-boot",
+        "stars": 17,
+        "language": "Java",
+        "class": "external",
+        "prs": 13,
+        "lines": 5709,
+        "first": "2026-10-10T17:37:25Z",
+        "last": "2026-11-07T05:30:41Z",
+        "list": [
+          {
+            "number": 242,
+            "title": "Feat/feature sortable columns",
+            "url": "https://github.com/seleniumboot/selenium-boot/pull/242",
+            "mergedAt": "2026-11-07T05:30:41Z",
+            "mergedBy": "shossain786",
+            "lines": 500
+          },
+          {
+            "number": 229,
+            "title": "Feat/215 persist report filters",
+            "url": "https://github.com/seleniumboot/selenium-boot/pull/229",
+            "mergedAt": "2026-11-01T09:55:12Z",
+            "mergedBy": "shossain786",
+            "lines": 195
+          },
+          {
+            "number": 222,
+            "title": "Docs/why accessibility and waitengine",
+            "url": "https://github.com/seleniumboot/selenium-boot/pull/222",
+            "mergedAt": "2026-10-30T01:35:34Z",
+            "mergedBy": "shossain786",
+            "lines": 295
+          },
+          {
+            "number": 199,
+            "title": "feat(network): support network mocking on Firefox via WebDriver BiDi …",
+            "url": "https://github.com/seleniumboot/selenium-boot/pull/199",
+            "mergedAt": "2026-10-25T01:25:10Z",
+            "mergedBy": "shossain786",
+            "lines": 871
+          },
+          {
+            "number": 189,
+            "title": "Feat/167 results by tag",
+            "url": "https://github.com/seleniumboot/selenium-boot/pull/189",
+            "mergedAt": "2026-10-22T01:25:47Z",
+            "mergedBy": "shossain786",
+            "lines": 628
+          },
+          {
+            "number": 177,
+            "title": "feat: feature added failure intelligence",
+            "url": "https://github.com/seleniumboot/selenium-boot/pull/177",
+            "mergedAt": "2026-10-21T03:12:13Z",
+            "mergedBy": "shossain786",
+            "lines": 611
+          },
+          {
+            "number": 169,
+            "title": "feat: add focused empty and regex assertions (#136)",
+            "url": "https://github.com/seleniumboot/selenium-boot/pull/169",
+            "mergedAt": "2026-10-19T01:18:45Z",
+            "mergedBy": "shossain786",
+            "lines": 223
+          },
+          {
+            "number": 158,
+            "title": "feat(cucumber): add JUnit Platform engine support and runner parity (…",
+            "url": "https://github.com/seleniumboot/selenium-boot/pull/158",
+            "mergedAt": "2026-10-18T01:47:28Z",
+            "mergedBy": "shossain786",
+            "lines": 381
+          },
+          {
+            "number": 157,
+            "title": "fix(chore): test-cleanup",
+            "url": "https://github.com/seleniumboot/selenium-boot/pull/157",
+            "mergedAt": "2026-10-17T01:26:17Z",
+            "mergedBy": "shossain786",
+            "lines": 195
+          },
+          {
+            "number": 154,
+            "title": "Feat/ci list failed tests",
+            "url": "https://github.com/seleniumboot/selenium-boot/pull/154",
+            "mergedAt": "2026-10-15T03:29:28Z",
+            "mergedBy": "shossain786",
+            "lines": 620
+          },
+          {
+            "number": 150,
+            "title": "feat(locator): waitFor, allTextContents, element screenshot (#135)",
+            "url": "https://github.com/seleniumboot/selenium-boot/pull/150",
+            "mergedAt": "2026-10-14T01:24:30Z",
+            "mergedBy": "shossain786",
+            "lines": 494
+          },
+          {
+            "number": 147,
+            "title": "feat(locator): form actions: clear, check, uncheck, isChecked, select…",
+            "url": "https://github.com/seleniumboot/selenium-boot/pull/147",
+            "mergedAt": "2026-10-12T01:28:00Z",
+            "mergedBy": "shossain786",
+            "lines": 425
+          },
+          {
+            "number": 143,
+            "title": "feat(locator): add first() and last() narrowing methods (#132)",
+            "url": "https://github.com/seleniumboot/selenium-boot/pull/143",
+            "mergedAt": "2026-10-10T17:37:25Z",
+            "mergedBy": "shossain786",
+            "lines": 271
+          }
+        ]
+      },
+      {
+        "repo": "Create-Python-App/cpa-templates",
+        "stars": 3,
+        "language": "Python",
+        "class": "external",
+        "prs": 5,
+        "lines": 1660,
+        "first": "2026-07-17T02:43:34Z",
+        "last": "2026-10-05T15:38:38Z",
+        "list": [
+          {
+            "number": 244,
+            "title": "docs: refresh security maintenance guide (#228)",
+            "url": "https://github.com/Create-Python-App/cpa-templates/pull/244",
+            "mergedAt": "2026-10-05T15:38:38Z",
+            "mergedBy": "ulises-jeremias",
+            "lines": 15
+          },
+          {
+            "number": 241,
+            "title": "docs: refresh maintenance and template quality guides",
+            "url": "https://github.com/Create-Python-App/cpa-templates/pull/241",
+            "mergedAt": "2026-10-04T07:00:41Z",
+            "mergedBy": "ulises-jeremias",
+            "lines": 392
+          },
+          {
+            "number": 103,
+            "title": "docs: add maintenance guide links to README",
+            "url": "https://github.com/Create-Python-App/cpa-templates/pull/103",
+            "mergedAt": "2026-07-24T13:45:59Z",
+            "mergedBy": "ulises-jeremias",
+            "lines": 6
+          },
+          {
+            "number": 70,
+            "title": "Add `all-pre-commit` and `fastapi-opentelemetry` extensions to CPA templates",
+            "url": "https://github.com/Create-Python-App/cpa-templates/pull/70",
+            "mergedAt": "2026-07-18T20:38:31Z",
+            "mergedBy": "ulises-jeremias",
+            "lines": 281
+          },
+          {
+            "number": 45,
+            "title": "added fastapi typed version",
+            "url": "https://github.com/Create-Python-App/cpa-templates/pull/45",
+            "mergedAt": "2026-07-17T02:43:34Z",
+            "mergedBy": "ulises-jeremias",
+            "lines": 966
+          }
+        ]
+      },
+      {
+        "repo": "seleniumboot/selenium-boot-migrator",
+        "stars": 1,
+        "language": "Java",
+        "class": "external",
+        "prs": 8,
+        "lines": 2799,
+        "first": "2026-09-26T15:49:44Z",
+        "last": "2026-10-03T17:23:39Z",
+        "list": [
+          {
+            "number": 31,
+            "title": "feat: migrate supporting features",
+            "url": "https://github.com/seleniumboot/selenium-boot-migrator/pull/31",
+            "mergedAt": "2026-10-03T17:23:39Z",
+            "mergedBy": "shossain786",
+            "lines": 234
+          },
+          {
+            "number": 32,
+            "title": "Issue 7 migration report",
+            "url": "https://github.com/seleniumboot/selenium-boot-migrator/pull/32",
+            "mergedAt": "2026-10-02T07:32:48Z",
+            "mergedBy": "shossain786",
+            "lines": 291
+          },
+          {
+            "number": 29,
+            "title": "Feat: added CLI Friendly output format and json",
+            "url": "https://github.com/seleniumboot/selenium-boot-migrator/pull/29",
+            "mergedAt": "2026-10-01T01:23:51Z",
+            "mergedBy": "shossain786",
+            "lines": 948
+          },
+          {
+            "number": 17,
+            "title": "Matz2009 patch 8",
+            "url": "https://github.com/seleniumboot/selenium-boot-migrator/pull/17",
+            "mergedAt": "2026-09-28T02:50:57Z",
+            "mergedBy": "shossain786",
+            "lines": 220
+          },
+          {
+            "number": 16,
+            "title": "feat: migrate command",
+            "url": "https://github.com/seleniumboot/selenium-boot-migrator/pull/16",
+            "mergedAt": "2026-09-27T10:18:49Z",
+            "mergedBy": "shossain786",
+            "lines": 578
+          },
+          {
+            "number": 13,
+            "title": "Detect driver lifecycle setup and teardown methods",
+            "url": "https://github.com/seleniumboot/selenium-boot-migrator/pull/13",
+            "mergedAt": "2026-09-27T05:36:42Z",
+            "mergedBy": "shossain786",
+            "lines": 203
+          },
+          {
+            "number": 12,
+            "title": "feat: gradle-support",
+            "url": "https://github.com/seleniumboot/selenium-boot-migrator/pull/12",
+            "mergedAt": "2026-09-26T16:31:49Z",
+            "mergedBy": "shossain786",
+            "lines": 253
+          },
+          {
+            "number": 14,
+            "title": "Detect Page Objects, `@FindBy` and PageFactory",
+            "url": "https://github.com/seleniumboot/selenium-boot-migrator/pull/14",
+            "mergedAt": "2026-09-26T15:49:44Z",
+            "mergedBy": "shossain786",
+            "lines": 72
+          }
+        ]
+      }
+    ],
+    "unchecked": [
+      {
+        "repo": "SciLab-GUI-Verse/guiverse-hackathon-submission",
+        "prs": 5
+      },
+      {
+        "repo": "Distributed-VCS/contracts",
+        "prs": 4
+      },
+      {
+        "repo": "TechAmigo2k25/create-server-startup",
+        "prs": 4
+      },
+      {
+        "repo": "IBM/AssetOpsBench",
+        "prs": 3
+      },
+      {
+        "repo": "Tuntii/viltrum",
+        "prs": 2
+      },
+      {
+        "repo": "Distributed-VCS/test",
+        "prs": 2
+      },
+      {
+        "repo": "Distributed-VCS/scripts",
+        "prs": 2
+      },
+      {
+        "repo": "Create-Python-App/create-python-app",
+        "prs": 2
+      },
+      {
+        "repo": "maize-genetics/tassel",
+        "prs": 1
+      },
+      {
+        "repo": "seleniumboot/selenium-boot-starter",
+        "prs": 1
+      },
+      {
+        "repo": "Distributed-VCS/cli",
+        "prs": 1
+      },
+      {
+        "repo": "enghitalo/vcsr",
+        "prs": 1
+      },
+      {
+        "repo": "bundlab/finance-coach",
+        "prs": 1
+      },
+      {
+        "repo": "TanbirRamim/open-source-radar",
+        "prs": 1
+      },
+      {
+        "repo": "ckan/ckan",
+        "prs": 1
+      },
+      {
+        "repo": "arkaslittlemind/ScholarLens",
+        "prs": 1
+      },
+      {
+        "repo": "johnSamilin/solo",
+        "prs": 1
+      },
+      {
+        "repo": "lingdojo/kana-dojo",
+        "prs": 1
+      },
+      {
+        "repo": "alirux/tandem-transactional-outbox-kafka",
+        "prs": 1
+      },
+      {
+        "repo": "Stock-Trading/data-loader-1",
+        "prs": 1
+      },
+      {
+        "repo": "RevCraft/SB-001",
+        "prs": 1
+      },
+      {
+        "repo": "ghostmkg/dsa-code",
+        "prs": 1
+      },
+      {
+        "repo": "ghostmkg/Learning-Stories-Repository",
+        "prs": 1
+      },
+      {
+        "repo": "jonathanwvd/awesome-industrial-datasets",
+        "prs": 1
+      }
+    ],
+    "timeline": [
+      {
+        "month": "2024-12",
+        "prs": 0
+      },
+      {
+        "month": "2025-01",
+        "prs": 0
+      },
+      {
+        "month": "2025-02",
+        "prs": 0
+      },
+      {
+        "month": "2025-03",
+        "prs": 0
+      },
+      {
+        "month": "2025-04",
+        "prs": 0
+      },
+      {
+        "month": "2025-05",
+        "prs": 0
+      },
+      {
+        "month": "2025-06",
+        "prs": 0
+      },
+      {
+        "month": "2025-07",
+        "prs": 0
+      },
+      {
+        "month": "2025-08",
+        "prs": 0
+      },
+      {
+        "month": "2025-09",
+        "prs": 0
+      },
+      {
+        "month": "2025-10",
+        "prs": 0
+      },
+      {
+        "month": "2025-11",
+        "prs": 0
+      },
+      {
+        "month": "2025-12",
+        "prs": 0
+      },
+      {
+        "month": "2026-01",
+        "prs": 0
+      },
+      {
+        "month": "2026-02",
+        "prs": 0
+      },
+      {
+        "month": "2026-03",
+        "prs": 0
+      },
+      {
+        "month": "2026-04",
+        "prs": 0
+      },
+      {
+        "month": "2026-05",
+        "prs": 0
+      },
+      {
+        "month": "2026-06",
+        "prs": 0
+      },
+      {
+        "month": "2026-07",
+        "prs": 3
+      },
+      {
+        "month": "2026-08",
+        "prs": 0
+      },
+      {
+        "month": "2026-09",
+        "prs": 5
+      },
+      {
+        "month": "2026-10",
+        "prs": 16
+      },
+      {
+        "month": "2026-11",
+        "prs": 2
+      }
+    ],
+    "evidence": [
+      {
+        "repo": "seleniumboot/selenium-boot",
+        "stars": 17,
+        "language": "Java",
+        "class": "external",
+        "number": 242,
+        "title": "Feat/feature sortable columns",
+        "url": "https://github.com/seleniumboot/selenium-boot/pull/242",
+        "mergedAt": "2026-11-07T05:30:41Z",
+        "mergedBy": "shossain786",
+        "lines": 500
+      },
+      {
+        "repo": "seleniumboot/selenium-boot",
+        "stars": 17,
+        "language": "Java",
+        "class": "external",
+        "number": 229,
+        "title": "Feat/215 persist report filters",
+        "url": "https://github.com/seleniumboot/selenium-boot/pull/229",
+        "mergedAt": "2026-11-01T09:55:12Z",
+        "mergedBy": "shossain786",
+        "lines": 195
+      },
+      {
+        "repo": "seleniumboot/selenium-boot",
+        "stars": 17,
+        "language": "Java",
+        "class": "external",
+        "number": 222,
+        "title": "Docs/why accessibility and waitengine",
+        "url": "https://github.com/seleniumboot/selenium-boot/pull/222",
+        "mergedAt": "2026-10-30T01:35:34Z",
+        "mergedBy": "shossain786",
+        "lines": 295
+      },
+      {
+        "repo": "seleniumboot/selenium-boot",
+        "stars": 17,
+        "language": "Java",
+        "class": "external",
+        "number": 199,
+        "title": "feat(network): support network mocking on Firefox via WebDriver BiDi …",
+        "url": "https://github.com/seleniumboot/selenium-boot/pull/199",
+        "mergedAt": "2026-10-25T01:25:10Z",
+        "mergedBy": "shossain786",
+        "lines": 871
+      },
+      {
+        "repo": "seleniumboot/selenium-boot",
+        "stars": 17,
+        "language": "Java",
+        "class": "external",
+        "number": 189,
+        "title": "Feat/167 results by tag",
+        "url": "https://github.com/seleniumboot/selenium-boot/pull/189",
+        "mergedAt": "2026-10-22T01:25:47Z",
+        "mergedBy": "shossain786",
+        "lines": 628
+      },
+      {
+        "repo": "seleniumboot/selenium-boot",
+        "stars": 17,
+        "language": "Java",
+        "class": "external",
+        "number": 177,
+        "title": "feat: feature added failure intelligence",
+        "url": "https://github.com/seleniumboot/selenium-boot/pull/177",
+        "mergedAt": "2026-10-21T03:12:13Z",
+        "mergedBy": "shossain786",
+        "lines": 611
+      },
+      {
+        "repo": "seleniumboot/selenium-boot",
+        "stars": 17,
+        "language": "Java",
+        "class": "external",
+        "number": 169,
+        "title": "feat: add focused empty and regex assertions (#136)",
+        "url": "https://github.com/seleniumboot/selenium-boot/pull/169",
+        "mergedAt": "2026-10-19T01:18:45Z",
+        "mergedBy": "shossain786",
+        "lines": 223
+      },
+      {
+        "repo": "seleniumboot/selenium-boot",
+        "stars": 17,
+        "language": "Java",
+        "class": "external",
+        "number": 158,
+        "title": "feat(cucumber): add JUnit Platform engine support and runner parity (…",
+        "url": "https://github.com/seleniumboot/selenium-boot/pull/158",
+        "mergedAt": "2026-10-18T01:47:28Z",
+        "mergedBy": "shossain786",
+        "lines": 381
+      },
+      {
+        "repo": "seleniumboot/selenium-boot",
+        "stars": 17,
+        "language": "Java",
+        "class": "external",
+        "number": 157,
+        "title": "fix(chore): test-cleanup",
+        "url": "https://github.com/seleniumboot/selenium-boot/pull/157",
+        "mergedAt": "2026-10-17T01:26:17Z",
+        "mergedBy": "shossain786",
+        "lines": 195
+      },
+      {
+        "repo": "seleniumboot/selenium-boot",
+        "stars": 17,
+        "language": "Java",
+        "class": "external",
+        "number": 154,
+        "title": "Feat/ci list failed tests",
+        "url": "https://github.com/seleniumboot/selenium-boot/pull/154",
+        "mergedAt": "2026-10-15T03:29:28Z",
+        "mergedBy": "shossain786",
+        "lines": 620
+      },
+      {
+        "repo": "seleniumboot/selenium-boot",
+        "stars": 17,
+        "language": "Java",
+        "class": "external",
+        "number": 150,
+        "title": "feat(locator): waitFor, allTextContents, element screenshot (#135)",
+        "url": "https://github.com/seleniumboot/selenium-boot/pull/150",
+        "mergedAt": "2026-10-14T01:24:30Z",
+        "mergedBy": "shossain786",
+        "lines": 494
+      },
+      {
+        "repo": "seleniumboot/selenium-boot",
+        "stars": 17,
+        "language": "Java",
+        "class": "external",
+        "number": 147,
+        "title": "feat(locator): form actions: clear, check, uncheck, isChecked, select…",
+        "url": "https://github.com/seleniumboot/selenium-boot/pull/147",
+        "mergedAt": "2026-10-12T01:28:00Z",
+        "mergedBy": "shossain786",
+        "lines": 425
+      },
+      {
+        "repo": "seleniumboot/selenium-boot",
+        "stars": 17,
+        "language": "Java",
+        "class": "external",
+        "number": 143,
+        "title": "feat(locator): add first() and last() narrowing methods (#132)",
+        "url": "https://github.com/seleniumboot/selenium-boot/pull/143",
+        "mergedAt": "2026-10-10T17:37:25Z",
+        "mergedBy": "shossain786",
+        "lines": 271
+      },
+      {
+        "repo": "Create-Python-App/cpa-templates",
+        "stars": 3,
+        "language": "Python",
+        "class": "external",
+        "number": 244,
+        "title": "docs: refresh security maintenance guide (#228)",
+        "url": "https://github.com/Create-Python-App/cpa-templates/pull/244",
+        "mergedAt": "2026-10-05T15:38:38Z",
+        "mergedBy": "ulises-jeremias",
+        "lines": 15
+      },
+      {
+        "repo": "Create-Python-App/cpa-templates",
+        "stars": 3,
+        "language": "Python",
+        "class": "external",
+        "number": 241,
+        "title": "docs: refresh maintenance and template quality guides",
+        "url": "https://github.com/Create-Python-App/cpa-templates/pull/241",
+        "mergedAt": "2026-10-04T07:00:41Z",
+        "mergedBy": "ulises-jeremias",
+        "lines": 392
+      }
+    ]
+  }
+}
