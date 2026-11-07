@@ -2,13 +2,18 @@
 // (sessionStorage) and is sent only to api.github.com. The proxy at AUTH_URL only forwards the two login calls.
 import { setToken } from './github'
 
-export const CLIENT_ID = import.meta.env.VITE_GH_CLIENT_ID || ''
-export const AUTH_URL = (import.meta.env.VITE_AUTH_URL || '').replace(/\/$/, '')
+export const CLIENT_ID = (import.meta.env.VITE_GH_CLIENT_ID || '').trim()
+export const AUTH_URL = (import.meta.env.VITE_AUTH_URL || '').trim().replace(/\/+$/, '')
 export const authAvailable = Boolean(CLIENT_ID && AUTH_URL)
 
 async function post(path, body) {
-  const res = await fetch(`${AUTH_URL}${path}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ client_id: CLIENT_ID, ...body }) })
-  if (!res.ok) throw new Error('The sign-in service did not answer. Try again, or use a token instead.')
+  let res
+  try {
+    res = await fetch(`${AUTH_URL}${path}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ client_id: CLIENT_ID, ...body }) })
+  } catch {
+    throw new Error('Could not reach the sign-in service. Its ALLOWED_ORIGIN setting probably does not match this site, or the address is wrong.')
+  }
+  if (!res.ok) throw new Error(res.status === 403 ? 'The sign-in service refused this request. Its CLIENT_ID or ALLOWED_ORIGIN setting does not match.' : 'The sign-in service did not answer. Try again, or use a token instead.')
   return res.json()
 }
 
