@@ -7,7 +7,7 @@ Three one-time jobs. A is required, B and C are optional but fix the rate-limit 
 The Action's built-in `GITHUB_TOKEN` can only see this repository. When it searched for someone's pull requests it found nothing, so certificates came out as 0.0. Certificates must read with a real account's token.
 
 1. GitHub > your avatar > **Settings** > **Developer settings** > **Personal access tokens** > **Fine-grained tokens** > **Generate new token**.
-2. Token name `oss-proof-read`. Expiration: the longest you are comfortable with (a calendar reminder to renew is wise).
+2. Token name `oss-proof-read`. **Expiration: 365 days or less.** Some organizations refuse fine-grained tokens that live longer than 366 days, and a pull request into one of them then cannot be read (this really happened: the grade came out too low). Set a calendar reminder to renew it.
 3. **Resource owner**: your account. **Repository access**: **Public repositories (read-only)**.
 4. Leave every permission empty. Public data needs none. Generate and copy the token.
 5. In this repository: **Settings** > **Secrets and variables** > **Actions** > **Secrets** > **New repository secret**. Name `GH_READ_TOKEN`, paste the token.
@@ -21,14 +21,15 @@ This lets a visitor sign in once and read all of their own pull requests with th
 1. **Settings** > **Developer settings** > **GitHub Apps** > **New GitHub App**.
 2. **GitHub App name**: `OSS Proof` (names are global, so add something unique if it is taken).
 3. **Homepage URL**: `https://<your-username>.github.io/OSS-Proof/`
-4. **Callback URL**: the same URL. (The device flow does not use it, but the form wants one.)
+4. **Callback URL**: exactly `https://<your-username>.github.io/OSS-Proof/` (with the trailing slash, no `#`). The redirect sign-in returns here.
 5. **Expire user authorization tokens**: leave ticked.
 6. **Request user authorization (OAuth) during installation**: leave unticked.
 7. **Enable Device Flow**: **tick it**. This is the important one.
 8. **Webhook** > **Active**: untick.
 9. **Permissions**: leave all empty for now. Public data needs none.
 10. **Where can this GitHub App be installed?**: **Any account**.
-11. **Create GitHub App**. On the next page copy the **Client ID** (starts with `Iv`). Do **not** generate a client secret or a private key. Nothing here needs them.
+11. **Create GitHub App**. On the next page copy the **Client ID** (starts with `Iv`).
+12. For the one-click sign-in (recommended), click **Generate a new client secret** and copy it now, since GitHub shows it once. It goes only into the Cloudflare worker as a *Secret*, never into this repository. Without it the site falls back to typing a code. You never need a private key.
 
 ## C. The sign-in proxy (Cloudflare Worker, free)
 
@@ -36,10 +37,11 @@ GitHub's login endpoints do not allow calls from a web page (no CORS), so a tiny
 
 1. Make a free account at cloudflare.com > **Workers & Pages** > **Create** > **Create Worker** > name it `oss-proof-auth` > **Deploy**.
 2. **Edit code**, replace everything with the contents of `worker/github-proxy.js` from this repository, **Deploy**.
-3. Worker > **Settings** > **Variables and Secrets** > add two plain variables:
+3. Worker > **Settings** > **Variables and Secrets** > add two plain variables, and one secret:
    - `CLIENT_ID` = the Client ID from step B11
    - `ALLOWED_ORIGIN` = `https://<your-username>.github.io` (no path, no trailing slash)
-4. Open the worker's address in a browser. You should see `{ "ok": true, "clientIdSet": true, "allowedOrigins": ["https://<you>.github.io"] }`. If `allowedOrigins` is empty or wrong, fix `ALLOWED_ORIGIN`.
+   - `CLIENT_SECRET` = the client secret from B12, type **Secret** (optional, but it turns on the redirect sign-in and stay-signed-in)
+4. Open the worker's address in a browser. You should see `{ "ok": true, "clientIdSet": true, "secretSet": true, "allowedOrigins": ["https://<you>.github.io"] }`. If `allowedOrigins` is empty or wrong, fix `ALLOWED_ORIGIN`.
 5. Copy the worker URL, for example `https://oss-proof-auth.<you>.workers.dev`.
 6. In this repository: **Settings** > **Secrets and variables** > **Actions** > **Variables** > **New repository variable**:
    - `GH_APP_CLIENT_ID` = the Client ID
@@ -47,6 +49,13 @@ GitHub's login endpoints do not allow calls from a web page (no CORS), so a tiny
 7. **Actions** > **Deploy to GitHub Pages** > **Run workflow**. The Check page now shows **Sign in with GitHub**.
 
 Until B and C are done, the Check page keeps the paste-a-token box, so nothing breaks.
+
+## How sign-in behaves
+
+- **No installation.** Visitors only *authorize* the app once. Nothing is installed on their account or repositories.
+- **Once, then automatic.** After the first approval GitHub skips its consent screen, and the site renews the session by itself (the token lasts 8 hours, the refresh token about 6 months), so returning visitors are already signed in.
+- **Why the app asks for no permissions.** A token only has the power the app requests. With none, a stolen token can read only public data, which anyone can read. Asking for more (for example, writing to a profile repository) would make tokens more powerful and would need more care.
+- **The badge does not use the visitor's token.** Certificates are built by the Action with `GH_READ_TOKEN`. Sign-in only makes the website's own check complete and fast.
 
 ## What I could not test
 
