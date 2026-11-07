@@ -134,12 +134,23 @@ export async function analyzeUser(login, { api, mode = 'anonymous', now = new Da
     }
   }
 
-  const scored = scoreEvidence(evidence, {
+  return buildResult({
+    mode,
     now,
-    accountCreatedAt: user.created_at,
+    user: { login: user.login, id: user.id, name: user.name, avatarUrl: user.avatar_url, profileUrl: user.html_url, location: user.location, createdAt: user.created_at },
+    orgs: orgs.length,
+    evidence,
     selfMerged,
     sampled: sample.length,
+    unverifiable,
+    mergedFound: totalMerged,
+    outsideOwn: candidates.length,
   })
+}
+
+/** Turns verified evidence into the result object that certificates and the UI share. */
+export function buildResult({ mode, now, user, orgs, evidence, selfMerged, sampled, unverifiable, mergedFound, outsideOwn, truncated = false }) {
+  const scored = scoreEvidence(evidence, { now, accountCreatedAt: user.createdAt, selfMerged, sampled })
 
   // Languages: weight each counted PR by its repo weight, so one popular repo outweighs ten tiny ones.
   const langWeight = new Map()
@@ -162,6 +173,15 @@ export async function analyzeUser(login, { api, mode = 'anonymous', now = new Da
       repo, stars, language, class: cls, number, title, url, mergedAt, mergedBy, lines,
     }))
 
+  // One line per repository, so a reader sees the breadth behind the headline number.
+  const perRepo = new Map()
+  for (const pr of evidence) {
+    const r = perRepo.get(pr.repo.toLowerCase()) || { repo: pr.repo, stars: pr.stars, language: pr.language, prs: 0 }
+    r.prs++
+    perRepo.set(pr.repo.toLowerCase(), r)
+  }
+  const repos = [...perRepo.values()].sort((a, b) => b.stars - a.stars || b.prs - a.prs).slice(0, 25)
+
   return {
     schema: 1,
     scoringVersion: SCORING_VERSION,
@@ -169,30 +189,32 @@ export async function analyzeUser(login, { api, mode = 'anonymous', now = new Da
     login: user.login,
     githubId: user.id,
     name: user.name || null,
-    avatarUrl: user.avatar_url,
-    profileUrl: user.html_url,
+    avatarUrl: user.avatarUrl,
+    profileUrl: user.profileUrl,
     location: user.location || null,
     country,
     countryCode: code,
-    accountCreatedAt: user.created_at,
+    accountCreatedAt: user.createdAt,
     issuedAt: new Date(now).toISOString(),
     score: scored.score,
     grade: scored.grade,
     gradeLabel: scored.gradeLabel,
     breakdown: scored.breakdown,
     counts: {
-      mergedFound: totalMerged,
-      outsideOwnRepos: candidates.length,
-      sampled: sample.length,
+      mergedFound,
+      outsideOwnRepos: outsideOwn,
+      sampled,
       counted: evidence.length,
       selfMerged,
       unverifiable,
       repos: scored.distinctRepos,
       activeMonths24: scored.activeMonths24,
-      orgs: orgs.length,
+      orgs,
+      truncated,
     },
     languages,
     lastMergedAt,
+    repos,
     evidence: top,
   }
 }
