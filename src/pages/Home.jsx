@@ -42,8 +42,8 @@ function Hero() {
         </div>
 
         <Tilt className="relative">
-          <span className="float absolute -top-5 -left-4 z-10 hidden sm:block" style={{ '--d': 0, '--r': '-3deg' }}><Badge grade="S" score={85} height={26} /></span>
-          <span className="float absolute -bottom-5 -right-3 z-10 hidden sm:block" style={{ '--d': 2, '--r': '3deg' }}><Badge grade="A" score={72} height={26} /></span>
+          <span className="float absolute -top-5 -left-4 z-10 hidden sm:block" style={{ '--d': 0, '--r': '-3deg' }}><Badge grade="S" score={91.3} login="you" height={84} /></span>
+          <span className="float absolute -bottom-5 -right-3 z-10 hidden sm:block" style={{ '--d': 2, '--r': '3deg' }}><Badge grade="A" score={76.4} login="you" height={84} /></span>
         <AppFrame title="Check a GitHub profile">
           <form onSubmit={submit} className="p-5 sm:p-6 grid gap-5">
             <label className="grid gap-2">
@@ -238,7 +238,7 @@ function Pin() {
               <div className="overflow-hidden -mx-5 sm:-mx-6" style={{ WebkitMaskImage: 'linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent)', maskImage: 'linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent)' }}>
                 <div className="slide-row px-5">
                   {[...SLIDE, ...SLIDE].map((g, i) => (
-                    <Badge key={i} grade={g} score={GRADES.find((x) => x.grade === g).min} height={26} />
+                    <Badge key={i} grade={g} score={GRADES.find((x) => x.grade === g).min} height={24} mini />
                   ))}
                 </div>
               </div>
