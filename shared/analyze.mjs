@@ -172,7 +172,7 @@ export async function analyzeUser(login, { api, mode = 'anonymous', now = new Da
 }
 
 /** Turns verified evidence into the result object that certificates and the UI share. */
-export function buildResult({ mode, now, user, profile = null, full = false, orgs, evidence, selfMerged, sampled, unverifiable, mergedFound, outsideOwn, truncated = false, foundProjects = 0, unchecked = [], partial = false }) {
+export function buildResult({ mode, now, user, profile = null, activity = null, full = false, orgs, evidence, selfMerged, sampled, unverifiable, mergedFound, outsideOwn, truncated = false, foundProjects = 0, unchecked = [], partial = false, restrictedOrgs = [], readErrors = 0 }) {
   const scored = scoreEvidence(evidence, { now, accountCreatedAt: user.createdAt, selfMerged, sampled })
 
   // Languages: weight each counted PR by its repo weight, so one popular repo outweighs ten tiny ones.
@@ -200,7 +200,7 @@ export function buildResult({ mode, now, user, profile = null, full = false, org
   const perRepo = new Map()
   for (const pr of evidence) {
     const k = pr.repo.toLowerCase()
-    const r = perRepo.get(k) || { repo: pr.repo, stars: pr.stars, language: pr.language, class: pr.class, prs: 0, lines: 0, first: pr.mergedAt, last: pr.mergedAt }
+    const r = perRepo.get(k) || { repo: pr.repo, stars: pr.stars, language: pr.language, class: pr.class, prs: 0, lines: 0, first: pr.mergedAt, last: pr.mergedAt, ...(pr.ownerType ? { ownerType: pr.ownerType, description: pr.description, license: pr.license, forks: pr.forks } : {}) }
     r.prs++
     if (full) (r.list ||= []).push({ number: pr.number, title: String(pr.title || '').slice(0, 100), url: pr.url, mergedAt: pr.mergedAt, mergedBy: pr.mergedBy, lines: pr.lines })
     r.lines += pr.lines || 0
@@ -219,6 +219,20 @@ export function buildResult({ mode, now, user, profile = null, full = false, org
     return { month: key, prs: evidence.filter((p) => String(p.mergedAt).slice(0, 7) === key).length }
   })
 
+  // What the work looked like: size, speed, and how many different maintainers accepted it.
+  const days = evidence.filter((p) => p.createdAt && p.mergedAt).map((p) => (Date.parse(p.mergedAt) - Date.parse(p.createdAt)) / 864e5).sort((a, b) => a - b)
+  const sum = (f) => evidence.reduce((n, p) => n + (f(p) || 0), 0)
+  const stats = {
+    additions: sum((p) => p.additions ?? p.lines),
+    deletions: sum((p) => p.deletions),
+    filesChanged: sum((p) => p.files),
+    medianDaysToMerge: days.length ? Math.round(days[Math.floor(days.length / 2)] * 10) / 10 : null,
+    maintainers: new Set(evidence.map((p) => String(p.mergedBy).toLowerCase())).size,
+    orgProjects: [...perRepo.values()].filter((r) => r.ownerType === 'Organization').length,
+    userProjects: [...perRepo.values()].filter((r) => r.ownerType === 'User').length,
+    licenses: [...new Set([...perRepo.values()].map((r) => r.license).filter(Boolean))].slice(0, 8),
+  }
+
   return {
     schema: 1,
     scoringVersion: SCORING_VERSION,
@@ -230,6 +244,7 @@ export function buildResult({ mode, now, user, profile = null, full = false, org
     profileUrl: user.profileUrl,
     location: user.location || null,
     profile,
+    activity,
     country,
     countryCode: code,
     accountCreatedAt: user.createdAt,
@@ -250,13 +265,15 @@ export function buildResult({ mode, now, user, profile = null, full = false, org
       orgs,
       truncated,
       foundProjects: Math.max(foundProjects, scored.distinctRepos),
-      partial,
+      partial: partial || readErrors > 0,
     },
     languages,
     lastMergedAt,
     repos,
     unchecked,
+    restrictedOrgs,
     timeline,
+    stats,
     evidence: top,
   }
 }
