@@ -36,6 +36,8 @@ Limits: only public activity is visible, the grade measures accepted PRs and not
 
 ## Set it up
 
+Extra one-time steps (read token, GitHub App sign-in, sign-in proxy) are in [docs/SETUP.md](docs/SETUP.md). The read token is required: without it certificates cannot see anyone's pull requests.
+
 1. Create a GitHub repository and push this project to `main`.
 2. Nothing to generate: certificates work without a key. (Optional: see Ed25519 above.)
 3. Settings > Pages > Source: **GitHub Actions**.
