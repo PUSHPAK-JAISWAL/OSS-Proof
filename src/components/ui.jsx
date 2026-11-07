@@ -83,16 +83,16 @@ export function CodeBlock({ code, label }) {
   )
 }
 
-export function Badge({ grade, score, login, height = 22, mini = false }) {
-  const svg = (mini ? makeMiniBadgeSvg : makeBadgeSvg)({ grade, score, login })
+export function Badge({ grade, score, login, height = 22, mini = false, projects }) {
+  const svg = (mini ? makeMiniBadgeSvg : makeBadgeSvg)({ grade, score, login, projects })
   const src = `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
   return <img src={src} alt={`OSS Proof grade ${grade}`} height={height} style={{ height }} />
 }
 
 export function Breakdown({ breakdown }) {
   const rows = [
-    ['Impact', breakdown.impact, 50, 'Merged PRs, weighted by how used the repo is'],
-    ['Breadth', breakdown.breadth, 20, 'Different repos that accepted your work'],
+    ['Impact', breakdown.impact, 50, 'Merged work, weighted by how used each project is, fewer points for repeat PRs in one project'],
+    ['Breadth', breakdown.breadth, 20, 'How many different projects accepted your work'],
     ['Consistency', breakdown.consistency, 20, 'Months active in the last 24'],
     ['Trust', breakdown.trust, 10, 'Account age, no self-merges, no tiny PRs'],
   ]

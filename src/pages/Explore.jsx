@@ -118,7 +118,7 @@ export default function Explore() {
                         <span className="block label truncate">@{e.login}{e.country ? ` · ${e.country}` : ''}</span>
                       </span>
                       <span className="hidden sm:block text-[15px] truncate">{e.languages.join(', ') || '—'}</span>
-                      <span className="hidden sm:block label">Last merged {fmtDate(e.lastMergedAt)}</span>
+                      <span className="hidden sm:block label">{e.projects ? `${e.projects} ${e.projects === 1 ? 'project' : 'projects'} · ` : ''}Last merged {fmtDate(e.lastMergedAt)}</span>
                       <span className="flex items-baseline gap-3 justify-end">
                         <span className="mono text-sm">{e.score.toFixed(1)}</span>
                         <span className="text-[28px] leading-none tracking-tighter w-8 text-center">{e.grade === '-' ? '–' : e.grade}</span>

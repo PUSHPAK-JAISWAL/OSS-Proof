@@ -94,7 +94,7 @@ const signature = ed25519.sign(new TextEncoder().encode(stableStringify(payload)
 
 const cert = { alg: 'ed25519', keyId: bytesToHex(publicKey).slice(0, 8), payload, signature: bytesToHex(signature) }
 writeFileSync(certPath, JSON.stringify(cert, null, 2) + '\n')
-const badgeArgs = { grade: payload.grade, score: payload.score, login: payload.login }
+const badgeArgs = { grade: payload.grade, score: payload.score, login: payload.login, projects: payload.counts.repos }
 writeFileSync(`data/badges/${file}.svg`, makeBadgeSvg(badgeArgs))
 writeFileSync(`data/badges/${file}-mini.svg`, makeMiniBadgeSvg(badgeArgs))
 
