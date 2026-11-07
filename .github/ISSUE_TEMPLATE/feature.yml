@@ -1,0 +1,15 @@
+name: Idea or grading feedback
+description: Suggest a feature, or tell us a grade feels unfair.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you change
+      description: For grading feedback, say whose grade looks wrong and why. Public profile links help.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why it matters
