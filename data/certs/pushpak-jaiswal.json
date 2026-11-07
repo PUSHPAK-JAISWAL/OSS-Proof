@@ -1,0 +1,46 @@
+{
+  "alg": "github-actions",
+  "payload": {
+    "schema": 1,
+    "scoringVersion": "1.2.0",
+    "mode": "deep",
+    "login": "PUSHPAK-JAISWAL",
+    "githubId": 149317014,
+    "name": "Pushpak Jaiswal",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/149317014?u=1f086c14c610bcf8746141a62a6476db6172c08b&v=4",
+    "profileUrl": "https://github.com/PUSHPAK-JAISWAL",
+    "location": "INDIA",
+    "country": "India",
+    "countryCode": "IN",
+    "accountCreatedAt": "2023-10-29T15:14:59Z",
+    "issuedAt": "2026-11-07T09:19:46.369Z",
+    "score": 0,
+    "grade": "-",
+    "gradeLabel": "Unrated",
+    "breakdown": {
+      "impact": 0,
+      "breadth": 0,
+      "consistency": 0,
+      "trust": 0
+    },
+    "counts": {
+      "mergedFound": 0,
+      "outsideOwnRepos": 0,
+      "sampled": 0,
+      "counted": 0,
+      "selfMerged": 0,
+      "unverifiable": 0,
+      "repos": 0,
+      "activeMonths24": 0,
+      "orgs": 0,
+      "truncated": false,
+      "foundProjects": 0,
+      "partial": false
+    },
+    "languages": [],
+    "lastMergedAt": null,
+    "repos": [],
+    "unchecked": [],
+    "evidence": []
+  }
+}

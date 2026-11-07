@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="380" height="120" viewBox="0 0 380 120" role="img" aria-label="OSS Proof grade -, score 0.0 out of 100 for PUSHPAK-JAISWAL">
+<title>OSS Proof grade -, score 0.0 out of 100 for PUSHPAK-JAISWAL</title>
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0a1318"/><stop offset=".6" stop-color="#13232b"/><stop offset="1" stop-color="#0d1a20"/></linearGradient>
+<linearGradient id="ac" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c8d0d4"/><stop offset=".55" stop-color="#98a5ab"/><stop offset="1" stop-color="#6c7a80"/></linearGradient>
+<linearGradient id="sweep" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".22"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<radialGradient id="aura" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#98a5ab" stop-opacity=".55"/><stop offset="1" stop-color="#98a5ab" stop-opacity="0"/></radialGradient>
+<clipPath id="card"><rect width="380" height="120" rx="16"/></clipPath>
+</defs>
+<g clip-path="url(#card)">
+<rect width="380" height="120" fill="url(#bg)"/>
+<circle cx="64" cy="60" r="62" fill="url(#aura)"></circle>
+<circle cx="350" cy="14" r="70" fill="#6c7a80" opacity=".12"/>
+<path d="M0 98 C70 80 120 112 190 96 S320 84 380 100 V120 H0Z" fill="#98a5ab" opacity=".08"/>
+<rect x="-140" y="0" width="120" height="120" fill="url(#sweep)" transform="skewX(-20)"><animate attributeName="x" values="-160;460" dur="2.4s" begin="0.4s" fill="freeze"/></rect>
+</g>
+<rect x="1" y="1" width="378" height="118" rx="15" fill="none" stroke="url(#ac)" stroke-width="1.6" opacity=".85"/>
+<g>
+<polygon points="64.0,20.0 98.6,40.0 98.6,80.0 64.0,100.0 29.4,80.0 29.4,40.0" fill="url(#ac)"/>
+<polygon points="64.0,27.0 92.6,43.5 92.6,76.5 64.0,93.0 35.4,76.5 35.4,43.5" fill="#0b1419"/>
+<polygon points="64.0,27.0 92.6,43.5 92.6,76.5 64.0,93.0 35.4,76.5 35.4,43.5" fill="none" stroke="url(#ac)" stroke-width="1" opacity=".6"/>
+</g>
+<text x="64" y="71" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-size="30" font-weight="700" fill="url(#ac)">–</text>
+
+<text x="124" y="30" font-family="Verdana,'DejaVu Sans',sans-serif" font-size="10" font-weight="700" letter-spacing="2.4" fill="url(#ac)">OSS PROOF · UNRATED</text>
+<text x="124" y="56" font-family="Verdana,'DejaVu Sans',sans-serif" font-size="17" font-weight="700" fill="#fff">@PUSHPAK-JAISWAL</text>
+<text x="124" y="74" font-family="Verdana,'DejaVu Sans',sans-serif" font-size="10" fill="#9fb2ba">Verified contribution</text>
+<rect x="124" y="88" width="130" height="7" rx="3.5" fill="#ffffff" opacity=".1"/>
+<rect x="124" y="88" width="0" height="7" rx="3.5" fill="url(#ac)"><animate attributeName="width" from="0" to="0.0" dur="1.4s" fill="freeze" calcMode="spline" keySplines=".2 .7 .2 1" keyTimes="0;1"/></rect>
+<text x="346" y="82" text-anchor="end" font-family="Verdana,'DejaVu Sans',sans-serif" font-size="26" font-weight="700" fill="#fff">0.0</text>
+<text x="346" y="98" text-anchor="end" font-family="Verdana,'DejaVu Sans',sans-serif" font-size="10" fill="#9fb2ba">out of 100</text>
+<circle cx="354" cy="22" r="8" fill="url(#ac)"/><path d="M350.2 22.2l2.7 2.7 4.9-5.3" fill="none" stroke="#0b1419" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
