@@ -83,8 +83,8 @@ export function CodeBlock({ code, label }) {
   )
 }
 
-export function Badge({ grade, score, login, height = 22, mini = false, projects }) {
-  const svg = (mini ? makeMiniBadgeSvg : makeBadgeSvg)({ grade, score, login, projects })
+export function Badge({ grade, score, login, height = 22, mini = false, projects, theme = 'grade' }) {
+  const svg = (mini ? makeMiniBadgeSvg : makeBadgeSvg)({ grade, score, login, projects, theme })
   const src = `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
   return <img src={src} alt={`OSS Proof grade ${grade}`} height={height} style={{ height }} />
 }

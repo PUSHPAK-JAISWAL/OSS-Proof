@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict'
 import { ed25519 } from '@noble/curves/ed25519.js'
 import { mergeIndex, pickStale } from '../shared/mergeindex.mjs'
-import { makeBadgeSvg, makeMiniBadgeSvg } from '../shared/badge.mjs'
+import { makeBadgeSvg, makeMiniBadgeSvg, THEME_IDS } from '../shared/badge.mjs'
 import { bytesToHex, hexToBytes, stableStringify } from '../shared/canonical.mjs'
 import { countryFromLocation } from '../shared/country.mjs'
 import { gradeFor, scoreEvidence } from '../shared/score.mjs'
@@ -63,6 +63,7 @@ assert.match(makeMiniBadgeSvg({ grade: 'A', score: 72.44, login: 'x' }), /A · 7
 assert.match(makeBadgeSvg({ grade: 'S', score: 88.04, login: 'x' }), /88\.0/)
 assert.equal(makeBadgeSvg({ grade: 'zz', score: 5, login: 'x' }).includes('Unrated'.toUpperCase()), true)
 assert.equal(makeBadgeSvg({ grade: 'A', score: 1, login: '<script>' }).includes('<script>'), false)
+for (const t of THEME_IDS) assert.ok(makeBadgeSvg({ grade: 'B', score: 55, login: 'x', projects: 3, theme: t }).endsWith('</svg>\n'), t)
 assert.equal(makeMiniBadgeSvg({ grade: 'A', score: 1, login: '<script>' }).includes('<script>'), false)
 assert.equal(countryFromLocation('Aurangabad, Maharashtra').country, 'India')
 assert.equal(countryFromLocation('Berlin').country, 'Germany')
