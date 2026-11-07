@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Btn, fmtDate } from '../components/ui'
 import { fetchIndex } from '../lib/verify'
+import { go } from '../lib/router'
 
 const ACTIVITY = [
   ['any', 'Any time'],
@@ -62,6 +63,22 @@ export default function Explore() {
           <h1 className="h2 m-0">Developers with certificates</h1>
           <p className="lead mt-4 mb-0 muted">Filter by country, language, recent activity and grade. Open any row to check its signature.</p>
         </div>
+
+        <form
+          className="card p-5 flex flex-wrap items-end gap-3"
+          onSubmit={(e) => {
+            e.preventDefault()
+            const u = new FormData(e.currentTarget).get('login')?.toString().trim().replace(/^@/, '')
+            if (u) go(`/check/${u}`)
+          }}
+        >
+          <label className="grid gap-1.5 flex-1 min-w-[220px]">
+            <span className="font-medium">Check any GitHub profile</span>
+            <input name="login" className="input" placeholder="octocat" autoComplete="off" spellCheck="false" />
+          </label>
+          <Btn type="submit">Check</Btn>
+          <p className="label m-0 basis-full">Works for anyone, with or without a certificate. It reads their public pull requests live.</p>
+        </form>
 
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 items-end">
           <label className="grid gap-1.5 col-span-2 lg:col-span-1">
