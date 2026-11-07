@@ -1,6 +1,7 @@
 // Badges are plain SVG built from the signed numbers. No external fonts, images or scripts.
-// The large card animates (a light sweep, twinkling stars, a breathing emblem). Browsers and GitHub's
-// image proxy play SMIL inside <img>, and viewers that do not simply show the still card.
+// The large card plays once when it loads (a light sweep, stars appearing, the bar filling) and then
+// rests, so nothing loops. Browsers and GitHub's image proxy play SMIL inside <img>, and viewers that
+// do not simply show the finished card.
 const THEME = {
   S: { name: 'Exceptional', a: '#ffe08a', b: '#ff9d4d', c: '#ff5d8f', glow: '#ffb457', stars: true },
   A: { name: 'Strong', a: '#7df9e0', b: '#38bdf8', c: '#4f8bff', glow: '#38d6e8', stars: true },
@@ -22,7 +23,7 @@ function hex(cx, cy, r) {
 }
 
 const star = (x, y, s, delay) =>
-  `<path transform="translate(${x} ${y}) scale(${s})" d="M0-6C.6-2 2 -.6 6 0 2 .6.6 2 0 6-.6 2-2 .6-6 0-2-.6-.6-2 0-6Z" fill="#fff"><animate attributeName="opacity" values="0;1;0" dur="2.8s" begin="${delay}s" repeatCount="indefinite"/></path>`
+  `<path transform="translate(${x} ${y}) scale(${s})" d="M0-6C.6-2 2 -.6 6 0 2 .6.6 2 0 6-.6 2-2 .6-6 0-2-.6-.6-2 0-6Z" fill="#fff"><animate attributeName="opacity" values="0;1;0.55" dur="1.6s" begin="${delay}s" fill="freeze"/></path>`
 
 /** The large card, 380 x 120. */
 export function makeBadgeSvg({ grade, score, login }) {
@@ -42,20 +43,19 @@ export function makeBadgeSvg({ grade, score, login }) {
 </defs>
 <g clip-path="url(#card)">
 <rect width="380" height="120" fill="url(#bg)"/>
-<circle cx="64" cy="60" r="62" fill="url(#aura)"><animate attributeName="opacity" values=".7;1;.7" dur="4s" repeatCount="indefinite"/></circle>
+<circle cx="64" cy="60" r="62" fill="url(#aura)"></circle>
 <circle cx="350" cy="14" r="70" fill="${t.c}" opacity=".12"/>
 <path d="M0 98 C70 80 120 112 190 96 S320 84 380 100 V120 H0Z" fill="${t.b}" opacity=".08"/>
-<rect x="-140" y="0" width="120" height="120" fill="url(#sweep)" transform="skewX(-20)"><animate attributeName="x" values="-160;460" dur="4.5s" repeatCount="indefinite"/></rect>
+<rect x="-140" y="0" width="120" height="120" fill="url(#sweep)" transform="skewX(-20)"><animate attributeName="x" values="-160;460" dur="2.4s" begin="0.4s" fill="freeze"/></rect>
 </g>
 <rect x="1" y="1" width="378" height="118" rx="15" fill="none" stroke="url(#ac)" stroke-width="1.6" opacity=".85"/>
 <g>
-<animateTransform attributeName="transform" type="scale" values="1;1.04;1" dur="4s" repeatCount="indefinite" additive="sum"/>
 <polygon points="${hex(64, 60, 40)}" fill="url(#ac)"/>
 <polygon points="${hex(64, 60, 33)}" fill="#0b1419"/>
 <polygon points="${hex(64, 60, 33)}" fill="none" stroke="url(#ac)" stroke-width="1" opacity=".6"/>
 </g>
 <text x="64" y="${g === '-' ? 71 : 74}" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-size="${g === '-' ? 30 : 38}" font-weight="700" fill="url(#ac)">${g === '-' ? '–' : g}</text>
-${t.stars ? star(26, 24, 1.1, 0) + star(104, 30, 0.8, 0.9) + star(100, 96, 1, 1.7) + star(30, 92, 0.7, 2.2) : ''}
+${t.stars ? star(26, 24, 1.1, 0.2) + star(104, 30, 0.8, 0.6) + star(100, 96, 1, 1.0) + star(30, 92, 0.7, 1.4) : ''}
 <text x="124" y="30" font-family="Verdana,'DejaVu Sans',sans-serif" font-size="10" font-weight="700" letter-spacing="2.4" fill="url(#ac)">OSS PROOF · ${esc(t.name.toUpperCase())}</text>
 <text x="124" y="56" font-family="Verdana,'DejaVu Sans',sans-serif" font-size="17" font-weight="700" fill="#fff">${esc(name)}</text>
 <text x="124" y="74" font-family="Verdana,'DejaVu Sans',sans-serif" font-size="10" fill="#9fb2ba">Verified contribution</text>
