@@ -1,7 +1,6 @@
 name: Issue certificate
 
 # Runs when someone opens a "Certificate request" issue. The issue author is the account being graded.
-# No third-party actions: this repo only allows actions owned by its own account.
 on:
   issues:
     types: [opened]
@@ -21,25 +20,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - name: Check out the repository
-        env:
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: ${{ github.event.repository.default_branch }}
-        run: |
-          git clone --depth 1 --branch "$BRANCH" "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" repo
-
-      - name: Install Node 22
-        run: |
-          curl -fsSL https://nodejs.org/dist/v22.12.0/node-v22.12.0-linux-x64.tar.xz | tar -xJ -C "$HOME"
-          echo "$HOME/node-v22.12.0-linux-x64/bin" >> "$GITHUB_PATH"
-
-      - name: Install dependencies
-        working-directory: repo
-        run: npm ci
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
 
       - name: Grade and sign
         id: cert
-        working-directory: repo
         env:
           # Passed as environment variables, never pasted into the script, so issue text cannot inject commands.
           LOGIN: ${{ github.event.issue.user.login }}
@@ -50,7 +39,6 @@ jobs:
 
       - name: Commit certificate
         if: steps.cert.outputs.status == 'ok'
-        working-directory: repo
         env:
           FILE: ${{ steps.cert.outputs.file }}
           BRANCH: ${{ github.event.repository.default_branch }}
