@@ -3,7 +3,7 @@
 import { ed25519 } from '@noble/curves/ed25519.js'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { analyzeUser, isValidLogin, summarize } from '../shared/analyze.mjs'
-import { makeBadgeSvg } from '../shared/badge.mjs'
+import { makeBadgeSvg, makeMiniBadgeSvg } from '../shared/badge.mjs'
 import { bytesToHex, hexToBytes, stableStringify } from '../shared/canonical.mjs'
 
 const login = process.env.LOGIN
@@ -66,7 +66,9 @@ const signature = ed25519.sign(new TextEncoder().encode(stableStringify(payload)
 
 const cert = { alg: 'ed25519', keyId: bytesToHex(publicKey).slice(0, 8), payload, signature: bytesToHex(signature) }
 writeFileSync(certPath, JSON.stringify(cert, null, 2) + '\n')
-writeFileSync(`data/badges/${file}.svg`, makeBadgeSvg({ grade: payload.grade, score: payload.score, login: payload.login }))
+const badgeArgs = { grade: payload.grade, score: payload.score, login: payload.login }
+writeFileSync(`data/badges/${file}.svg`, makeBadgeSvg(badgeArgs))
+writeFileSync(`data/badges/${file}-mini.svg`, makeMiniBadgeSvg(badgeArgs))
 
 const indexPath = 'data/index.json'
 const index = existsSync(indexPath) ? JSON.parse(readFileSync(indexPath, 'utf8')) : { entries: [] }
