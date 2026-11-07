@@ -50,7 +50,7 @@ export function Btn({ children, variant = 'primary', href, onClick, type = 'butt
 
 export function AppFrame({ title, children, className = '' }) {
   return (
-    <div className={`frame ${className}`}>
+    <div className={`frame ${className}`} data-ui>
       <div className="frame__bar">
         <i className="frame__dot" /><i className="frame__dot" /><i className="frame__dot" />
         <span className="label ml-2 truncate">{title}</span>
