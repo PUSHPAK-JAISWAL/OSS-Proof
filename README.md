@@ -11,6 +11,12 @@ Contribution certificates for open source developers. It shows how many open sou
 
 Requests run one at a time through the GitHub Actions queue, so a certificate can take a few minutes when many people ask at once. The workflow comments on the issue straight away to confirm the request arrived.
 
+### Badges stay fresh by themselves
+
+`.github/workflows/refresh.yml` runs every day at 03:17 UTC. It re-grades the oldest certificates (up to 25 a day, only those older than 6 days) and rewrites the same files, so the badge link in a README never changes and always shows a recent grade. You can also run it by hand from the Actions tab and choose the batch size. Accounts that no longer exist are skipped and retried after 30 days. GitHub caches README images for a few minutes, so a new grade can take a little while to show.
+
+Runs never overwrite each other: before committing, each run merges its entries into the `data/index.json` that is on the branch at that moment.
+
 ### How a certificate is verified
 
 - **Keyless (default, nothing to set up).** The workflow commits the files through the GitHub API, so GitHub signs the commit and it shows as Verified, authored by `github-actions[bot]`. The certificate page asks GitHub for the latest commit on the file and checks both. Only people with write access to this repository could change a file any other way.
