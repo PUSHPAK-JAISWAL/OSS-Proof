@@ -37,8 +37,8 @@ export const GRADES = [
 
 // How many PRs and repos we look at per run. The signed certificate run has a bigger token budget.
 export const LIMITS = {
-  anonymous: { searchPages: 1, repos: 15, prs: 15 },
-  token: { searchPages: 2, repos: 40, prs: 40 },
+  anonymous: { searchPages: 3, repos: 28, prs: 28 },
+  token: { searchPages: 3, repos: 60, prs: 60 },
   certificate: { searchPages: 3, repos: 80, prs: 80 },
   // GraphQL reads the merger with the PR, so nothing is sampled. maxPages x 100 is the cap.
   deep: { maxPages: 40 },
