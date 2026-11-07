@@ -19,7 +19,10 @@ function fail(msg) {
 }
 
 if (!isValidLogin(login)) fail('The issue author is not a valid personal account.')
-if (!secret || !/^[0-9a-f]{64}$/i.test(secret.trim())) fail('CERT_SIGNING_KEY is missing or is not a 64 character hex key. Run npm run keygen.')
+// A key is optional. Without one the certificate is "github-actions" kind: the Action commits it through the
+// GitHub API, GitHub signs that commit, and the site checks the commit. With a key it is also ed25519 signed.
+const hasKey = Boolean(secret && secret.trim())
+if (hasKey && !/^[0-9a-f]{64}$/i.test(secret.trim())) fail('CERT_SIGNING_KEY is set but is not a 64 character hex key. Delete the secret to use keyless mode, or run npm run keygen.')
 
 const file = login.toLowerCase()
 const certPath = `data/certs/${file}.json`
@@ -88,11 +91,15 @@ try {
   fail(err.message)
 }
 
-const secretKey = hexToBytes(secret.trim())
-const publicKey = ed25519.getPublicKey(secretKey)
-const signature = ed25519.sign(new TextEncoder().encode(stableStringify(payload)), secretKey)
-
-const cert = { alg: 'ed25519', keyId: bytesToHex(publicKey).slice(0, 8), payload, signature: bytesToHex(signature) }
+let cert
+if (hasKey) {
+  const secretKey = hexToBytes(secret.trim())
+  const publicKey = ed25519.getPublicKey(secretKey)
+  const signature = ed25519.sign(new TextEncoder().encode(stableStringify(payload)), secretKey)
+  cert = { alg: 'ed25519', keyId: bytesToHex(publicKey).slice(0, 8), payload, signature: bytesToHex(signature) }
+} else {
+  cert = { alg: 'github-actions', payload }
+}
 writeFileSync(certPath, JSON.stringify(cert, null, 2) + '\n')
 const badgeArgs = { grade: payload.grade, score: payload.score, login: payload.login, projects: payload.counts.repos }
 writeFileSync(`data/badges/${file}.svg`, makeBadgeSvg(badgeArgs))

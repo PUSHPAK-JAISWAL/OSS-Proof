@@ -3,11 +3,15 @@ import { Breakdown, Btn, fmtDate, GradeMark, Icon } from '../components/ui'
 import { EvidenceList, PinPanel, RepoList } from '../components/cert'
 import RequestFlow from '../components/RequestFlow'
 import { KEY_ID, RAW_BASE } from '../lib/config'
-import { checkSignature, fetchCertificate } from '../lib/verify'
+import { checkCertificate, fetchCertificate } from '../lib/verify'
 
 const STATUS = {
   valid: { tone: 'text-ok', icon: 'check', title: 'Signature verified', body: 'This record was signed by this project’s key and has not been edited since.' },
   invalid: { tone: 'text-bad', icon: 'x', title: 'Signature does not match', body: 'This file was changed after signing, or was not signed by this project. Do not trust the numbers.' },
+  checking: { tone: 'text-warn', icon: 'check', title: 'Checking the record…', body: 'Asking GitHub who wrote this file.' },
+  'k-valid': { tone: 'text-ok', icon: 'check', title: 'Verified by GitHub', body: 'This record was committed by github-actions[bot] in this repository, and GitHub signed that commit. Nobody edited it by hand.' },
+  'k-invalid': { tone: 'text-bad', icon: 'x', title: 'Not committed by the OSS Proof workflow', body: 'The latest change to this file was not a GitHub-signed commit by github-actions[bot]. Do not trust the numbers.' },
+  'k-unknown': { tone: 'text-warn', icon: 'x', title: 'Could not ask GitHub', body: 'GitHub did not answer (rate limit or offline). Open the file history on GitHub to check the commit yourself.' },
   'no-key': { tone: 'text-warn', icon: 'x', title: 'No public key configured', body: 'This site has no public key set, so signatures cannot be checked. The maintainer needs to run npm run keygen.' },
 }
 
@@ -21,7 +25,8 @@ export default function Verify({ login }) {
       .then((cert) => {
         if (!live) return
         if (!cert) return setState({ phase: 'missing' })
-        setState({ phase: 'done', cert, sig: checkSignature(cert, login) })
+        setState({ phase: 'done', cert, sig: 'checking' })
+        checkCertificate(cert, login).then((r) => live && setState({ phase: 'done', cert, sig: r.kind === 'keyless' ? `k-${r.status}` : r.status }))
       })
       .catch((err) => live && setState({ phase: 'error', message: err.message }))
     return () => { live = false }
@@ -56,7 +61,7 @@ export default function Verify({ login }) {
   return (
     <main className="page">
       <div className="wrap grid gap-12">
-        <div className={`card p-5 flex gap-4 items-start ${sig === 'valid' ? '' : 'border-current'} ${s.tone}`} role={sig === 'valid' ? 'status' : 'alert'}>
+        <div className={`card p-5 flex gap-4 items-start ${(sig === 'valid' || sig === 'k-valid') ? '' : 'border-current'} ${s.tone}`} role={(sig === 'valid' || sig === 'k-valid') ? 'status' : 'alert'}>
           <span className="mt-0.5 shrink-0"><Icon name={s.icon} size={22} /></span>
           <div className="text-ink">
             <p className="m-0 font-medium">{s.title}</p>
