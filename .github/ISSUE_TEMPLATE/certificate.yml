@@ -1,5 +1,5 @@
 name: Certificate request
-description: Get a signed OSS Proof certificate for the GitHub account you are signed in with.
+description: Get a verified OSS Proof certificate for the GitHub account you are signed in with.
 title: "Certificate request"
 labels: ["certificate"]
 body:
@@ -8,7 +8,9 @@ body:
       value: |
         A workflow grades **the account that opens this issue**. GitHub itself proves who you are, so there is nothing to paste.
 
-        It reads your public pull requests, writes a signed certificate and a badge into this repository, comments with your links, and closes the issue. This takes a minute or two.
+        It reads your public merged pull requests, groups them by open source project, writes a certificate and a badge into this repository, comments with README tags you can copy, and closes the issue.
+
+**It can take a few minutes.** Requests run one at a time through the GitHub Actions queue, so it is slower when many people ask at once. You can close this page and come back to the reply.
   - type: checkboxes
     id: confirm
     attributes:
