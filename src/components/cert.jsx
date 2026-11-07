@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import { BADGE_THEMES, THEME_IDS } from '../../shared/badge.mjs'
 import { badgeUrl, certificateLink } from '../lib/config'
 import { Badge, CodeBlock, fmtDate, fmtStars, Icon } from './ui'
 
@@ -89,8 +91,9 @@ export function Timeline({ data }) {
 }
 
 export function PinPanel({ login, grade, score, projects }) {
+  const [theme, setTheme] = useState('grade')
   const link = certificateLink(login)
-  const big = badgeUrl(login)
+  const big = badgeUrl(login, false, theme)
   const mini = badgeUrl(login, true)
   const md = `[![OSS Proof](${big})](${link})`
   const mdMini = `[![OSS Proof](${mini})](${link})`
@@ -98,17 +101,32 @@ export function PinPanel({ login, grade, score, projects }) {
   return (
     <div className="grid gap-4">
       <div className="card px-4 py-5 grid gap-4 justify-items-start">
-        <Badge grade={grade} score={score} login={login} projects={projects} height={120} />
+        <Badge grade={grade} score={score} login={login} projects={projects} theme={theme} height={120} />
+        <div role="radiogroup" aria-label="Badge theme" className="flex flex-wrap gap-2">
+          {THEME_IDS.map((id) => (
+            <button
+              key={id}
+              type="button"
+              role="radio"
+              aria-checked={theme === id}
+              onClick={() => setTheme(id)}
+              className={`rounded-md border p-1 cursor-pointer transition-all hover:-translate-y-0.5 ${theme === id ? 'border-accent shadow-[0_8px_24px_-12px_var(--accent)]' : 'border-line'}`}
+              title={BADGE_THEMES[id].label}
+            >
+              <Badge grade={grade} score={score} login={login} projects={projects} theme={id} height={38} />
+            </button>
+          ))}
+        </div>
         <div className="flex items-center gap-3 flex-wrap">
           <Badge grade={grade} score={score} login={login} height={24} mini />
-          <span className="label">Card and compact versions. Both link to your certificate.</span>
+          <span className="label">Theme: {BADGE_THEMES[theme].label}. A compact version is below.</span>
         </div>
       </div>
-      <CodeBlock label="Markdown, card (README.md)" code={md} />
+      <CodeBlock label={`Markdown, card (${BADGE_THEMES[theme].label})`} code={md} />
       <CodeBlock label="Markdown, compact" code={mdMini} />
       <CodeBlock label="HTML, card" code={html} />
       <p className="label">
-        Paste it once. The badge refreshes itself every few days, so the link never changes. Put it in your profile README: the repository named <span className="mono">{login}/{login}</span>. GitHub shows that file on your profile page.
+        Paste it once. The badge refreshes itself every few days, so the link never changes. Put it in your profile README: the repository named <span className="mono">{login}/{login}</span>. To switch theme later, change the file name in the link (for example <span className="mono">{login.toLowerCase()}.neon.svg</span>).
       </p>
     </div>
   )
