@@ -1,21 +1,23 @@
 import { useEffect, useRef, useState } from 'react'
 import { analyzeUser, isValidLogin } from '../../shared/analyze.mjs'
+import { analyzeDeep } from '../../shared/deep.mjs'
 import { Breakdown, Btn, GradeMark, Icon } from '../components/ui'
 import { EvidenceList } from '../components/cert'
 import { requestCertificateUrl } from '../lib/config'
-import { getToken, makeApi, setToken } from '../lib/github'
+import { getToken, makeApi, makeGql, setToken } from '../lib/github'
 import { go } from '../lib/router'
 
 function TokenBox({ token, onChange }) {
   const [draft, setDraft] = useState(token)
   return (
     <details className="card p-4" open={Boolean(token)}>
-      <summary className="cursor-pointer font-medium">Raise the rate limit (optional)</summary>
+      <summary className="cursor-pointer font-medium">Read all your pull requests with your own token (optional)</summary>
       <div className="mt-4 grid gap-3">
         <p className="m-0 muted text-[15px]">
-          Without a token GitHub allows 60 requests an hour, so the preview reads a smaller sample.
-          Paste a personal access token with no permissions ticked to read more. It stays in this tab
-          and is only sent to api.github.com.
+          Without a token GitHub allows 60 requests an hour, so the preview reads only a small sample of your pull requests.
+          With your own token it reads every merged pull request you have made, as the signed certificate does.
+          A fine-grained token with no permissions ticked is enough. It stays in this tab, is never saved or sent
+          anywhere but api.github.com, and you should never paste it into a GitHub issue.
         </p>
         <div className="flex gap-2">
           <input className="input mono" type="password" value={draft} onChange={(e) => setDraft(e.target.value.trim())} placeholder="github_pat_…" autoComplete="off" aria-label="GitHub token" />
@@ -37,11 +39,11 @@ export default function Check({ username }) {
     const id = ++run.current
     setState({ phase: 'loading', step: 'Starting' })
     try {
-      const result = await analyzeUser(login, {
-        api: makeApi(tk),
-        mode: tk ? 'token' : 'anonymous',
-        onProgress: (step) => run.current === id && setState({ phase: 'loading', step }),
-      })
+      const onProgress = (step) => run.current === id && setState({ phase: 'loading', step })
+      // With a token every merged PR is read through GraphQL. Without one, a small REST sample.
+      const result = tk
+        ? await analyzeDeep(login, { gql: makeGql(tk), onProgress })
+        : await analyzeUser(login, { api: makeApi(tk), mode: 'anonymous', onProgress })
       if (run.current === id) setState({ phase: 'done', result })
     } catch (err) {
       if (run.current === id) setState({ phase: 'error', message: err.message })
@@ -150,11 +152,14 @@ export default function Check({ username }) {
                 </dl>
               </div>
 
-              {r.counts.sampled < r.counts.outsideOwnRepos && (
+              {r.mode !== 'deep' && r.counts.sampled < r.counts.outsideOwnRepos && (
                 <p className="m-0 muted text-[15px] max-w-[64ch]">
-                  This preview checked the {r.counts.sampled} most used repositories’ pull requests out of {r.counts.outsideOwnRepos}.
-                  The signed certificate checks up to 80, so its score can be higher.
+                  This quick preview checked {r.counts.sampled} of your {r.counts.outsideOwnRepos} pull requests outside your own repositories.
+                  Add your own token above to read all of them. The signed certificate always reads all of them.
                 </p>
+              )}
+              {r.counts.truncated && (
+                <p className="m-0 text-warn text-[15px] max-w-[64ch]">Your history is very large, so the newest {r.counts.mergedFound} merged pull requests were read.</p>
               )}
 
               <section className="grid gap-4">
