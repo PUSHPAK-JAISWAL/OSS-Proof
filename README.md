@@ -7,7 +7,7 @@ Contribution certificates for open source developers. It grades the pull request
 1. **Check a profile.** The React app reads public GitHub data in the browser and shows the score, its four parts and every counted pull request.
 2. **Request a certificate.** The user opens a "Certificate request" issue. The workflow in `.github/workflows/certify.yml` grades the issue author (GitHub proves who they are, so no OAuth app is needed), signs the result with Ed25519, and commits `data/certs/<user>.json`, `data/badges/<user>.svg` and `data/index.json`.
 3. **Verify.** `#/verify/<user>` fetches the file and checks the signature in the browser against the public key in `src/lib/pubkey.json`.
-4. **Pin.** The certificate page gives Markdown and HTML for the badge.
+4. **Pin.** The certificate page gives Markdown and HTML for an animated badge card and a compact badge.
 
 ## Grading (scoring version 1.0.0)
 
