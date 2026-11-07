@@ -71,6 +71,7 @@ export async function analyzeUser(login, { api, mode = 'anonymous', now = new Da
   }
   const repoOrder = [...byRepo.values()].sort((a, b) => b.count - a.count || b.latest - a.latest).slice(0, limits.repos)
 
+  let partial = false
   const repoInfo = new Map()
   let done = 0
   for (const entry of repoOrder) {
@@ -85,7 +86,7 @@ export async function analyzeUser(login, { api, mode = 'anonymous', now = new Da
         full: r.full_name,
       })
     } catch (err) {
-      if (err.rateLimited) throw err
+      if (err.rateLimited) { partial = true; break }
       // A deleted or private repo cannot be verified, so it is simply not counted.
     }
   }
@@ -95,7 +96,16 @@ export async function analyzeUser(login, { api, mode = 'anonymous', now = new Da
     .filter((c) => repoInfo.has(c.repo.full.toLowerCase()))
     .map((c) => ({ ...c, info: repoInfo.get(c.repo.full.toLowerCase()) }))
     .sort((a, b) => b.info.stars - a.info.stars || Date.parse(b.it.closed_at) - Date.parse(a.it.closed_at))
-  const sample = known.slice(0, limits.prs)
+  // One PR per project first (busiest repos first), then the rest, so every project gets checked.
+  const seen = new Map()
+  const firsts = []
+  const rest = []
+  for (const c of known) {
+    const k = c.repo.full.toLowerCase()
+    if (seen.has(k)) rest.push(c)
+    else { seen.set(k, true); firsts.push(c) }
+  }
+  const sample = [...firsts, ...rest].slice(0, limits.prs)
 
   const evidence = []
   let selfMerged = 0
@@ -129,10 +139,19 @@ export async function analyzeUser(login, { api, mode = 'anonymous', now = new Da
         mergedAt: pr.merged_at,
       })
     } catch (err) {
-      if (err.rateLimited) throw err
+      if (err.rateLimited) { partial = true; break }
       unverifiable++
     }
   }
+
+  // Projects the search found but that we could not check (no budget left): still shown, clearly marked.
+  const checked = new Set(evidence.map((e) => e.repo.toLowerCase()))
+  const unchecked = [...byRepo.values()]
+    .filter((e) => !checked.has(e.repo.full.toLowerCase()))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 40)
+    .map((e) => ({ repo: e.repo.full, prs: e.count }))
+  if (partial && evidence.length === 0) throw Object.assign(new Error('GitHub rate limit reached before anything could be checked. Add your own token above, or try again in an hour.'), { rateLimited: true })
 
   return buildResult({
     mode,
@@ -145,11 +164,14 @@ export async function analyzeUser(login, { api, mode = 'anonymous', now = new Da
     unverifiable,
     mergedFound: totalMerged,
     outsideOwn: candidates.length,
+    foundProjects: byRepo.size,
+    unchecked,
+    partial,
   })
 }
 
 /** Turns verified evidence into the result object that certificates and the UI share. */
-export function buildResult({ mode, now, user, orgs, evidence, selfMerged, sampled, unverifiable, mergedFound, outsideOwn, truncated = false }) {
+export function buildResult({ mode, now, user, orgs, evidence, selfMerged, sampled, unverifiable, mergedFound, outsideOwn, truncated = false, foundProjects = 0, unchecked = [], partial = false }) {
   const scored = scoreEvidence(evidence, { now, accountCreatedAt: user.createdAt, selfMerged, sampled })
 
   // Languages: weight each counted PR by its repo weight, so one popular repo outweighs ten tiny ones.
@@ -215,10 +237,13 @@ export function buildResult({ mode, now, user, orgs, evidence, selfMerged, sampl
       activeMonths24: scored.activeMonths24,
       orgs,
       truncated,
+      foundProjects: Math.max(foundProjects, scored.distinctRepos),
+      partial,
     },
     languages,
     lastMergedAt,
     repos,
+    unchecked,
     evidence: top,
   }
 }
