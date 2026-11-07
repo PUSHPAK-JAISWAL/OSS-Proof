@@ -5,7 +5,56 @@ import { Breakdown, Btn, GradeMark, Icon } from '../components/ui'
 import { EvidenceList, RepoList } from '../components/cert'
 import RequestFlow from '../components/RequestFlow'
 import { getToken, makeApi, makeGql, setToken } from '../lib/github'
+import { authAvailable, beginSignIn, finishSignIn, signOut } from '../lib/auth'
 import { go } from '../lib/router'
+
+function SignIn({ token, onToken }) {
+  const [flow, setFlow] = useState(null)
+  const [error, setError] = useState('')
+  const abort = useRef(null)
+  useEffect(() => () => abort.current?.abort(), [])
+  if (!authAvailable) return null
+  if (token) {
+    return (
+      <div className="card p-4 flex items-center justify-between gap-3">
+        <span className="inline-flex items-center gap-2 font-medium"><span className="text-ok"><Icon name="check" size={18} /></span>Signed in. Reading every pull request.</span>
+        <Btn variant="secondary" onClick={() => { signOut(); onToken('') }}>Sign out</Btn>
+      </div>
+    )
+  }
+  const begin = async () => {
+    setError('')
+    try {
+      const f = await beginSignIn()
+      setFlow(f)
+      window.open(f.verificationUri, '_blank', 'noopener')
+      abort.current = new AbortController()
+      const t = await finishSignIn(f, { signal: abort.current.signal })
+      setFlow(null)
+      onToken(t)
+    } catch (e) {
+      setFlow(null)
+      if (e.message !== 'cancelled') setError(e.message)
+    }
+  }
+  return (
+    <div className="card p-4 grid gap-3 spot">
+      <p className="m-0 font-medium">Sign in with GitHub for the full read</p>
+      <p className="m-0 muted text-[15px]">Raises GitHub's limit from 60 to 5,000 requests an hour and reads every merged pull request. No permissions are requested beyond public data.</p>
+      {flow ? (
+        <div className="grid gap-2" role="status" aria-live="polite">
+          <p className="m-0 text-[15px]">Enter this code on the GitHub page that just opened:</p>
+          <p className="m-0 mono text-[28px] tracking-[0.2em]">{flow.userCode}</p>
+          <a className="link text-[14px] w-fit" href={flow.verificationUri} target="_blank" rel="noreferrer noopener">Open github.com/login/device</a>
+          <p className="m-0 label">Waiting for you to approve…</p>
+        </div>
+      ) : (
+        <Btn onClick={begin} className="w-fit">Sign in with GitHub</Btn>
+      )}
+      {error && <p className="m-0 text-bad text-[15px]" role="alert">{error}</p>}
+    </div>
+  )
+}
 
 function TokenBox({ token, onChange }) {
   const [draft, setDraft] = useState(token)
@@ -87,7 +136,8 @@ export default function Check({ username }) {
               <Btn type="submit" className="shrink-0" disabled={state.phase === 'loading'}>Check</Btn>
             </div>
           </form>
-          <TokenBox token={token} onChange={updateToken} />
+          <SignIn token={token} onToken={updateToken} />
+          {!authAvailable || !token ? <TokenBox token={token} onChange={updateToken} /> : null}
         </div>
 
         <div className="min-w-0">
