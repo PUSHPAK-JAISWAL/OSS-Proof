@@ -3,7 +3,7 @@ import { analyzeUser, isValidLogin } from '../../shared/analyze.mjs'
 import { analyzeDeep } from '../../shared/deep.mjs'
 import { Breakdown, Btn, GradeMark, Icon } from '../components/ui'
 import { EvidenceList } from '../components/cert'
-import { requestCertificateUrl } from '../lib/config'
+import RequestFlow from '../components/RequestFlow'
 import { getToken, makeApi, makeGql, setToken } from '../lib/github'
 import { go } from '../lib/router'
 
@@ -167,16 +167,7 @@ export default function Check({ username }) {
                 <EvidenceList items={r.evidence} />
               </section>
 
-              <section className="card p-6 grid gap-4">
-                <h2 className="h3 m-0">Make it official</h2>
-                <p className="m-0 muted max-w-[60ch]">
-                  Open a certificate request on GitHub while signed in as <span className="mono text-ink">{r.login}</span>.
-                  GitHub proves who you are, a workflow re-runs the grading with a larger sample, signs it, and replies with your certificate link and badge.
-                </p>
-                <div className="flex flex-wrap gap-3">
-                  <Btn href={requestCertificateUrl(r.login)} external>Request signed certificate <Icon name="external" size={16} /></Btn>
-                </div>
-              </section>
+              <RequestFlow login={r.login} />
             </div>
           )}
         </div>
