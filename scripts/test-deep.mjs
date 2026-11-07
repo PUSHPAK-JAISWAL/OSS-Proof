@@ -31,7 +31,7 @@ assert.ok(r.counts.counted > 1300, `counted ${r.counts.counted}`)
 assert.ok(r.counts.selfMerged > 0)
 assert.equal(r.counts.truncated, false)
 assert.equal(r.mode, 'deep')
-assert.ok(r.repos.length > 20 && r.repos.length <= 25)
+assert.ok(r.repos.length > 20 && r.repos.length <= 40)
 assert.ok(r.score > 60, `score ${r.score}`)
 
 const small = await analyzeDeep('octo', { gql, now: NOW, maxPages: 3 })

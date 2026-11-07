@@ -37,6 +37,12 @@ const clean = scoreEvidence([pr()], { ...ctx, sampled: 1 }).breakdown.trust
 const dirty = scoreEvidence([pr()], { ...ctx, selfMerged: 4, sampled: 5 }).breakdown.trust
 assert.ok(dirty < clean)
 
+{
+  const mk = (repo, i) => ({ repo, stars: 500, class: 'external', lines: 40, botMerged: false, mergedAt: month(i % 12) })
+  const oneRepo = Array.from({ length: 30 }, (_, i) => mk('o/one', i))
+  const manyRepos = Array.from({ length: 10 }, (_, i) => mk(`o/r${i}`, i))
+  assert.ok(scoreEvidence(manyRepos, ctx).score > scoreEvidence(oneRepo, ctx).score, '10 projects must beat 30 PRs in one project')
+}
 assert.equal(gradeFor(85).grade, 'S')
 assert.equal(gradeFor(84.9).grade, 'A')
 assert.equal(gradeFor(11.9).grade, '-')

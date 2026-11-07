@@ -1,5 +1,5 @@
-// Scoring rules, version 1.1.0. Anything that changes a number below must bump SCORING_VERSION.
-export const SCORING_VERSION = '1.1.0'
+// Scoring rules, version 1.2.0. Anything that changes a number below must bump SCORING_VERSION.
+export const SCORING_VERSION = '1.2.0'
 
 export const SCORING = {
   // Points available per component. They add up to 100.
@@ -20,9 +20,9 @@ export const SCORING = {
   botMergedFactor: 0.5,
   tinyFactor: 0.3,
   tinyLines: 5,
-  // Inside one repository each further PR counts a little less, so breadth beats volume.
-  repoDecay: 0.9,
-  repoDecayFloor: 0.25,
+  // Inside one repository each further PR counts a little less, so the number of projects matters more than the number of PRs.
+  repoDecay: 0.6,
+  repoDecayFloor: 0.1,
 }
 
 // Tough on purpose. A score of 85 needs dozens of merged PRs across many well-used repos for 18+ months.
