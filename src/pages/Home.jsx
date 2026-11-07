@@ -274,6 +274,7 @@ function Pin() {
         <Reveal i={2}>
           <AppFrame title="README.md">
             <div className="p-5 sm:p-6 grid gap-5">
+              <div className="tilt holo spot w-fit"><Badge grade="S" score={91.3} login="you" height={130} /></div>
               <div className="overflow-hidden -mx-5 sm:-mx-6" style={{ WebkitMaskImage: 'linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent)', maskImage: 'linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent)' }}>
                 <div className="slide-row px-5">
                   {[...SLIDE, ...SLIDE].map((g, i) => (
