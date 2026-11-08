@@ -6,6 +6,7 @@ import { Aurora } from '../components/fx'
 import Report from '../components/Report'
 import RequestFlow from '../components/RequestFlow'
 import { getToken, makeApi, makeGql, setToken } from '../lib/github'
+import { APP_SLUG, installAppUrl } from '../lib/config'
 import { authAvailable, beginSignIn, finishSignIn, signInMode, signOut, startRedirectSignIn } from '../lib/auth'
 import { go } from '../lib/router'
 
@@ -19,12 +20,34 @@ function SignIn({ token, onToken }) {
   const [error, setError] = useState('')
   const abort = useRef(null)
   useEffect(() => () => abort.current?.abort(), [])
+  const [installed, setInstalled] = useState(null)
+  useEffect(() => {
+    setInstalled(null)
+    if (!token || !APP_SLUG) return
+    let live = true
+    // Only a token from the GitHub App sign-in can list its installations; for any other token this just stays unknown.
+    fetch('https://api.github.com/user/installations?per_page=100', { headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' } })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => live && j && setInstalled(j.installations.some((i) => i.app_slug === APP_SLUG)))
+      .catch(() => {})
+    return () => { live = false }
+  }, [token])
   if (!authAvailable) return null
   if (token) {
     return (
-      <div className="card p-4 flex items-center justify-between gap-3">
-        <span className="inline-flex items-center gap-2 font-medium"><span className="text-ok"><Icon name="check" size={18} /></span>Signed in. Reading every pull request.</span>
-        <Btn variant="secondary" onClick={() => { signOut(); onToken('') }}>Sign out</Btn>
+      <div className="card p-4 grid gap-3">
+        <div className="flex items-center justify-between gap-3">
+          <span className="inline-flex items-center gap-2 font-medium"><span className="text-ok"><Icon name="check" size={18} /></span>Signed in. Reading every pull request.</span>
+          <Btn variant="secondary" onClick={() => { signOut(); onToken('') }}>Sign out</Btn>
+        </div>
+        {installUrl && installed === false && (
+          <div className="grid gap-2 border-t border-line pt-3">
+            <p className="m-0 font-medium">One more step: install the app</p>
+            <p className="m-0 muted text-[15px]">Your certificate and badges are stored in your own profile repository, not here. Install the OSS Proof app on it once, choosing <span className="mono text-ink">Only select repositories</span>.</p>
+            <Btn href={installUrl} external className="w-fit">Install on my profile repo</Btn>
+          </div>
+        )}
+        {installed === true && <p className="m-0 label border-t border-line pt-3">The app is installed on your account, so you can request a certificate.</p>}
       </div>
     )
   }
@@ -85,6 +108,7 @@ function TokenBox({ token, onChange }) {
   )
 }
 
+const installUrl = installAppUrl
 const EARLY_STOP_SCORE = 88 // S starts at 85. A little margin, because the last pages can only add or nudge a few points.
 
 export default function Check({ username }) {

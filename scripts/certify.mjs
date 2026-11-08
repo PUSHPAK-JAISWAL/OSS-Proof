@@ -85,6 +85,20 @@ async function gql(query, variables) {
   return gqlData(await res.json())
 }
 
+// Certificates live in the person's own profile repository, written by the app. Nothing per-person is kept in this repository.
+if (!access.token && !process.env.ALLOW_CENTRAL) {
+  const slug = process.env.APP_SLUG
+  const install = slug ? ` Install it on ${login}/${login} only: https://github.com/apps/${slug}/installations/new , then ask again.` : ''
+  const why = {
+    'not-installed': `The OSS Proof app is not installed on your account.${install}`,
+    'repo-not-granted': `The app is installed but cannot reach ${login}/${login}. Add that repository in the app's settings (https://github.com/settings/installations), then ask again.`,
+    'no-signing-key': 'Storage is not finished yet: the maintainer still has to add the signing key (CERT_SIGNING_KEY).',
+    off: 'Storage is not finished yet: the maintainer still has to add the GitHub App secrets (GH_APP_ID and GH_APP_PRIVATE_KEY).',
+    error: `The app could not be reached (${access.detail || 'unknown error'}). Try again in a few minutes.`,
+  }
+  fail(`Certificates are stored in your own profile repository. ${why[access.reason] || why.error}`)
+}
+
 // The app's own token has its own rate limit, so it goes first. If it sees nothing or fails, the maintainer's token reads instead.
 const readers = [access.token, process.env.READ_TOKEN, process.env.GH_TOKEN].filter((t, i, all) => t && all.indexOf(t) === i)
 const isReal = (t) => t === access.token || t === process.env.READ_TOKEN
@@ -133,7 +147,8 @@ if (access.token) {
     console.log(`Wrote the certificate to ${login}/${login}: ${url}`)
     store = 'profile'
   } catch (err) {
-    console.log(`Could not write to ${login}/${login} (${err.message}). Keeping it in this repository instead.`)
+    console.log(`Could not write to ${login}/${login} (${err.message}).`)
+    if (!process.env.ALLOW_CENTRAL) fail(`The app could not write to ${login}/${login}: ${err.message}. Check that the repository exists, is public and has a README (the profile repository), then ask again.`)
     access = { reason: 'write-failed', detail: err.message }
     delete payload.store
   }
