@@ -66,6 +66,19 @@ export default function Report({ p, theme = 'grade', notices = null, children })
 
       {notices}
 
+      {p.mode === 'deep' && c.mergedFound > 0 && c.counted < c.mergedFound * 0.5 && (
+        <section className="card p-5 grid gap-3 rv" role="note">
+          <h2 className="h3 m-0">Why {c.counted} of {num(c.mergedFound)} merged pull requests count</h2>
+          <p className="m-0 muted text-[15px] max-w-[72ch]">Only work that someone else accepted into a project counts. That is what makes the grade hard to inflate, and it is the same rule for everyone.</p>
+          <ul className="m-0 p-0 list-none grid gap-1.5 text-[15px]">
+            <li><b className="mono">{num(c.counted)}</b> counted</li>
+            {c.selfMerged > 0 && <li><b className="mono">{num(c.selfMerged)}</b> were merged by {p.login} themself, so they are not outside review</li>}
+            {c.unverifiable > 0 && <li><b className="mono">{num(c.unverifiable)}</b> have no recorded merger on GitHub</li>}
+            {c.mergedFound - c.counted - c.selfMerged - c.unverifiable > 0 && <li><b className="mono">{num(c.mergedFound - c.counted - c.selfMerged - c.unverifiable)}</b> are in repositories {p.login} owns, or where GitHub gives no outside role</li>}
+          </ul>
+        </section>
+      )}
+
       <div className="kpis">
         <Kpi i={0} value={<Count to={projects} />} label="open source projects" hint={projects > c.repos ? `${c.repos} checked` : null} />
         <Kpi i={1} value={<Count to={c.counted} />} label="merged PRs counted" hint={c.selfMerged ? `${c.selfMerged} self-merged, not counted` : null} />

@@ -119,9 +119,9 @@ export default function RequestFlow({ login }) {
         </Step>
 
         {installAppUrl && (
-          <Step n="+" title="Keep it in your own repository (optional)" state={cert?._store === 'profile' ? 'done' : 'todo'}>
+          <Step n="+" title="Install the app on your profile repo" state={cert?._store === 'profile' ? 'done' : 'todo'}>
             <p className="m-0 muted max-w-[62ch]">
-              Install the OSS Proof app on <span className="mono text-ink">{login}/{login}</span> only. The app then writes your signed certificate and badges into a <span className="mono text-ink">.oss-proof</span> folder there, so your data lives with you and reads use your own GitHub rate limit. Skip it and everything still works, stored here.
+              Install the OSS Proof app on <span className="mono text-ink">{login}/{login}</span> only. The app then writes your signed certificate and badges into a <span className="mono text-ink">.oss-proof</span> folder there, so your data lives with you, not in this project. A certificate cannot be issued until the app is installed there. You need a public repository named exactly like your username, with a README.
             </p>
             <div><Btn variant="secondary" href={installAppUrl} external>Install on my profile repo <Icon name="external" size={16} /></Btn></div>
           </Step>

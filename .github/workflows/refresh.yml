@@ -34,6 +34,7 @@ jobs:
           CERT_SIGNING_KEY: ${{ secrets.CERT_SIGNING_KEY }}
           APP_ID: ${{ vars.GH_APP_ID || secrets.GH_APP_ID }}
           APP_PRIVATE_KEY: ${{ secrets.GH_APP_PRIVATE_KEY }}
+          APP_SLUG: ${{ vars.GH_APP_SLUG || secrets.GH_APP_SLUG }}
           BATCH: ${{ inputs.batch || '100' }}
           COOLDOWN_MS: "0"
         run: |
