@@ -36,7 +36,7 @@ Limits: only public activity is visible, the grade measures accepted PRs and not
 
 ## Set it up
 
-Extra one-time steps (read token, GitHub App sign-in, sign-in proxy) are in [docs/SETUP.md](docs/SETUP.md). The read token is required: without it certificates cannot see anyone's pull requests.
+Extra one-time steps (read token, GitHub App sign-in, sign-in proxy) are in [docs/SETUP.md](docs/SETUP.md). The read token is required: without it certificates cannot see anyone's pull requests. Section D there turns on optional storage in each person's own profile repository, written by the GitHub App, so nothing per-person grows in this repository.
 
 1. Create a GitHub repository and push this project to `main`.
 2. Nothing to generate: certificates work without a key. (Optional: see Ed25519 above.)
