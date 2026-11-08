@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import { Badge, Breakdown, fmtDate, fmtStars, Icon } from './ui'
-import { Count, useParallax, useReveal } from './fx'
+import { Burst, Count, useParallax, useReveal } from './fx'
+import Languages from './Languages'
 import { EvidenceList, RepoList, Timeline } from './cert'
 
 const num = (n) => (n == null ? '—' : Number(n).toLocaleString())
@@ -47,11 +48,20 @@ export default function Report({ p, theme = 'grade', notices = null, children })
           </div>
           <div className="par report-badge" style={{ '--z': 14 }}>
             <div className="float" style={{ '--d': '7s', '--amp': '9px' }}>
-              <Badge grade={p.grade} score={p.score} login={p.login} projects={c.repos} theme={theme} height={104} />
+              <div className="stamp relative">
+                <div className="tilt"><Badge grade={p.grade} score={p.score} login={p.login} projects={c.repos} theme={theme} height={104} /></div>
+                <Burst n={{ S: 30, A: 24, B: 18, C: 12 }[p.grade] || 0} />
+              </div>
             </div>
           </div>
         </div>
         {p.profile?.bio && <p className="m-0 mt-5 muted max-w-[70ch] relative">{p.profile.bio}</p>}
+        {p.languages?.length > 0 && (
+          <div className="lchips" aria-label="Languages">
+            {p.languages.slice(0, 8).map((l, i) => <span key={l.name} className="lchip" style={{ '--c': l.color || 'var(--accent)', '--i': i }}><i />{l.name}</span>)}
+            {p.languages.length > 8 && <span className="lchip lchip--more">+{p.languages.length - 8}</span>}
+          </div>
+        )}
       </section>
 
       {notices}
@@ -64,6 +74,16 @@ export default function Report({ p, theme = 'grade', notices = null, children })
         <Kpi i={4} value={st ? <>+{num(st.additions)}<span className="kpi__sub"> −{num(st.deletions)}</span></> : '—'} label="lines changed" hint={st?.filesChanged ? `${num(st.filesChanged)} files` : null} />
         <Kpi i={5} value={<Count to={c.activeMonths24} />} label="active months of 24" />
       </div>
+
+      {p.languages?.length > 0 && (
+        <section className="card p-6 grid gap-5 rv">
+          <div>
+            <h2 className="h3 m-0">Languages</h2>
+            <p className="m-0 mt-1 label">From the projects that merged this person’s work and from their own repositories, split by each repository’s real language mix.</p>
+          </div>
+          <Languages languages={p.languages} />
+        </section>
+      )}
 
       <div className="grid lg:grid-cols-2 gap-6">
         <section className="card p-6 grid gap-5 rv">
