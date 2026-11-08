@@ -20,8 +20,18 @@ export const KEY_ID = pubkey.keyId
 // The workflow grades whoever opens the issue, so the link needs no username.
 export const requestCertificateUrl = () => `${REPO_URL}/issues/new?template=certificate.yml&title=${encodeURIComponent('Certificate request')}`
 
-export const badgeUrl = (login, mini = false, theme = 'grade') =>
-  `${RAW_BASE}/badges/${login.toLowerCase()}${mini ? '-mini' : theme && theme !== 'grade' ? `.${theme}` : ''}.svg`
+// Where a person's data lives. "profile" means the OSS Proof app wrote it into their own <login>/<login> repository.
+export const PROFILE_DIR = '.oss-proof'
+export const APP_SLUG = (import.meta.env.VITE_GH_APP_SLUG || '').trim()
+export const installAppUrl = APP_SLUG ? `https://github.com/apps/${APP_SLUG}/installations/new` : ''
+export const profileRaw = (login, ref = 'HEAD') => `https://raw.githubusercontent.com/${login}/${login}/${ref}/${PROFILE_DIR}`
+export const profileBlob = (login, file) => `https://github.com/${login}/${login}/blob/HEAD/${PROFILE_DIR}/${file}`
+
+export const badgeFile = (mini, theme) => (mini ? 'badge-mini.svg' : theme && theme !== 'grade' ? `badge.${theme}.svg` : 'badge.svg')
+export const badgeUrl = (login, mini = false, theme = 'grade', store = 'central') =>
+  store === 'profile'
+    ? `${profileRaw(login)}/${badgeFile(mini, theme)}`
+    : `${RAW_BASE}/badges/${login.toLowerCase()}${mini ? '-mini' : theme && theme !== 'grade' ? `.${theme}` : ''}.svg`
 export const certificateLink = (login) => `${SITE_URL}#/verify/${login}`
 
 // Shown in the footer so GitHub users can reach the maintainer. Set the repository variable SUPPORT_EMAIL.
