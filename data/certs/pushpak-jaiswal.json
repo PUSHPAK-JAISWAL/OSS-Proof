@@ -1,5 +1,6 @@
 {
-  "alg": "github-actions",
+  "alg": "ed25519",
+  "keyId": "197498a7",
   "payload": {
     "schema": 1,
     "scoringVersion": "1.2.0",
@@ -16,7 +17,7 @@
       "website": "https://pushpak-jaiswal.github.io/portfolio-website/",
       "followers": 30,
       "following": 24,
-      "publicRepos": 80,
+      "publicRepos": 81,
       "orgs": [],
       "topOwn": [
         {
@@ -58,10 +59,10 @@
       ]
     },
     "activity": {
-      "commitsLastYear": 1271,
+      "commitsLastYear": 1290,
       "prsLastYear": 129,
       "reviewsLastYear": 192,
-      "issuesLastYear": 180,
+      "issuesLastYear": 181,
       "privateLastYear": 6217,
       "reviewsGiven": 147,
       "issuesOpened": 51
@@ -69,7 +70,7 @@
     "country": "India",
     "countryCode": "IN",
     "accountCreatedAt": "2023-10-29T15:14:59Z",
-    "issuedAt": "2026-11-07T18:20:05.399Z",
+    "issuedAt": "2026-11-08T06:41:33.503Z",
     "score": 62,
     "grade": "B",
     "gradeLabel": "Solid",
@@ -96,27 +97,147 @@
     "languages": [
       {
         "name": "Java",
-        "weight": 32.4
+        "weight": 34.4,
+        "share": 39.2,
+        "prs": 28,
+        "repos": 9,
+        "own": 4,
+        "color": "#b07219"
       },
       {
         "name": "Python",
-        "weight": 23.9
+        "weight": 20.7,
+        "share": 23.6,
+        "prs": 15,
+        "repos": 8,
+        "own": 2,
+        "color": "#3572A5"
       },
       {
         "name": "TypeScript",
-        "weight": 6.1
+        "weight": 8.5,
+        "share": 9.6,
+        "prs": 3,
+        "repos": 3,
+        "own": 9,
+        "color": "#3178c6"
+      },
+      {
+        "name": "Jupyter Notebook",
+        "weight": 5.2,
+        "share": 5.9,
+        "prs": 3,
+        "repos": 1,
+        "own": 2,
+        "color": "#DA5B0B"
+      },
+      {
+        "name": "HTML",
+        "weight": 4.9,
+        "share": 5.6,
+        "prs": 1,
+        "repos": 1,
+        "own": 10,
+        "color": "#e34c26"
       },
       {
         "name": "V",
-        "weight": 4.6
-      },
-      {
-        "name": "C++",
-        "weight": 2.5
+        "weight": 4.2,
+        "share": 4.8,
+        "prs": 3,
+        "repos": 2,
+        "own": 2,
+        "color": "#4f87c4"
       },
       {
         "name": "JavaScript",
-        "weight": 1.8
+        "weight": 2.9,
+        "share": 3.3,
+        "prs": 1,
+        "repos": 1,
+        "own": 3,
+        "color": "#f1e05a"
+      },
+      {
+        "name": "CSS",
+        "weight": 1.7,
+        "share": 1.9,
+        "prs": 0,
+        "repos": 0,
+        "own": 1,
+        "color": "#663399"
+      },
+      {
+        "name": "C++",
+        "weight": 1.5,
+        "share": 1.8,
+        "prs": 1,
+        "repos": 1,
+        "own": 1,
+        "color": "#f34b7d"
+      },
+      {
+        "name": "Kotlin",
+        "weight": 1,
+        "share": 1.2,
+        "prs": 0,
+        "repos": 0,
+        "own": 2,
+        "color": "#A97BFF"
+      },
+      {
+        "name": "C",
+        "weight": 0.9,
+        "share": 1,
+        "prs": 0,
+        "repos": 0,
+        "own": 1,
+        "color": "#555555"
+      },
+      {
+        "name": "Shell",
+        "weight": 0.8,
+        "share": 0.9,
+        "prs": 0,
+        "repos": 0,
+        "own": 1,
+        "color": "#89e051"
+      },
+      {
+        "name": "MDX",
+        "weight": 0.7,
+        "share": 0.8,
+        "prs": 0,
+        "repos": 0,
+        "own": 0,
+        "color": "#fcb32c"
+      },
+      {
+        "name": "TeX",
+        "weight": 0.3,
+        "share": 0.4,
+        "prs": 0,
+        "repos": 0,
+        "own": 1,
+        "color": "#3D6117"
+      },
+      {
+        "name": "Go",
+        "weight": 0.1,
+        "share": 0.1,
+        "prs": 0,
+        "repos": 0,
+        "own": 0,
+        "color": "#00ADD8"
+      },
+      {
+        "name": "Dockerfile",
+        "weight": 0,
+        "share": 0,
+        "prs": 0,
+        "repos": 0,
+        "own": 0,
+        "color": "#384d54"
       }
     ],
     "lastMergedAt": "2026-11-07T05:30:41Z",
@@ -133,7 +254,7 @@
         "ownerType": "Organization",
         "description": "CKAN is an open-source DMS (data management system) for powering data hubs and data portals. CKAN makes it easy to publish, share and use da",
         "license": "NOASSERTION",
-        "forks": 2123,
+        "forks": 2122,
         "list": [
           {
             "number": 9560,
@@ -147,7 +268,7 @@
       },
       {
         "repo": "lingdojo/kana-dojo",
-        "stars": 3819,
+        "stars": 3823,
         "language": "TypeScript",
         "class": "external",
         "prs": 1,
@@ -157,7 +278,7 @@
         "ownerType": "Organization",
         "description": "Aesthetic, minimalist platform for learning Japanese inspired by Duolingo and Monkeytype, built with Next.js and sponsored by Vercel. Beginn",
         "license": "AGPL-3.0",
-        "forks": 3847,
+        "forks": 3851,
         "list": [
           {
             "number": 31004,
@@ -283,7 +404,7 @@
       },
       {
         "repo": "TanbirRamim/open-source-radar",
-        "stars": 54,
+        "stars": 55,
         "language": "JavaScript",
         "class": "external",
         "prs": 1,
@@ -948,7 +1069,7 @@
       },
       {
         "repo": "lingdojo/kana-dojo",
-        "stars": 3819,
+        "stars": 3823,
         "language": "TypeScript",
         "class": "external",
         "number": 31004,
@@ -1032,7 +1153,7 @@
       },
       {
         "repo": "TanbirRamim/open-source-radar",
-        "stars": 54,
+        "stars": 55,
         "language": "JavaScript",
         "class": "external",
         "number": 106,
@@ -1114,6 +1235,8 @@
         "mergedBy": "shossain786",
         "lines": 295
       }
-    ]
-  }
+    ],
+    "store": "central"
+  },
+  "signature": "ed25c384367aa62ecfa77c21d2e5fccfb2048979c79794ef9c7b9f406d580a9540c7626e6100384c6a0f93b71bcea5a67abbb82f97a6ba965b6bec4f1bf9e707"
 }
