@@ -37,14 +37,15 @@ export function RepoList({ repos, login }) {
           <>
             <span className="font-medium truncate">{r.repo}</span>
             <span className="muted inline-flex items-center justify-end gap-1 text-sm mono"><Icon name="star" size={14} />{fmtStars(r.stars)}</span>
+            {r.description && <span className="label truncate col-span-2 -mt-0.5 opacity-80">{r.description}</span>}
             <span className="label truncate">
               {r.prs} merged {r.prs === 1 ? 'PR' : 'PRs'}{r.language ? ` · ${r.language}` : ''}
               {r.first ? ` · ${r.first === r.last ? fmtDate(r.first) : `${fmtDate(r.first)} to ${fmtDate(r.last)}`}` : ''}
             </span>
-            <span className="label text-right whitespace-nowrap">{CLASS_LABEL[r.class] || ''}</span>
+            <span className="label text-right whitespace-nowrap">{[CLASS_LABEL[r.class], r.license && r.license !== 'NOASSERTION' ? r.license : null].filter(Boolean).join(' · ')}</span>
           </>
         )
-        const grid = 'grid grid-cols-[minmax(0,1fr)_auto] gap-x-4 gap-y-1 px-4 py-3 hover:bg-surface transition-colors'
+        const grid = 'repo-row grid grid-cols-[minmax(0,1fr)_auto] gap-x-4 gap-y-1 px-4 py-3'
         return (
           <li key={r.repo}>
             {r.list?.length ? (
@@ -82,7 +83,7 @@ export function Timeline({ data }) {
     <div>
       <div className="flex items-end gap-1 h-20" role="img" aria-label={`Merged pull requests per month, last 24 months, busiest month ${max}`}>
         {data.map((d) => (
-          <div key={d.month} className="flex-1 bg-accent/80 rounded-sm min-h-[2px] hover:bg-accent transition-colors" style={{ height: `${Math.max(3, (d.prs / max) * 100)}%`, opacity: d.prs ? 1 : 0.25 }} title={`${d.month}: ${d.prs}`} />
+          <div key={d.month} className="tl-bar flex-1 bg-accent/80 rounded-sm min-h-[2px] hover:bg-accent" style={{ '--i': d.month ? data.indexOf(d) : 0, height: `${Math.max(3, (d.prs / max) * 100)}%`, opacity: d.prs ? 1 : 0.25 }} title={`${d.month}: ${d.prs}`} />
         ))}
       </div>
       <p className="label mt-2 mb-0">Merged pull requests per month, {data[0].month} to {data[data.length - 1].month}</p>
@@ -90,11 +91,11 @@ export function Timeline({ data }) {
   )
 }
 
-export function PinPanel({ login, grade, score, projects }) {
+export function PinPanel({ login, grade, score, projects, store = 'central' }) {
   const [theme, setTheme] = useState('grade')
   const link = certificateLink(login)
-  const big = badgeUrl(login, false, theme)
-  const mini = badgeUrl(login, true)
+  const big = badgeUrl(login, false, theme, store)
+  const mini = badgeUrl(login, true, 'grade', store)
   const md = `[![OSS Proof](${big})](${link})`
   const mdMini = `[![OSS Proof](${mini})](${link})`
   const html = `<a href="${link}"><img src="${big}" alt="OSS Proof grade ${grade}" width="380" /></a>`
