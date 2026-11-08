@@ -29,6 +29,7 @@ const countQuery = (n) => `query(${Array.from({ length: n }, (_, i) => `$q${i}:S
 // Language breakdown for many repositories in one request. Names are checked before they are placed in the query text.
 const SAFE = /^[A-Za-z0-9._-]+$/
 const langQuery = (repos) => `query{ ${RL} ${repos.map(([o, n], i) => `r${i}: repository(owner:"${o}", name:"${n}"){ languages(first:5, orderBy:{field:SIZE,direction:DESC}){ edges{ size node{ name color } } } }`).join(' ')} }`
+const PARTIAL_EVERY = 3
 const LANG_BATCH = 30
 const LANG_REPOS = 90
 
@@ -54,7 +55,7 @@ async function pool(items, n, fn) {
  *  4. each PR arrives with who merged it, its size, time to merge and its repository's details, in the same page.
  * gql(query, variables) must return the "data" object of a GraphQL response.
  */
-export async function analyzeDeep(login, { gql: rawGql, now = new Date(), maxPages = LIMITS.deep.maxPages, onProgress = () => {} }) {
+export async function analyzeDeep(login, { gql: rawGql, now = new Date(), maxPages = LIMITS.deep.maxPages, onProgress = () => {}, onPartial = null, shouldStop = () => false }) {
   if (!isValidLogin(login)) throw new Error('That is not a valid GitHub username.')
   const me = login.toLowerCase()
   const api = { requests: 0, cost: 0, remaining: null, resetAt: null, partialErrors: 0 }
@@ -135,11 +136,13 @@ export async function analyzeDeep(login, { gql: rawGql, now = new Date(), maxPag
     const q = `${base} merged:${day(w.from)}..${day(w.to)}`
     let after = null
     for (;;) {
-      if (pages >= maxPages) { truncated = true; return }
+      if (pages >= maxPages || shouldStop()) { truncated = true; return }
       pages++
-      onProgress(`Reading merged pull requests (page ${pages}, ${seen.size} found)`)
+      onProgress(`Reading merged pull requests (page ${pages}, ${seen.size} of ${total} found)`, { found: seen.size, total })
       const { search } = await gql(PRS_Q, { q, after })
       for (const n of search.nodes) if (n?.url) seen.set(n.url, n)
+      // Show a first answer early. Newest work is read first, so what is shown only grows and sharpens as more arrives.
+      if (onPartial && pages % PARTIAL_EVERY === 0) onPartial(await finish(false), { found: seen.size, total })
       if (!search.pageInfo.hasNextPage) return
       after = search.pageInfo.endCursor
     }
@@ -147,111 +150,115 @@ export async function analyzeDeep(login, { gql: rawGql, now = new Date(), maxPag
   // Newest windows first, a few at a time, so a page limit only ever cuts the oldest history.
   await pool([...windows].reverse(), PARALLEL, readWindow)
 
-  onProgress('Checking who merged each pull request')
-  const evidence = []
-  let selfMerged = 0
-  let unverifiable = 0
-  let outside = 0
-  for (const pr of seen.values()) {
-    const repo = pr.repository
-    if (!repo || repo.owner.login.toLowerCase() === me) continue
-    let cls = EXTERNAL.has(pr.authorAssociation) ? 'external' : TEAM.has(pr.authorAssociation) ? 'team' : null
-    if (!cls) continue // OWNER and unknown: not counted
-    if (orgNames.has(repo.owner.login.toLowerCase())) cls = 'team'
-    outside++
-    const merger = pr.mergedBy
-    if (!merger?.login) {
-      unverifiable++
-      continue
-    }
-    if (merger.login.toLowerCase() === me) {
-      selfMerged++
-      continue
-    }
-    evidence.push({
-      repo: repo.nameWithOwner,
-      stars: repo.stargazerCount || 0,
-      language: repo.primaryLanguage?.name || null,
-      class: cls,
-      lines: (pr.additions || 0) + (pr.deletions || 0),
-      additions: pr.additions || 0,
-      deletions: pr.deletions || 0,
-      files: pr.changedFiles || 0,
-      botMerged: merger.__typename === 'Bot',
-      mergedBy: merger.login,
-      number: pr.number,
-      title: String(pr.title || '').slice(0, 120),
-      url: pr.url,
-      createdAt: pr.createdAt,
-      mergedAt: pr.mergedAt,
-      description: repo.description ? String(repo.description).slice(0, 140) : null,
-      forks: repo.forkCount || 0,
-      license: repo.licenseInfo?.spdxId || null,
-      ownerType: repo.owner.__typename || null,
-    })
-  }
-
-  // Every language, not just each project's main one: the breakdown of the projects contributed to (best known first).
-  const repoLangs = new Map()
-  try {
-    const weight = new Map()
-    for (const e of evidence) weight.set(e.repo, (weight.get(e.repo) || 0) + Math.log10((e.stars || 0) + 10))
-    const wanted = [...weight.entries()].sort((a, b) => b[1] - a[1]).map(([r]) => r.split('/')).filter(([o, n]) => o && n && SAFE.test(o) && SAFE.test(n)).slice(0, LANG_REPOS)
-    const chunks = []
-    for (let i = 0; i < wanted.length; i += LANG_BATCH) chunks.push(wanted.slice(i, i + LANG_BATCH))
-    if (chunks.length) onProgress(`Reading languages of ${wanted.length} projects`)
-    await pool(chunks, 2, async (chunk) => {
-      const res = await gql(langQuery(chunk), {})
-      chunk.forEach(([o, n], i) => {
-        const edges = res?.[`r${i}`]?.languages?.edges
-        if (edges?.length) repoLangs.set(`${o}/${n}`, edges.map((x) => ({ name: x.node.name, color: x.node.color, size: x.size })))
+  // Builds a result from what has been read so far. The last call (final) also reads language breakdowns.
+  async function finish(final) {
+    if (final) onProgress('Checking who merged each pull request')
+    const evidence = []
+    let selfMerged = 0
+    let unverifiable = 0
+    let outside = 0
+    for (const pr of seen.values()) {
+      const repo = pr.repository
+      if (!repo || repo.owner.login.toLowerCase() === me) continue
+      let cls = EXTERNAL.has(pr.authorAssociation) ? 'external' : TEAM.has(pr.authorAssociation) ? 'team' : null
+      if (!cls) continue // OWNER and unknown: not counted
+      if (orgNames.has(repo.owner.login.toLowerCase())) cls = 'team'
+      outside++
+      const merger = pr.mergedBy
+      if (!merger?.login) {
+        unverifiable++
+        continue
+      }
+      if (merger.login.toLowerCase() === me) {
+        selfMerged++
+        continue
+      }
+      evidence.push({
+        repo: repo.nameWithOwner,
+        stars: repo.stargazerCount || 0,
+        language: repo.primaryLanguage?.name || null,
+        class: cls,
+        lines: (pr.additions || 0) + (pr.deletions || 0),
+        additions: pr.additions || 0,
+        deletions: pr.deletions || 0,
+        files: pr.changedFiles || 0,
+        botMerged: merger.__typename === 'Bot',
+        mergedBy: merger.login,
+        number: pr.number,
+        title: String(pr.title || '').slice(0, 120),
+        url: pr.url,
+        createdAt: pr.createdAt,
+        mergedAt: pr.mergedAt,
+        description: repo.description ? String(repo.description).slice(0, 140) : null,
+        forks: repo.forkCount || 0,
+        license: repo.licenseInfo?.spdxId || null,
+        ownerType: repo.owner.__typename || null,
       })
-    })
-  } catch (err) {
-    if (err.rateLimited) throw err
-    onProgress('Language breakdown unavailable, using each project’s main language')
-  }
-  const ownLangs = (user.ownLangs?.nodes || []).map((r) => ({
-    stars: r.stargazerCount || 0,
-    primary: r.primaryLanguage?.name || null,
-    langs: (r.languages?.edges || []).map((x) => ({ name: x.node.name, color: x.node.color, size: x.size })),
-  }))
+    }
 
-  const cc = user.contributionsCollection || {}
-  const result = buildResult({
-    mode: 'deep',
-    now,
-    user: { login: user.login, id: user.databaseId, name: user.name, avatarUrl: user.avatarUrl, profileUrl: user.url, location: user.location, createdAt: user.createdAt },
-    profile: {
-      bio: user.bio || null, company: user.company || null, website: user.websiteUrl || null,
-      followers: user.followers?.totalCount ?? null, following: user.following?.totalCount ?? null, publicRepos: user.repositories?.totalCount ?? null,
-      orgs: orgNodes.slice(0, 12).map((o) => ({ login: o.login, name: o.name || null, avatarUrl: o.avatarUrl || null })),
-      topOwn: (user.topOwn?.nodes || []).map((r) => ({ repo: r.nameWithOwner, stars: r.stargazerCount || 0, description: r.description ? String(r.description).slice(0, 140) : null, language: r.primaryLanguage?.name || null })),
-    },
-    activity: {
-      commitsLastYear: cc.totalCommitContributions ?? null,
-      prsLastYear: cc.totalPullRequestContributions ?? null,
-      reviewsLastYear: cc.totalPullRequestReviewContributions ?? null,
-      issuesLastYear: cc.totalIssueContributions ?? null,
-      privateLastYear: cc.restrictedContributionsCount ?? null,
-      reviewsGiven: first.reviews?.issueCount ?? null,
-      issuesOpened: first.issues?.issueCount ?? null,
-    },
-    full: true,
-    repoLangs,
-    ownLangs,
-    orgs: orgNames.size,
-    evidence,
-    selfMerged,
-    sampled: outside,
-    unverifiable,
-    mergedFound: seen.size,
-    outsideOwn: outside,
-    truncated,
-    restrictedOrgs: [...restricted],
-    readErrors: api.partialErrors,
-  })
-  // How much of the person's GitHub allowance this read used. Not part of the certificate (not enumerable).
-  Object.defineProperty(result, 'api', { value: api, enumerable: false })
-  return result
+    // Every language, not just each project's main one: the breakdown of the projects contributed to (best known first).
+    const repoLangs = new Map()
+    if (final) try {
+      const weight = new Map()
+      for (const e of evidence) weight.set(e.repo, (weight.get(e.repo) || 0) + Math.log10((e.stars || 0) + 10))
+      const wanted = [...weight.entries()].sort((a, b) => b[1] - a[1]).map(([r]) => r.split('/')).filter(([o, n]) => o && n && SAFE.test(o) && SAFE.test(n)).slice(0, LANG_REPOS)
+      const chunks = []
+      for (let i = 0; i < wanted.length; i += LANG_BATCH) chunks.push(wanted.slice(i, i + LANG_BATCH))
+      if (chunks.length) onProgress(`Reading languages of ${wanted.length} projects`)
+      await pool(chunks, 2, async (chunk) => {
+        const res = await gql(langQuery(chunk), {})
+        chunk.forEach(([o, n], i) => {
+          const edges = res?.[`r${i}`]?.languages?.edges
+          if (edges?.length) repoLangs.set(`${o}/${n}`, edges.map((x) => ({ name: x.node.name, color: x.node.color, size: x.size })))
+        })
+      })
+    } catch (err) {
+      if (err.rateLimited) throw err
+      onProgress('Language breakdown unavailable, using each project’s main language')
+    }
+    const ownLangs = (user.ownLangs?.nodes || []).map((r) => ({
+      stars: r.stargazerCount || 0,
+      primary: r.primaryLanguage?.name || null,
+      langs: (r.languages?.edges || []).map((x) => ({ name: x.node.name, color: x.node.color, size: x.size })),
+    }))
+
+    const cc = user.contributionsCollection || {}
+    const result = buildResult({
+      mode: 'deep',
+      now,
+      user: { login: user.login, id: user.databaseId, name: user.name, avatarUrl: user.avatarUrl, profileUrl: user.url, location: user.location, createdAt: user.createdAt },
+      profile: {
+        bio: user.bio || null, company: user.company || null, website: user.websiteUrl || null,
+        followers: user.followers?.totalCount ?? null, following: user.following?.totalCount ?? null, publicRepos: user.repositories?.totalCount ?? null,
+        orgs: orgNodes.slice(0, 12).map((o) => ({ login: o.login, name: o.name || null, avatarUrl: o.avatarUrl || null })),
+        topOwn: (user.topOwn?.nodes || []).map((r) => ({ repo: r.nameWithOwner, stars: r.stargazerCount || 0, description: r.description ? String(r.description).slice(0, 140) : null, language: r.primaryLanguage?.name || null })),
+      },
+      activity: {
+        commitsLastYear: cc.totalCommitContributions ?? null,
+        prsLastYear: cc.totalPullRequestContributions ?? null,
+        reviewsLastYear: cc.totalPullRequestReviewContributions ?? null,
+        issuesLastYear: cc.totalIssueContributions ?? null,
+        privateLastYear: cc.restrictedContributionsCount ?? null,
+        reviewsGiven: first.reviews?.issueCount ?? null,
+        issuesOpened: first.issues?.issueCount ?? null,
+      },
+      full: true,
+      repoLangs,
+      ownLangs,
+      orgs: orgNames.size,
+      evidence,
+      selfMerged,
+      sampled: outside,
+      unverifiable,
+      mergedFound: seen.size,
+      outsideOwn: outside,
+      truncated: truncated || !final,
+      restrictedOrgs: [...restricted],
+      readErrors: api.partialErrors,
+    })
+    // How much of the person's GitHub allowance this read used. Not part of the certificate (not enumerable).
+    Object.defineProperty(result, 'api', { value: api, enumerable: false })
+    return result
+  }
+  return finish(true)
 }
