@@ -90,6 +90,17 @@ console.log('full-data size KB:', Math.round(JSON.stringify(r).length / 1024))
 
 const small = await analyzeDeep('octo', { gql, now: NOW, maxPages: 3 })
 assert.equal(small.counts.truncated, true, 'page budget reports truncation')
+// Progressive read: partial results arrive early, and stopping halts further pages.
+{
+  const partials = []
+  let stopAfter = false
+  const early = await analyzeDeep('octo', { gql, now: NOW, onPartial: (p) => { partials.push(p); stopAfter = true }, shouldStop: () => stopAfter })
+  assert.ok(partials.length >= 1, 'a partial result is delivered early')
+  assert.ok(partials[0].counts.truncated, 'a partial result is marked as incomplete')
+  assert.ok(partials[0].score > 0 && partials[0].projects !== 0, 'partial result already has a score')
+  assert.ok(early.counts.mergedFound < r.counts.mergedFound, 'stopping reads fewer pull requests')
+  assert.ok(early.score <= r.score + 0.01, 'a partial score never exceeds the full one here')
+}
 await assert.rejects(analyzeDeep('bad name!', { gql }), /valid GitHub username/)
 // A small account needs three requests: profile and counts, then its single page. An empty one stops after the first.
 {
