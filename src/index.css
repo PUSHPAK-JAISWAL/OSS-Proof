@@ -508,3 +508,55 @@ header { transition: box-shadow .3s ease, background .3s ease; }
   .rv-on .rv .lang__ring { --sweep: 100 !important; transition: none !important; }
   .btn--primary::after { display: none; }
 }
+
+/* ---- 3D: WebGL hosts, floor grid, CSS cube, depth reveals ------------------------------------- */
+.gl-host { position: relative; width: 100%; height: 100%; }
+.gl-host canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; display: block; }
+.gl-off { background: radial-gradient(closest-side, color-mix(in oklab, var(--accent) 22%, transparent), transparent 70%); }
+
+.hero-ground > .hero-gl { position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: .95; }
+.hero-ground .wrap { position: relative; z-index: 2; }
+@media (max-width: 1023px) { .hero-ground > .hero-gl { opacity: .42; } }
+
+/* A grid floor that rushes toward you */
+.floor { position: absolute; left: -25%; right: -25%; bottom: -2%; height: 46%; z-index: 0; pointer-events: none; transform-origin: 50% 100%; transform: perspective(520px) rotateX(64deg);
+  background-image: linear-gradient(color-mix(in oklab, var(--accent) 38%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in oklab, var(--accent) 38%, transparent) 1px, transparent 1px);
+  background-size: 64px 64px; animation: floor-run 2.4s linear infinite;
+  -webkit-mask-image: linear-gradient(to top, #000 0%, transparent 85%); mask-image: linear-gradient(to top, #000 0%, transparent 85%); }
+@keyframes floor-run { to { background-position: 0 64px, 0 0; } }
+
+.universe-card { overflow: hidden; padding: 0; }
+.universe { position: relative; height: clamp(300px, 46vw, 460px); }
+.universe__gl { position: absolute; inset: 0; }
+.universe__tip { position: absolute; z-index: 5; pointer-events: none; display: grid; gap: 2px; padding: 8px 12px; border-radius: 10px; font-size: 13px; white-space: nowrap; transform: translateY(-100%);
+  background: color-mix(in oklab, var(--bg) 88%, transparent); border: 1px solid color-mix(in oklab, var(--accent) 55%, var(--line)); box-shadow: 0 12px 30px -12px var(--accent); backdrop-filter: blur(8px); }
+.universe__tip span { color: var(--muted); font-size: 12px; }
+
+/* CSS cube */
+.cube { width: var(--s); height: var(--s); perspective: 760px; }
+.cube__in { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; animation: cube-turn 16s linear infinite; }
+.cube:hover .cube__in { animation-duration: 5s; }
+.cube__f { position: absolute; inset: 0; display: grid; place-items: center; font: 700 calc(var(--s) * .44) var(--font-mono); color: var(--accent);
+  border: 1px solid color-mix(in oklab, var(--accent) 65%, transparent); border-radius: 10px;
+  background: linear-gradient(135deg, color-mix(in oklab, var(--accent) 16%, transparent), color-mix(in oklab, var(--aurora-2) 8%, transparent));
+  box-shadow: inset 0 0 28px color-mix(in oklab, var(--accent) 28%, transparent), 0 0 24px -6px var(--accent); text-shadow: 0 0 18px currentColor; backface-visibility: visible; }
+.cube__f--0 { transform: translateZ(calc(var(--s) / 2)); }
+.cube__f--1 { transform: rotateY(90deg) translateZ(calc(var(--s) / 2)); color: var(--aurora-2); }
+.cube__f--2 { transform: rotateY(180deg) translateZ(calc(var(--s) / 2)); color: var(--aurora-3); }
+.cube__f--3 { transform: rotateY(-90deg) translateZ(calc(var(--s) / 2)); color: var(--aurora-4); }
+.cube__f--4 { transform: rotateX(90deg) translateZ(calc(var(--s) / 2)); }
+.cube__f--5 { transform: rotateX(-90deg) translateZ(calc(var(--s) / 2)); color: var(--aurora-2); }
+@keyframes cube-turn { from { transform: rotateX(-24deg) rotateY(0deg) rotateZ(0deg); } 50% { transform: rotateX(-34deg) rotateY(180deg) rotateZ(6deg); } to { transform: rotateX(-24deg) rotateY(360deg) rotateZ(0deg); } }
+
+/* Sections swing up out of the page instead of just fading in */
+.rv-on .rv { transform: perspective(1100px) translateY(38px) rotateX(10deg) scale(.985); transform-origin: 50% 100%; }
+.rv-on .rv.in { transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .floor, .cube__in { animation: none !important; }
+  .rv-on .rv { transform: none !important; }
+}
+
+/* The hero terminal is glass, so the crystal behind it glows through */
+.hero-ground .term { background: color-mix(in oklab, #04080b 66%, transparent); -webkit-backdrop-filter: blur(9px) saturate(1.35); backdrop-filter: blur(9px) saturate(1.35); }
+:root[data-theme="light"] .hero-ground .term { background: color-mix(in oklab, #0b141a 82%, transparent); }

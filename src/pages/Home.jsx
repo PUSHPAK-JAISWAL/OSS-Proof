@@ -4,6 +4,8 @@ import { BADGE_THEMES, THEME_IDS } from '../../shared/badge.mjs'
 import { AppFrame, Badge, Btn, Icon, Mark } from '../components/ui'
 import { REPO_URL, SUPPORT_EMAIL, SUPPORT_URL } from '../lib/config'
 import { Count, useParallax, useReveal } from '../components/fx'
+import Cube3D from '../components/Cube3D'
+import { HeroCore } from '../components/Scene3D'
 import { go, scrollToId } from '../lib/router'
 
 const SAMPLE = [
@@ -26,6 +28,8 @@ function Hero() {
   return (
     <section ref={heroRef} className="screen screen--hero hero-ground">
       <span className="blob blob--1" aria-hidden="true" /><span className="blob blob--2" aria-hidden="true" /><span className="blob blob--3" aria-hidden="true" />
+      <HeroCore className="hero-gl" />
+      <span className="floor" aria-hidden="true" />
       <div className="wrap grid grid-cols-[minmax(0,1fr)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] gap-12 lg:gap-14 items-center">
         <div>
           <p className="kicker mb-6">oss-proof v1.2 · verified by GitHub</p>
@@ -233,7 +237,10 @@ function Closing() {
               <Btn href="#/explore" variant="secondary" className="btn--block-sm">Browse developers</Btn>
             </div>
           </div>
-          <a href="#/explore" className="badge-tile" aria-label="Browse certified developers"><Badge grade="S" score={91.3} login="you" projects={24} height={130} /></a>
+          <div className="grid gap-8 justify-items-center">
+            <Cube3D size={112} />
+            <a href="#/explore" className="badge-tile" aria-label="Browse certified developers"><Badge grade="S" score={91.3} login="you" projects={24} height={130} /></a>
+          </div>
         </div>
         <footer className="pt-10 mt-12 border-t border-line flex flex-wrap items-center justify-between gap-4 text-[14px] muted">
           <span className="inline-flex items-center gap-2"><Mark size={22} /> OSS Proof is open source, built on the GitHub API, and not affiliated with GitHub.</span>
