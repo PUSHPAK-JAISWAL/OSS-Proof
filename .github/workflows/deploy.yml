@@ -34,6 +34,7 @@ jobs:
           VITE_BRANCH: ${{ github.event.repository.default_branch }}
           VITE_SUPPORT_EMAIL: ${{ vars.SUPPORT_EMAIL || secrets.SUPPORT_EMAIL }}
           VITE_GH_CLIENT_ID: ${{ vars.GH_APP_CLIENT_ID || secrets.GH_APP_CLIENT_ID }}
+          VITE_GH_APP_SLUG: ${{ vars.GH_APP_SLUG || secrets.GH_APP_SLUG }}
           VITE_AUTH_URL: ${{ vars.AUTH_URL || secrets.AUTH_URL }}
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
