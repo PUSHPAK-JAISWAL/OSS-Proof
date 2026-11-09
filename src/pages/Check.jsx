@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { analyzeUser, isValidLogin } from '../../shared/analyze.mjs'
 import { analyzeDeep } from '../../shared/deep.mjs'
 import { Breakdown, Btn, GradeMark, Icon } from '../components/ui'
-import { EvidenceList, RepoList } from '../components/cert'
+import { Aurora } from '../components/fx'
+import Report from '../components/Report'
 import RequestFlow from '../components/RequestFlow'
 import { getToken, makeApi, makeGql, setToken } from '../lib/github'
 import { authAvailable, beginSignIn, finishSignIn, signInMode, signOut, startRedirectSignIn } from '../lib/auth'
@@ -122,127 +123,89 @@ export default function Check({ username }) {
   }
 
   const r = state.result
-  return (
-    <main className="page">
-      <div className="wrap grid lg:grid-cols-[minmax(0,420px)_1fr] gap-10 lg:gap-16 items-start">
-        <div className="grid gap-6 lg:sticky lg:top-[calc(var(--nav)+32px)]">
-          <div>
-            <h1 className="h2 m-0">Check a GitHub profile</h1>
-            <p className="mt-4 mb-0 muted">Reads public data and shows the grade a certificate would carry. Nothing is stored.</p>
+  const estimate = r && r.mode !== 'deep' && r.counts.sampled < r.counts.outsideOwnRepos
+  const notices = r && (
+    <>
+      {estimate && (
+        <div className="card p-5 flex gap-4 items-start border-warn/60 rv" role="note">
+          <span className="text-warn mt-0.5 shrink-0"><Icon name="x" size={20} /></span>
+          <div className="grid gap-1">
+            <p className="m-0 font-medium">This is an estimate</p>
+            <p className="m-0 muted text-[15px] max-w-[70ch]">
+              Without signing in, GitHub allows 60 requests an hour, so only {r.counts.sampled} of {r.counts.outsideOwnRepos} pull requests were checked. The certificate reads all of them,
+              so its grade can be higher than this one.{authAvailable ? ' Sign in above to see the exact grade now.' : ' Add your own token above to see the exact grade now.'}
+            </p>
           </div>
-          <form onSubmit={submit} className="grid gap-3">
-            <label className="font-medium" htmlFor="login">GitHub username</label>
-            <div className="flex gap-2">
-              <input id="login" className="input" value={input} onChange={(e) => setInput(e.target.value)} placeholder="octocat" autoComplete="off" spellCheck="false" />
-              <Btn type="submit" className="shrink-0" disabled={state.phase === 'loading'}>Check</Btn>
+        </div>
+      )}
+      {r.restrictedOrgs?.length > 0 && (
+        <div className="card p-5 text-[15px] rv" role="note">Some pull requests could not be read because {r.restrictedOrgs.join(', ')} blocks this token. The grade may be slightly low.</div>
+      )}
+      {r.counts.truncated && (
+        <p className="m-0 text-warn text-[15px] max-w-[64ch]">Your history is very large, so only the newest {r.counts.mergedFound} merged pull requests were read.</p>
+      )}
+    </>
+  )
+  return (
+    <main className="page page-ground">
+      <Aurora />
+      <div className="wrap grid gap-10">
+        <div className="grid lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-8 items-start">
+          <div className="grid gap-6">
+            <div>
+              <p className="kicker mb-4">02 / check</p>
+              <h1 className="h2 m-0">Check a GitHub profile</h1>
+              <p className="mt-3 mb-0 muted max-w-[52ch]">Reads public data and shows the grade a certificate would carry. Nothing is stored.</p>
             </div>
-          </form>
-          <SignIn token={token} onToken={updateToken} />
-          {!authAvailable || !token ? <TokenBox token={token} onChange={updateToken} /> : null}
+            <form onSubmit={submit} className="term" data-ui>
+              <div className="term__bar"><i /><i /><i /><span className="ml-2">zsh</span></div>
+              <div className="term__body flex items-center flex-wrap gap-y-2">
+                <label htmlFor="login" className="sr-only">GitHub username</label>
+                <span className="prompt">$&nbsp;</span><span className="tok-f">oss-proof</span>&nbsp;<span className="tok-k">check</span>&nbsp;
+                <input id="login" className="term-input" style={{ width: '20ch' }} value={input} onChange={(e) => setInput(e.target.value)} placeholder="octocat" autoComplete="off" spellCheck="false" />
+                <button type="submit" className="term-go" disabled={state.phase === 'loading'}>run ↵</button>
+              </div>
+            </form>
+          </div>
+          <div className="grid gap-4">
+            <SignIn token={token} onToken={updateToken} />
+            {!authAvailable || !token ? <TokenBox token={token} onChange={updateToken} /> : null}
+          </div>
         </div>
 
-        <div className="min-w-0">
-          {state.phase === 'idle' && (
-            <div className="card p-8 grid gap-3">
-              <h2 className="h3 m-0">Enter a username to begin</h2>
-              <p className="m-0 muted max-w-[52ch]">
-                You will see the score, the four parts of it, and every pull request that was counted, each linked to GitHub so you can check it yourself.
-              </p>
+        {state.phase === 'idle' && (
+          <div className="card p-8 grid gap-3">
+            <h2 className="h3 m-0">Enter a username to begin</h2>
+            <p className="m-0 muted max-w-[56ch]">
+              You will see the score and its four parts, every open source project, what was done in each, and the pull requests behind it, each linked to GitHub so you can check it yourself.
+            </p>
+          </div>
+        )}
+
+        {state.phase === 'loading' && (
+          <div className="term" role="status" aria-live="polite">
+            <div className="term__bar"><i /><i /><i /><span className="ml-2">reading {input}</span></div>
+            <div className="term__body">
+              <div><span className="prompt">$</span> <span className="tok-f">oss-proof</span> <span className="tok-k">check</span> {input}</div>
+              <div className="flex items-center gap-3"><span className="h-3 w-3 rounded-full border-2 border-[#3a4e57] border-t-[var(--accent)] animate-spin" /><span>{state.step}</span></div>
+              <div className="bar mt-3"><i style={{ width: '35%' }} /></div>
             </div>
-          )}
+          </div>
+        )}
 
-          {state.phase === 'loading' && (
-            <div className="card p-8 grid gap-4" role="status" aria-live="polite">
-              <div className="flex items-center gap-3">
-                <span className="h-4 w-4 rounded-full border-2 border-line border-t-accent animate-spin" />
-                <span className="font-medium">{state.step}</span>
-              </div>
-              <div className="bar"><i style={{ width: '35%' }} /></div>
-            </div>
-          )}
+        {state.phase === 'error' && (
+          <div className="card p-8 grid gap-2 border-bad/50" role="alert">
+            <h2 className="h3 m-0">That did not work</h2>
+            <p className="m-0 muted">{state.message}</p>
+          </div>
+        )}
 
-          {state.phase === 'error' && (
-            <div className="card p-8 grid gap-2 border-bad/50" role="alert">
-              <h2 className="h3 m-0">That did not work</h2>
-              <p className="m-0 muted">{state.message}</p>
-            </div>
-          )}
-
-          {state.phase === 'done' && r && (
-            <div className="grid gap-10">
-              <div className="flex items-center gap-6 flex-wrap">
-                <GradeMark grade={r.grade} />
-                <div className="min-w-0">
-                  <div className="flex items-center gap-3">
-                    <img src={r.avatarUrl} alt="" width="40" height="40" className="rounded-sm border border-line" />
-                    <div className="min-w-0">
-                      <div className="font-medium truncate">{r.name || r.login}</div>
-                      <a className="link label" href={r.profileUrl} target="_blank" rel="noreferrer noopener">@{r.login}</a>
-                    </div>
-                  </div>
-                  <p className="m-0 mt-3 text-[28px] tracking-tight leading-none">{r.score.toFixed(1)} <span className="muted text-lg">/ 100 · {r.gradeLabel}</span></p>
-                </div>
-              </div>
-
-              <div className="grid sm:grid-cols-2 gap-x-12 gap-y-8">
-                <Breakdown breakdown={r.breakdown} />
-                <dl className="m-0 grid gap-3 content-start">
-                  {[
-                    ['Merged PRs found outside own repos', r.counts.mergedFound],
-                    ['Checked for who merged them', r.counts.sampled],
-                    ['Merged PRs counted', r.counts.counted],
-                    ['Merged by yourself (not counted)', r.counts.selfMerged],
-                    ['Open source projects found', r.counts.foundProjects],
-                    ['Active months, last 24', r.counts.activeMonths24],
-                  ].map(([k, v]) => (
-                    <div key={k} className="flex items-baseline justify-between gap-4 border-b border-line pb-2">
-                      <dt className="text-[15px]">{k}</dt>
-                      <dd className="m-0 mono text-sm">{v}</dd>
-                    </div>
-                  ))}
-                </dl>
-              </div>
-
-              {r.mode !== 'deep' && r.counts.sampled < r.counts.outsideOwnRepos && (
-                <p className="m-0 muted text-[15px] max-w-[64ch]">
-                  This quick preview checked {r.counts.sampled} of your {r.counts.outsideOwnRepos} pull requests, at least one in each project it could.
-                  Add your own token above to read all of them. The signed certificate always reads all of them.
-                </p>
-              )}
-              {r.counts.truncated && (
-                <p className="m-0 text-warn text-[15px] max-w-[64ch]">Your history is very large, so the newest {r.counts.mergedFound} merged pull requests were read.</p>
-              )}
-
-              <section className="grid gap-4">
-                <h2 className="h3 m-0">
-                  {r.counts.foundProjects} open source {r.counts.foundProjects === 1 ? 'project' : 'projects'} contributed to
-                  {r.counts.foundProjects > r.counts.repos && <span className="muted text-base font-normal"> · {r.counts.repos} checked</span>}
-                </h2>
-                <RepoList repos={r.repos} login={r.login} />
-                {r.unchecked?.length > 0 && (
-                  <details className="card p-4" open>
-                    <summary className="cursor-pointer font-medium">{r.unchecked.length} more {r.unchecked.length === 1 ? 'project' : 'projects'} found, not checked in this preview</summary>
-                    <p className="muted text-[15px] mt-2 mb-3">GitHub only allows 60 anonymous requests an hour, so these were found but not checked for who merged them. Add your token above to check all of them. A certificate always does.</p>
-                    <ul className="m-0 p-0 list-none flex flex-wrap gap-2">
-                      {r.unchecked.map((u) => (
-                        <li key={u.repo}>
-                          <a className="chip hover:text-ink" href={`https://github.com/${u.repo}/pulls?q=${encodeURIComponent(`is:pr is:merged author:${r.login}`)}`} target="_blank" rel="noreferrer noopener">{u.repo} · {u.prs}</a>
-                        </li>
-                      ))}
-                    </ul>
-                  </details>
-                )}
-              </section>
-
-              <section className="grid gap-4">
-                <h2 className="h3 m-0">Top merged pull requests</h2>
-                <EvidenceList items={r.evidence} />
-              </section>
-
-              <RequestFlow login={r.login} />
-            </div>
-          )}
-        </div>
+        {state.phase === 'done' && r && (
+          <Report p={r} notices={notices}>
+            {r.api && <p className="m-0 label">Used {r.api.cost} of your GitHub allowance in {r.api.requests} requests{r.api.remaining != null ? `, ${r.api.remaining.toLocaleString()} left this hour` : ''}.</p>}
+            <RequestFlow login={r.login} />
+          </Report>
+        )}
       </div>
     </main>
   )
