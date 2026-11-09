@@ -12,8 +12,8 @@ Last reviewed: 2026-11-09.
 - **Reduced motion.** With "reduce motion" turned on in your system settings, all animation is removed: no 3D scenes, no drifting symbols, no reveal effects, no count-up. Content is simply there. The 3D scenes are decorative and carry no information that is not also in text.
 - **Colour and contrast.** Dark and light themes, switchable from the header. Text colours were checked against the 4.5:1 ratio with an automated tool in both themes. Status never relies on colour alone: results use words, icons and numbers as well.
 - **Text alternatives.** Badge images have a text name (for example "OSS Proof grade S, 91.3 out of 100"). The "Open source universe" diagram has a text description, and the same projects are listed with links in the page's repository list.
-- **Forms.** Every input has a visible label. Errors and progress messages are announced politely (`aria-live`) instead of stealing focus.
-- **Zoom and reflow.** Layouts reflow down to a 320 px width without horizontal scrolling, and text can be enlarged to 200%.
+- **Forms.** Every input has a label, visible or read by screen readers. Errors and progress messages are announced politely (`aria-live`) instead of stealing focus.
+- **Reflow.** Layouts were checked down to a 390 px wide phone screen without horizontal scrolling. Zoom to 200% and widths below 390 px have not been tested yet.
 
 ## How it is checked
 
