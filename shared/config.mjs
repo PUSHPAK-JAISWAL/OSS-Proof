@@ -1,5 +1,5 @@
-// Scoring rules, version 1.0.0. Anything that changes a number below must bump SCORING_VERSION.
-export const SCORING_VERSION = '1.0.0'
+// Scoring rules, version 1.1.0. Anything that changes a number below must bump SCORING_VERSION.
+export const SCORING_VERSION = '1.1.0'
 
 export const SCORING = {
   // Points available per component. They add up to 100.
@@ -20,6 +20,9 @@ export const SCORING = {
   botMergedFactor: 0.5,
   tinyFactor: 0.3,
   tinyLines: 5,
+  // Inside one repository each further PR counts a little less, so breadth beats volume.
+  repoDecay: 0.9,
+  repoDecayFloor: 0.25,
 }
 
 // Tough on purpose. A score of 85 needs dozens of merged PRs across many well-used repos for 18+ months.
@@ -37,4 +40,6 @@ export const LIMITS = {
   anonymous: { searchPages: 1, repos: 15, prs: 15 },
   token: { searchPages: 2, repos: 40, prs: 40 },
   certificate: { searchPages: 3, repos: 80, prs: 80 },
+  // GraphQL reads the merger with the PR, so nothing is sampled. maxPages x 100 is the cap.
+  deep: { maxPages: 40 },
 }
