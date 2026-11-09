@@ -20,7 +20,8 @@ export const KEY_ID = pubkey.keyId
 // The workflow grades whoever opens the issue, so the link needs no username.
 export const requestCertificateUrl = () => `${REPO_URL}/issues/new?template=certificate.yml&title=${encodeURIComponent('Certificate request')}`
 
-export const badgeUrl = (login, mini = false) => `${RAW_BASE}/badges/${login.toLowerCase()}${mini ? '-mini' : ''}.svg`
+export const badgeUrl = (login, mini = false, theme = 'grade') =>
+  `${RAW_BASE}/badges/${login.toLowerCase()}${mini ? '-mini' : theme && theme !== 'grade' ? `.${theme}` : ''}.svg`
 export const certificateLink = (login) => `${SITE_URL}#/verify/${login}`
 
 // Shown in the footer so GitHub users can reach the maintainer. Set the repository variable SUPPORT_EMAIL.
