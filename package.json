@@ -2,6 +2,34 @@
   "name": "oss-proof",
   "private": true,
   "version": "1.0.0",
+  "description": "Open source contribution certificates for GitHub developers. Grades pull requests that maintainers merged into other projects and gives a verifiable badge for your profile README.",
+  "keywords": [
+    "open-source",
+    "github",
+    "contribution-certificate",
+    "pull-requests",
+    "github-badge",
+    "readme-badge",
+    "github-profile-readme",
+    "developer-portfolio",
+    "github-app",
+    "github-actions",
+    "github-pages",
+    "verification",
+    "react",
+    "vite",
+    "tailwindcss"
+  ],
+  "homepage": "https://pushpak-jaiswal.github.io/OSS-Proof/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PUSHPAK-JAISWAL/OSS-Proof.git"
+  },
+  "bugs": {
+    "url": "https://github.com/PUSHPAK-JAISWAL/OSS-Proof/issues"
+  },
+  "author": "Pushpak Jaiswal <pushpakmjaiswal@gmail.com>",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "vite",
