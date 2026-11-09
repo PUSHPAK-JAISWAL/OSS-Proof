@@ -1,11 +1,29 @@
 # OSS Proof
 
-Contribution certificates for open source developers. It shows how many open source projects accepted your work and what you did in each one, using only pull requests that other maintainers merged into repositories you do not own. You get a verifiable certificate and a badge for your profile README. It runs on GitHub Pages and stores everything as files in this repository: no database, no server.
+**Open source contribution certificates for GitHub developers.** OSS Proof shows how many open source projects accepted your work and what you did in each one. It counts only pull requests that other maintainers merged into repositories you do not own, grades them from D to S, and gives you a verifiable certificate and a badge for your GitHub profile README.
+
+[![Live site](https://img.shields.io/badge/live%20site-open-3fd6e6)](https://pushpak-jaiswal.github.io/OSS-Proof/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![Help wanted](https://img.shields.io/github/issues/PUSHPAK-JAISWAL/OSS-Proof/help%20wanted?color=green&label=help%20wanted)](https://github.com/PUSHPAK-JAISWAL/OSS-Proof/labels/help%20wanted)
+[![Good first issues](https://img.shields.io/github/issues/PUSHPAK-JAISWAL/OSS-Proof/good%20first%20issue?color=7057ff&label=good%20first%20issues)](https://github.com/PUSHPAK-JAISWAL/OSS-Proof/labels/good%20first%20issue)
+
+**Try it:** [pushpak-jaiswal.github.io/OSS-Proof](https://pushpak-jaiswal.github.io/OSS-Proof/). Type any GitHub username to see a grade, no sign-in needed.
+
+## Why use it
+
+- **Prove real contributions.** A pull request only counts when someone else merged it into a project you do not own, so a grade cannot be inflated by merging your own work.
+- **Show breadth, not a PR count.** Ten projects beat thirty pull requests in one project.
+- **Verifiable.** Certificates are signed by GitHub itself (or optionally by an Ed25519 key) and checked in the browser.
+- **A badge that stays fresh.** Eight badge themes for your profile README, regraded automatically every day.
+- **No database, no server.** Everything runs on GitHub: Pages, Actions, a GitHub App and your own profile repository.
+- **Accessible and open.** Keyboard friendly, respects reduced motion, MIT licensed. See [ACCESSIBILITY.md](ACCESSIBILITY.md).
+
+Keywords: GitHub contribution certificate, open source contributions, GitHub profile README badge, verify open source work, pull request grade, developer portfolio, GitHub App, GitHub Actions, GitHub Pages.
 
 ## How it works
 
 1. **Check a profile.** The React app reads public GitHub data in the browser and shows the score, its four parts, every project the developer contributed to, and the top merged pull requests. Add your own token for the deep read of every PR.
-2. **Request a certificate.** Open a "Certificate request" issue. The workflow in `.github/workflows/certify.yml` grades the issue author (GitHub proves who they are, so no OAuth app is needed) and commits `data/certs/<user>.json`, `data/badges/<user>.svg`, `data/badges/<user>-mini.svg` and `data/index.json`. When it finishes it replies on the issue with README tags to copy and closes it.
+2. **Request a certificate.** Install the OSS Proof GitHub App on your profile repository (`<you>/<you>`), then open a "Certificate request" issue. The workflow in `.github/workflows/certify.yml` grades the issue author (GitHub proves who they are), signs the result and the app writes `.oss-proof/certificate.json` and the badge SVGs into your own repository. Only the small leaderboard entry in `data/index.json` stays here. The workflow replies on the issue with README tags to copy and closes it.
 3. **Verify.** `#/verify/<user>` shows the certificate and checks it.
 4. **Pin.** Paste the Markdown or HTML from the issue reply (or the certificate page) into your profile README.
 
@@ -56,10 +74,20 @@ npm test        # scoring, signature, badge, country checks
 node scripts/test-analyze.mjs   # analysis pipeline against a fake GitHub API
 ```
 
-Design work uses the taste-skill. Install it once per checkout:
-
-```bash
-npx skills add Leonxlnx/taste-skill
-```
-
 Stack: Vite, React, Tailwind CSS v4, `@noble/curves` for the optional signatures. Dependabot keeps npm packages and GitHub Actions up to date weekly.
+
+## Contributing
+
+Contributions are welcome. Pick something from the [help wanted](https://github.com/PUSHPAK-JAISWAL/OSS-Proof/labels/help%20wanted) or [good first issue](https://github.com/PUSHPAK-JAISWAL/OSS-Proof/labels/good%20first%20issue) lists, and read [CONTRIBUTING.md](CONTRIBUTING.md) first. Accessibility reports are especially valuable: see [ACCESSIBILITY.md](ACCESSIBILITY.md).
+
+## FAQ
+
+**Is my private work counted?** No. Only public pull requests are graded. Private activity is shown as a count only.
+
+**Why is a very active developer "Unrated"?** Pull requests they merged themselves, and pull requests in repositories they own, do not count. The report shows exactly how many were dropped and why.
+
+**Do I need to give OSS Proof access to my code?** Signing in alone gives no access to your code. To keep your certificate in your own profile repository you install the app on that one repository, and it writes only the `.oss-proof` folder there.
+
+**How often is the badge updated?** Daily, for certificates older than six days.
+
+**Can I verify someone else's certificate?** Yes. Open `#/verify/<username>` on the site. It checks the signature and the commit that wrote it.
