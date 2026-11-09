@@ -36,11 +36,9 @@ async function latestIssue(login) {
 function Step({ n, title, state, children }) {
   const done = state === 'done'
   return (
-    <li className="grid grid-cols-[36px_1fr] gap-4">
-      <span className={`grid place-items-center h-9 w-9 rounded-md border text-sm mono ${done ? 'border-ok text-ok' : 'border-line text-muted'}`}>
-        {done ? <Icon name="check" size={18} /> : n}
-      </span>
-      <div className="grid gap-3 pb-2 min-w-0">
+    <li className={`step ${done ? '' : 'step--active'}`}>
+      <span className={`step__n ${done ? 'text-ok border-ok' : 'text-muted'}`}>{done ? <Icon name="check" size={18} /> : n}</span>
+      <div className="grid gap-3 min-w-0">
         <h3 className="h3 m-0">{title}</h3>
         {children}
       </div>
@@ -96,13 +94,15 @@ export default function RequestFlow({ login }) {
   const issueLine = !issue ? 'No request found yet.' : issue.state === 'closed' ? 'Request closed. The reply on it has your links.' : 'Request open. The workflow is grading your pull requests.'
 
   return (
-    <section className="card p-6 sm:p-8 grid gap-8" aria-labelledby="flow-title">
+    <section className="term" aria-labelledby="flow-title">
+      <div className="term__bar"><i /><i /><i /><span className="ml-2">request-certificate</span></div>
+      <div className="term__body grid gap-6" style={{ whiteSpace: 'normal' }}>
       <div>
         <h2 id="flow-title" className="h3 m-0">Get your signed certificate</h2>
         <p className="m-0 mt-2 muted max-w-[62ch]">Three steps. The only thing you do on GitHub is open one issue while signed in as <span className="mono text-ink">{login}</span>.</p>
       </div>
 
-      <ol className="m-0 p-0 list-none grid gap-8">
+      <ol className="m-0 p-0 list-none stepper">
         <Step n="1" title="Have a profile README" state={readme === 'ok' ? 'done' : 'todo'}>
           {readme === 'checking' && <p className="m-0 muted" role="status">Looking for the repository {login}/{login}…</p>}
           {readme === 'ok' && <p className="m-0 muted">Found <a className="link text-ink" href={`https://github.com/${login}/${login}`} target="_blank" rel="noreferrer noopener">{login}/{login}</a>. Your badge can go in its README.md.</p>}
@@ -152,6 +152,7 @@ export default function RequestFlow({ login }) {
           )}
         </Step>
       </ol>
+      </div>
     </section>
   )
 }
