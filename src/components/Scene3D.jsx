@@ -38,7 +38,7 @@ export function Universe({ repos, languages, grade }) {
   const colors = useMemo(() => Object.fromEntries((languages || []).filter((l) => l.color).map((l) => [l.name, l.color])), [languages])
   const props = useMemo(() => ({ repos, colors, grade, onHover: (r, x, y) => setTip(r ? { r, x, y } : null) }), [repos, colors, grade])
   return (
-    <div className="universe">
+    <div className="universe" role="img" aria-label={`Diagram of ${repos.length} open source projects around a grade ${grade} core. The full list of projects, with links, is in the Projects section below.`}>
       <GL load={loadUniverse} props={props} className="universe__gl" />
       {tip && (
         <div className="universe__tip" style={{ left: Math.min(tip.x + 14, 9999), top: tip.y - 10 }} role="status">
