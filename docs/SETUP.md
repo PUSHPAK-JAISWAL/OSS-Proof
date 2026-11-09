@@ -57,10 +57,29 @@ Until B and C are done, the Check page keeps the paste-a-token box, so nothing b
 - **Why the app asks for no permissions.** A token only has the power the app requests. With none, a stolen token can read only public data, which anyone can read. Asking for more (for example, writing to a profile repository) would make tokens more powerful and would need more care.
 - **The badge does not use the visitor's token.** Certificates are built by the Action with `GH_READ_TOKEN`. Sign-in only makes the website's own check complete and fast.
 
-## What I could not test
+## What I could not test (sign-in)
 
 Sign-in, the proxy and the read token need your credentials, so none of them were run end to end. First run, check: sign in on the Check page and confirm the status line says it is reading every pull request; then request a certificate and confirm it shows your real project count.
 
-## Later: certificates stored in each user's own profile repo
+## D. Store each person's data in their own profile repository (optional)
 
-The idea of the app writing the certificate and a refresh workflow into each user's own `<login>/<login>` repository, so GitHub holds the data and each user's own quota pays for it, is possible with this same App by adding permissions **Contents: read and write** and **Workflows: read and write** and an install step. It changes the trust model, because a file in a user's own repo can be edited by that user, so a visitor would verify by re-reading live GitHub data instead of trusting a stored file. Say the word and it can be built as a second step once A to C work.
+With this on, a certificate and its badges are written by your GitHub App into the person's own `<login>/<login>` repository, in a `.oss-proof` folder. Your repository then only keeps the small leaderboard index, reads use the installation's own rate limit, and nothing grows in your history. Anyone who has not installed the app keeps working exactly as before, stored in this repository.
+
+Because a person owns their own repository and could edit a file there, profile certificates **must be signed**. The site refuses an unsigned one. So this needs the signing key too.
+
+1. **Signing key.** Run `npm run keygen` on your computer. Commit the changed `src/lib/pubkey.json`. Put the private line it prints into a repository **secret** named `CERT_SIGNING_KEY`.
+2. **App permission.** Open your GitHub App, **Permissions and events** > **Repository permissions** > **Contents**: **Read and write**. Save. (Metadata read-only is added for you.) Also confirm **Where can this GitHub App be installed?** is **Any account**.
+3. **Private key.** On the same App page, **General** > **Private keys** > **Generate a private key**. A `.pem` file downloads.
+4. **Repository secrets and variables** (Settings > Secrets and variables > Actions):
+   - Secret `GH_APP_PRIVATE_KEY`: paste the full text of the `.pem` file, including the BEGIN and END lines.
+   - Variable (or secret) `GH_APP_ID`: the **App ID** number at the top of the App page.
+   - Variable (or secret) `GH_APP_SLUG`: the last part of the app's address, `https://github.com/apps/<slug>`.
+5. Run **Deploy to GitHub Pages** once so the site learns the slug and shows the optional "Install on my profile repo" step.
+
+How a person uses it: press the install button, choose **Only select repositories**, pick their profile repository, then open the certificate request as usual. The reply on the issue says where their files went.
+
+If something is missing the workflow says so in its log and falls back to this repository. It never fails because of it.
+
+## What I could not test
+
+The app login, token and commit code are covered by `npm test` with fake responses. The real calls to GitHub need your App, so check once end to end: install the app on your own profile repository, request a certificate, then look for `.oss-proof/certificate.json` in `<you>/<you>` with the app's bot as the author.
