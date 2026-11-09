@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "lint": "oxlint",
     "keygen": "node scripts/keygen.mjs",
-    "test": "node scripts/test-score.mjs"
+    "test": "node scripts/test-score.mjs && node scripts/test-deep.mjs"
   },
   "dependencies": {
     "@noble/curves": "^2.4.0",
