@@ -8,7 +8,7 @@ body:
       value: |
         A workflow grades **the account that opens this issue**. GitHub itself proves who you are, so there is nothing to paste.
 
-        It reads your public merged pull requests, groups them by open source project, writes a certificate and a badge into this repository, comments with README tags you can copy, and closes the issue.
+        It reads your public merged pull requests, groups them by open source project, writes a certificate and a badge into this repository, comments with README tags you can copy, and closes the issue. After that your certificate and badge refresh automatically, so you paste the tags only once.
 
 **It can take a few minutes.** Requests run one at a time through the GitHub Actions queue, so it is slower when many people ask at once. You can close this page and come back to the reply.
   - type: checkboxes
