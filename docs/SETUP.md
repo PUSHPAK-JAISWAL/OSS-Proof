@@ -61,9 +61,9 @@ Until B and C are done, the Check page keeps the paste-a-token box, so nothing b
 
 Sign-in, the proxy and the read token need your credentials, so none of them were run end to end. First run, check: sign in on the Check page and confirm the status line says it is reading every pull request; then request a certificate and confirm it shows your real project count.
 
-## D. Store each person's data in their own profile repository (optional)
+## D. Store each person's data in their own profile repository (required)
 
-With this on, a certificate and its badges are written by your GitHub App into the person's own `<login>/<login>` repository, in a `.oss-proof` folder. Your repository then only keeps the small leaderboard index, reads use the installation's own rate limit, and nothing grows in your history. Anyone who has not installed the app keeps working exactly as before, stored in this repository.
+With this on, a certificate and its badges are written by your GitHub App into the person's own `<login>/<login>` repository, in a `.oss-proof` folder. Your repository then only keeps the small leaderboard index, reads use the installation's own rate limit, and nothing grows in your history. Installing the app is required to get a certificate: a request from someone who has not installed it fails with a message and a link. Nothing per-person is stored in this repository. (Set the environment variable `ALLOW_CENTRAL=1` on the certify step only if you ever want the old repository storage back.)
 
 Because a person owns their own repository and could edit a file there, profile certificates **must be signed**. The site refuses an unsigned one. So this needs the signing key too.
 
@@ -76,9 +76,9 @@ Because a person owns their own repository and could edit a file there, profile 
    - Variable (or secret) `GH_APP_SLUG`: the last part of the app's address, `https://github.com/apps/<slug>`.
 5. Run **Deploy to GitHub Pages** once so the site learns the slug and shows the optional "Install on my profile repo" step.
 
-How a person uses it: press the install button, choose **Only select repositories**, pick their profile repository, then open the certificate request as usual. The reply on the issue says where their files went.
+How a person uses it: sign in, press the install button, choose **Only select repositories**, pick their profile repository, then open the certificate request as usual. The reply on the issue says where their files went.
 
-If something is missing the workflow says so in its log and falls back to this repository. It never fails because of it.
+If a secret is missing, the request fails with a plain message naming what the maintainer still has to add.
 
 ## What I could not test
 
