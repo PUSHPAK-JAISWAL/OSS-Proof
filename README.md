@@ -34,6 +34,14 @@ Rules live in `shared/config.mjs` and `shared/score.mjs`. Change a number, bump 
 
 Limits: only public activity is visible, the grade measures accepted PRs and not code quality, and country is the profile's free-text location.
 
+## FAQ
+
+**My grade is lower than I expected, or the badge says Unrated.** Only merged PRs in repositories you do not own, merged by someone other than you, count. Self-merges, your own repositories and private work are left out by design. The [troubleshooting page](docs/TROUBLESHOOTING.md) walks through every common case and what to do about each one.
+
+**My badge shows an older grade than the check page.** Badges refresh once a day (03:17 UTC, oldest certificates first, a few at a time) and GitHub caches README images for a few minutes. Timing details in [troubleshooting](docs/TROUBLESHOOTING.md).
+
+**The check only looked at some of my pull requests.** Anonymous GitHub allows 60 requests per hour, so the preview reads a sample; a certificate request reads the whole public history. When that matters is explained in [troubleshooting](docs/TROUBLESHOOTING.md).
+
 ## Set it up
 
 1. Create a GitHub repository and push this project to `main`.
