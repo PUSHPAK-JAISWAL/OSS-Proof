@@ -116,7 +116,7 @@ function How() {
           {PIPE.map((p, i) => (
             <div key={p.n} className="pipe__step rv" style={{ '--s': i, '--i': i }}>
               <div className="flex items-center justify-between"><span className="pipe__no">{p.n}</span><h3 className="h3 m-0">{p.title}</h3></div>
-              <pre className="pipe__code m-0">{p.code}</pre>
+              <pre className="pipe__code m-0" tabIndex={0} role="region" aria-label={`Step ${p.n}: ${p.title} code`}>{p.code}</pre>
               <span className="pipe__out"><Icon name="check" size={16} />{p.out}</span>
               {i < PIPE.length - 1 && <span className="pipe__link" style={{ '--k': i }} aria-hidden="true" />}
             </div>
@@ -140,7 +140,7 @@ function Grading() {
             An S needs merged work in many different, well-used projects over about 18 months.
             Ten pull requests in ten projects beat thirty in one.
           </p>
-          <pre className="pipe__code mt-6 mb-0 max-w-md"><span className="tok-f">score</span> = <span className="tok-n">impact</span>(50) + <span className="tok-n">breadth</span>(20){'\n'}      + <span className="tok-n">consistency</span>(20) + <span className="tok-n">trust</span>(10)</pre>
+          <pre className="pipe__code mt-6 mb-0 max-w-md" tabIndex={0} role="region" aria-label="Score formula"><span className="tok-f">score</span> = <span className="tok-n">impact</span>(50) + <span className="tok-n">breadth</span>(20){'\n'}      + <span className="tok-n">consistency</span>(20) + <span className="tok-n">trust</span>(10)</pre>
           <dl className="mt-6 mb-0 grid grid-cols-2 gap-x-6 gap-y-3 max-w-md">
             {POINTS.map(([n, v]) => (
               <div key={n} className="flex items-baseline justify-between border-b border-line pb-2">
@@ -214,7 +214,7 @@ function Pin() {
                 <Badge key={g} grade={g} score={GRADES.find((x) => x.grade === g).min} height={24} mini />
               ))}
             </div>
-            <pre className="pipe__code m-0 w-full">{<><span className="tok-c">[</span><span className="tok-c">![</span><span className="tok-s">OSS Proof</span><span className="tok-c">](</span><span className="tok-f">…/badges/you.svg</span><span className="tok-c">)](</span><span className="tok-f">…/#/verify/you</span><span className="tok-c">)</span></>}</pre>
+            <pre className="pipe__code m-0 w-full" tabIndex={0} role="region" aria-label="Markdown for the README badge">{<><span className="tok-c">[</span><span className="tok-c">![</span><span className="tok-s">OSS Proof</span><span className="tok-c">](</span><span className="tok-f">…/badges/you.svg</span><span className="tok-c">)](</span><span className="tok-f">…/#/verify/you</span><span className="tok-c">)</span></>}</pre>
           </div>
         </AppFrame>
       </div>
