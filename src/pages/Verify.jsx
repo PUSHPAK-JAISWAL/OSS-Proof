@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Breakdown, Btn, fmtDate, GradeMark, Icon } from '../components/ui'
-import { EvidenceList, PinPanel, RepoList } from '../components/cert'
+import { EvidenceList, PinPanel, RepoList, Timeline } from '../components/cert'
 import RequestFlow from '../components/RequestFlow'
 import { KEY_ID, RAW_BASE } from '../lib/config'
 import { checkCertificate, fetchCertificate } from '../lib/verify'
@@ -102,6 +102,16 @@ export default function Verify({ login }) {
                 </div>
               ))}
             </dl>
+            {p.profile && (p.profile.bio || p.profile.company || p.profile.website || p.profile.followers != null) && (
+              <div className="card p-5 grid gap-2">
+                {p.profile.bio && <p className="m-0">{p.profile.bio}</p>}
+                <p className="m-0 label">
+                  {[p.profile.company, p.profile.followers != null && `${p.profile.followers} followers`, p.profile.publicRepos != null && `${p.profile.publicRepos} public repos`, p.location].filter(Boolean).join(' · ')}
+                </p>
+                {p.profile.website && <a className="link label w-fit" href={/^https?:/.test(p.profile.website) ? p.profile.website : `https://${p.profile.website}`} target="_blank" rel="noreferrer noopener">{p.profile.website}</a>}
+              </div>
+            )}
+            {p.timeline && <section className="grid gap-3"><h2 className="h3 m-0">Activity, last 24 months</h2><Timeline data={p.timeline} /></section>}
             {stale && <p className="m-0 text-warn text-[15px]">This certificate is more than a year old. The owner can request a fresh one.</p>}
 
             <section className="grid gap-4">

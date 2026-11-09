@@ -1,7 +1,7 @@
 import { LIMITS } from './config.mjs'
 import { buildResult, isValidLogin } from './analyze.mjs'
 
-const USER_Q = `query($login:String!){ user(login:$login){ login databaseId name avatarUrl url location createdAt organizations(first:100){ nodes{ login } } } }`
+const USER_Q = `query($login:String!){ user(login:$login){ login databaseId name avatarUrl url location createdAt bio company websiteUrl followers{ totalCount } repositories(privacy:PUBLIC, ownerAffiliations:OWNER){ totalCount } organizations(first:100){ nodes{ login } } } }`
 const PRS_Q = `query($q:String!,$after:String){ search(query:$q,type:ISSUE,first:100,after:$after){
   issueCount pageInfo{ hasNextPage endCursor }
   nodes{ ... on PullRequest { number title url mergedAt additions deletions authorAssociation
@@ -105,6 +105,8 @@ export async function analyzeDeep(login, { gql, now = new Date(), maxPages = LIM
     mode: 'deep',
     now,
     user: { login: user.login, id: user.databaseId, name: user.name, avatarUrl: user.avatarUrl, profileUrl: user.url, location: user.location, createdAt: user.createdAt },
+    profile: { bio: user.bio || null, company: user.company || null, website: user.websiteUrl || null, followers: user.followers?.totalCount ?? null, publicRepos: user.repositories?.totalCount ?? null },
+    full: true,
     orgs: orgNames.size,
     evidence,
     selfMerged,

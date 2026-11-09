@@ -13,7 +13,7 @@ Requests run one at a time through the GitHub Actions queue, so a certificate ca
 
 ### Badges stay fresh by themselves
 
-`.github/workflows/refresh.yml` runs every day at 03:17 UTC. It re-grades the oldest certificates (up to 25 a day, only those older than 6 days) and rewrites the same files, so the badge link in a README never changes and always shows a recent grade. You can also run it by hand from the Actions tab and choose the batch size. Accounts that no longer exist are skipped and retried after 30 days. GitHub caches README images for a few minutes, so a new grade can take a little while to show.
+`.github/workflows/refresh.yml` runs every day at 03:17 UTC. It re-grades the oldest certificates (up to 100 a day, only those older than 6 days; it stops early if GitHub's rate limit is reached and carries on the next day) and rewrites the same files, so the badge link in a README never changes and always shows a recent grade. You can also run it by hand from the Actions tab and choose the batch size. Accounts that no longer exist are skipped and retried after 30 days. GitHub caches README images for a few minutes, so a new grade can take a little while to show.
 
 Runs never overwrite each other: before committing, each run merges its entries into the `data/index.json` that is on the branch at that moment.
 

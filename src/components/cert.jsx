@@ -30,14 +30,9 @@ export function RepoList({ repos, login }) {
   if (!repos?.length) return <p className="muted">No projects counted yet.</p>
   return (
     <ul className="m-0 p-0 list-none border border-line rounded-lg divide-y divide-line">
-      {repos.map((r) => (
-        <li key={r.repo}>
-          <a
-            href={`https://github.com/${r.repo}/pulls?q=${encodeURIComponent(`is:pr is:merged author:${login}`)}`}
-            target="_blank"
-            rel="noreferrer noopener"
-            className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-4 gap-y-1 px-4 py-3 hover:bg-surface transition-colors"
-          >
+      {repos.map((r) => {
+        const head = (
+          <>
             <span className="font-medium truncate">{r.repo}</span>
             <span className="muted inline-flex items-center justify-end gap-1 text-sm mono"><Icon name="star" size={14} />{fmtStars(r.stars)}</span>
             <span className="label truncate">
@@ -45,10 +40,51 @@ export function RepoList({ repos, login }) {
               {r.first ? ` · ${r.first === r.last ? fmtDate(r.first) : `${fmtDate(r.first)} to ${fmtDate(r.last)}`}` : ''}
             </span>
             <span className="label text-right whitespace-nowrap">{CLASS_LABEL[r.class] || ''}</span>
-          </a>
-        </li>
-      ))}
+          </>
+        )
+        const grid = 'grid grid-cols-[minmax(0,1fr)_auto] gap-x-4 gap-y-1 px-4 py-3 hover:bg-surface transition-colors'
+        return (
+          <li key={r.repo}>
+            {r.list?.length ? (
+              <details className="group">
+                <summary className={`${grid} cursor-pointer list-none`}>{head}</summary>
+                <ul className="m-0 p-0 list-none bg-surface border-t border-line">
+                  {r.list.map((pr) => (
+                    <li key={pr.url || pr.number}>
+                      <a href={pr.url} target="_blank" rel="noreferrer noopener" className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-4 px-6 py-2 text-[14px] hover:text-accent">
+                        <span className="truncate">#{pr.number} {pr.title}</span>
+                        <span className="label mono whitespace-nowrap">{fmtDate(pr.mergedAt)}</span>
+                      </a>
+                    </li>
+                  ))}
+                  {r.prs > r.list.length && <li className="px-6 py-2 label">Showing the newest {r.list.length} of {r.prs}.</li>}
+                  <li className="px-6 py-2">
+                    <a className="link label" href={`https://github.com/${r.repo}/pulls?q=${encodeURIComponent(`is:pr is:merged author:${login}`)}`} target="_blank" rel="noreferrer noopener">Open all on GitHub</a>
+                  </li>
+                </ul>
+              </details>
+            ) : (
+              <a href={`https://github.com/${r.repo}/pulls?q=${encodeURIComponent(`is:pr is:merged author:${login}`)}`} target="_blank" rel="noreferrer noopener" className={grid}>{head}</a>
+            )}
+          </li>
+        )
+      })}
     </ul>
+  )
+}
+
+export function Timeline({ data }) {
+  if (!data?.length) return null
+  const max = Math.max(1, ...data.map((d) => d.prs))
+  return (
+    <div>
+      <div className="flex items-end gap-1 h-20" role="img" aria-label={`Merged pull requests per month, last 24 months, busiest month ${max}`}>
+        {data.map((d) => (
+          <div key={d.month} className="flex-1 bg-accent/80 rounded-sm min-h-[2px] hover:bg-accent transition-colors" style={{ height: `${Math.max(3, (d.prs / max) * 100)}%`, opacity: d.prs ? 1 : 0.25 }} title={`${d.month}: ${d.prs}`} />
+        ))}
+      </div>
+      <p className="label mt-2 mb-0">Merged pull requests per month, {data[0].month} to {data[data.length - 1].month}</p>
+    </div>
   )
 }
 
