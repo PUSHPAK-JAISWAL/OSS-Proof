@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import Header from './components/Header'
 import { Glyphs, ScrollProgress } from './components/fx'
 import { prefersReduced } from './lib/motion'
@@ -40,10 +40,41 @@ function useSpotlight() {
   }, [])
 }
 
+const TITLES = { check: 'Check a profile', verify: 'Verify a certificate', explore: 'Developers' }
+
+// With hash routing the browser does not announce page changes, so set the title and move focus to the new page ourselves.
+function useRouteA11y(section, arg, first) {
+  useEffect(() => {
+    const base = 'OSS Proof'
+    document.title = TITLES[section] ? `${TITLES[section]}${arg ? `: ${arg}` : ''} · ${base}` : `${base}: contribution certificates for open source developers`
+    if (first.current) { first.current = false; return }
+    const main = document.querySelector('main')
+    if (main) { main.setAttribute('tabindex', '-1'); main.focus({ preventScroll: true }) }
+  }, [section, arg, first])
+}
+
+function SkipLink() {
+  return (
+    <nav aria-label="Skip links"><a
+      className="skip"
+      href="#/"
+      onClick={(e) => {
+        e.preventDefault()
+        const main = document.querySelector('main')
+        if (main) { main.setAttribute('tabindex', '-1'); main.focus(); main.scrollIntoView() }
+      }}
+    >
+      Skip to content
+    </a></nav>
+  )
+}
+
 export default function App() {
   const { parts, path } = useRoute()
   const [section, arg] = parts
+  const first = useRef(true)
   useSpotlight()
+  useRouteA11y(section, arg, first)
 
   let page
   if (section === 'check') page = <Check username={arg} />
@@ -53,6 +84,7 @@ export default function App() {
 
   return (
     <>
+      <SkipLink />
       <Glyphs />
       <ScrollProgress />
       <Header path={path} />
