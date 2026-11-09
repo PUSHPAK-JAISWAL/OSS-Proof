@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import { Badge, Breakdown, fmtDate, fmtStars, Icon } from './ui'
 import { Burst, Count, useParallax, useReveal } from './fx'
 import Languages from './Languages'
+import { Universe } from './Scene3D'
 import { EvidenceList, RepoList, Timeline } from './cert'
 
 const num = (n) => (n == null ? '—' : Number(n).toLocaleString())
@@ -95,6 +96,16 @@ export default function Report({ p, theme = 'grade', notices = null, children })
             <p className="m-0 mt-1 label">From the projects that merged this person’s work and from their own repositories, split by each repository’s real language mix.</p>
           </div>
           <Languages languages={p.languages} />
+        </section>
+      )}
+
+      {p.repos?.length > 1 && (
+        <section className="card rv universe-card">
+          <div className="p-6 pb-0">
+            <h2 className="h3 m-0">Open source universe</h2>
+            <p className="m-0 mt-1 label">Every project that merged this person’s work, around their grade. Bigger and brighter means better known with more merged pull requests. Hover a star.</p>
+          </div>
+          <Universe repos={p.repos} languages={p.languages} grade={p.grade} />
         </section>
       )}
 
