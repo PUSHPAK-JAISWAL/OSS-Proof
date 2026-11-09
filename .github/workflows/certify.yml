@@ -45,6 +45,7 @@ jobs:
           # Passed as environment variables, never pasted into the script, so issue text cannot inject commands.
           LOGIN: ${{ github.event.issue.user.login }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          READ_TOKEN: ${{ secrets.GH_READ_TOKEN }}
           CERT_SIGNING_KEY: ${{ secrets.CERT_SIGNING_KEY }}
         run: node scripts/certify.mjs
         continue-on-error: true
@@ -99,6 +100,8 @@ jobs:
               echo '```html'
               echo "<a href=\"${LINK}\"><img src=\"${RAW}/${F}.svg\" alt=\"OSS Proof\" width=\"380\" /></a>"
               echo '```'
+              echo
+              echo "**Other themes** (change the file name in the link): \`${F}.midnight.svg\`, \`${F}.aurora.svg\`, \`${F}.sunset.svg\`, \`${F}.terminal.svg\`, \`${F}.neon.svg\`, \`${F}.glass.svg\`, \`${F}.paper.svg\`. Preview them on your certificate page."
               echo
               echo "The badge can take a minute to appear because GitHub caches images. Ask for a new certificate any time your work changes (once an hour at most)."
             } > reply.md
