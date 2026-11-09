@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Breakdown, Btn, fmtDate, GradeMark, Icon } from '../components/ui'
 import { EvidenceList, PinPanel } from '../components/cert'
-import { KEY_ID, RAW_BASE, requestCertificateUrl } from '../lib/config'
+import RequestFlow from '../components/RequestFlow'
+import { KEY_ID, RAW_BASE } from '../lib/config'
 import { checkSignature, fetchCertificate } from '../lib/verify'
 
 const STATUS = {
@@ -40,8 +41,8 @@ export default function Verify({ login }) {
           <p className="lead mt-4 muted">Nothing has been signed for this account yet. Anyone can check a profile, and the owner can request a certificate.</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Btn href={`#/check/${login}`}>Check this profile</Btn>
-            <Btn variant="secondary" href={requestCertificateUrl(login)} external>Request a certificate</Btn>
           </div>
+          <div className="mt-12"><RequestFlow login={login} /></div>
         </div>
       </main>
     )
@@ -116,7 +117,10 @@ export default function Verify({ login }) {
               <PinPanel login={p.login} grade={p.grade} score={p.score} />
             </section>
 
-            <a className="link label w-fit" href={`${RAW_BASE}/certs/${p.login.toLowerCase()}.json`} target="_blank" rel="noreferrer noopener">View the signed JSON</a>
+            <div className="flex flex-wrap gap-x-6 gap-y-2">
+              <a className="link label w-fit" href={`${RAW_BASE}/certs/${p.login.toLowerCase()}.json`} target="_blank" rel="noreferrer noopener">View the signed JSON</a>
+              <a className="link label w-fit" href={`#/check/${p.login}`}>Compare with live GitHub data</a>
+            </div>
           </div>
         </div>
 
