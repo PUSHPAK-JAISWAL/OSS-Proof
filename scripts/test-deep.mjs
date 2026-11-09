@@ -21,6 +21,7 @@ const inRange = (q) => {
   const from = m ? Date.parse(m[1]) : -Infinity, to = m ? Date.parse(m[2]) + 864e5 : Infinity
   return all.filter((p) => Date.parse(p.mergedAt) >= from && Date.parse(p.mergedAt) < to)
 }
+let langQueries = 0
 const RL = { cost: 1, remaining: 4990, resetAt: '2026-11-06T01:00:00Z' }
 async function gql(query, vars, data = all) {
   calls++
@@ -28,11 +29,18 @@ async function gql(query, vars, data = all) {
     return {
       rateLimit: RL,
       user: { login: 'octo', databaseId: 1, name: 'Octo', avatarUrl: 'x', url: 'y', location: 'Pune, India', createdAt: '2015-01-01T00:00:00Z', bio: 'hi', followers: { totalCount: 5 }, following: { totalCount: 2 }, repositories: { totalCount: 9 },
+        ownLangs: { nodes: [{ stargazerCount: 40, primaryLanguage: { name: 'Go', color: '#00ADD8' }, languages: { edges: [{ size: 900, node: { name: 'Go', color: '#00ADD8' } }, { size: 100, node: { name: 'Shell', color: '#89e051' } }] } }] },
         topOwn: { nodes: [{ nameWithOwner: 'octo/tool', stargazerCount: 40, description: 'A tool', primaryLanguage: { name: 'Go' } }] },
         organizations: { nodes: [{ login: 'o3', name: 'Org 3', avatarUrl: 'z' }] },
         contributionsCollection: { totalCommitContributions: 300, totalIssueContributions: 4, totalPullRequestContributions: 90, totalPullRequestReviewContributions: 12, restrictedContributionsCount: 50 } },
       total: { issueCount: inRange(vars.qTotal).length }, reviews: { issueCount: 77 }, issues: { issueCount: 8 },
     }
+  }
+  if (query.includes('r0:')) {
+    langQueries++
+    const out = { rateLimit: RL }
+    for (let i = 0; query.includes(`r${i}:`); i++) out[`r${i}`] = { languages: { edges: [{ size: 700, node: { name: 'Rust', color: '#dea584' } }, { size: 300, node: { name: 'Python', color: '#3572A5' } }] } }
+    return out
   }
   if (query.includes('w0:')) {
     const out = { rateLimit: RL }
@@ -55,6 +63,16 @@ assert.equal(r.mode, 'deep')
 assert.equal(r.activity.reviewsGiven, 77)
 assert.equal(r.activity.privateLastYear, 50)
 assert.equal(r.profile.topOwn[0].repo, 'octo/tool')
+// Languages: breakdowns of contributed projects and own repositories, all kept with shares and colours.
+const names = r.languages.map((l) => l.name)
+assert.ok(names.includes('Rust') && names.includes('Python') && names.includes('Go') && names.includes('Shell'), `all languages found: ${names}`)
+assert.ok(langQueries >= 1, 'language breakdowns are read in batches')
+const rust = r.languages.find((l) => l.name === 'Rust')
+assert.equal(rust.color, '#dea584')
+assert.ok(rust.share > r.languages.find((l) => l.name === 'Python').share, 'bigger share ranks higher')
+assert.ok(Math.abs(r.languages.reduce((t, l) => t + l.share, 0) - 100) < 1.5, 'shares add up to 100')
+assert.equal(r.languages.find((l) => l.name === 'Go').own, 1)
+
 assert.equal(r.stats.medianDaysToMerge, 3)
 assert.ok(r.stats.maintainers >= 1 && r.stats.orgProjects > 20 && r.stats.filesChanged > 2000, JSON.stringify(r.stats))
 assert.equal(r.repos[0].license, 'MIT')

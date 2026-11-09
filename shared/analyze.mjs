@@ -171,20 +171,73 @@ export async function analyzeUser(login, { api, mode = 'anonymous', now = new Da
   })
 }
 
+const FALLBACK_COLORS = ['#58a6ff', '#f78166', '#56d364', '#d2a8ff', '#e3b341', '#79c0ff', '#ff7b72', '#7ee787']
+
+/** One repository's languages as shares that add up to 1. Uses the byte breakdown when there is one, else only the main language. */
+function langShares(list, primary) {
+  const rows = (list || []).filter((l) => l?.name && l.size > 0).sort((a, b) => b.size - a.size).slice(0, 5)
+  const sum = rows.reduce((t, l) => t + l.size, 0)
+  if (!sum) return primary ? [{ name: primary, share: 1, color: null }] : []
+  const kept = rows.filter((l, i) => i === 0 || l.size / sum >= 0.03)
+  const keptSum = kept.reduce((t, l) => t + l.size, 0)
+  return kept.map((l) => ({ name: l.name, share: l.size / keptSum, color: l.color || null }))
+}
+
+/**
+ * Every language a person has worked in, from two places: projects they got pull requests merged into (weighted by how
+ * well known each project is) and their own public repositories. Each repository is split by its real language breakdown,
+ * so a project that is 70% Rust and 30% Python counts toward both. Falls back to the main language when no breakdown is known.
+ */
+export function computeLanguages({ evidence, repoLangs = null, own = [], limit = 16 }) {
+  const acc = new Map()
+  const slot = (name, color) => {
+    let a = acc.get(name)
+    if (!a) acc.set(name, (a = { weight: 0, prs: 0, repos: 0, own: 0, color: null }))
+    if (color && !a.color) a.color = color
+    return a
+  }
+  const byRepo = new Map()
+  for (const pr of evidence) {
+    const r = byRepo.get(pr.repo) || { w: 0, prs: 0, primary: pr.language }
+    r.w += Math.log10((pr.stars || 0) + 10)
+    r.prs++
+    byRepo.set(pr.repo, r)
+  }
+  for (const [repo, r] of byRepo) {
+    for (const part of langShares(repoLangs?.get(repo), r.primary)) {
+      const a = slot(part.name, part.color)
+      a.weight += r.w * part.share
+      if (part.share >= 0.2) { a.repos++; a.prs += r.prs }
+    }
+  }
+  for (const o of own) {
+    const w = 0.5 * Math.log10((o.stars || 0) + 10)
+    for (const part of langShares(o.langs, o.primary)) {
+      const a = slot(part.name, part.color)
+      a.weight += w * part.share
+      if (part.share >= 0.2) a.own++
+    }
+  }
+  const total = [...acc.values()].reduce((t, a) => t + a.weight, 0) || 1
+  return [...acc.entries()]
+    .sort((a, b) => b[1].weight - a[1].weight)
+    .slice(0, limit)
+    .map(([name, a], i) => ({
+      name,
+      weight: Math.round(a.weight * 10) / 10,
+      share: Math.round((a.weight / total) * 1000) / 10,
+      prs: a.prs,
+      repos: a.repos,
+      own: a.own,
+      color: a.color || FALLBACK_COLORS[i % FALLBACK_COLORS.length],
+    }))
+}
+
 /** Turns verified evidence into the result object that certificates and the UI share. */
-export function buildResult({ mode, now, user, profile = null, activity = null, full = false, orgs, evidence, selfMerged, sampled, unverifiable, mergedFound, outsideOwn, truncated = false, foundProjects = 0, unchecked = [], partial = false, restrictedOrgs = [], readErrors = 0 }) {
+export function buildResult({ mode, now, user, profile = null, activity = null, full = false, orgs, evidence, selfMerged, sampled, unverifiable, mergedFound, outsideOwn, truncated = false, foundProjects = 0, unchecked = [], partial = false, restrictedOrgs = [], readErrors = 0, repoLangs = null, ownLangs = [] }) {
   const scored = scoreEvidence(evidence, { now, accountCreatedAt: user.createdAt, selfMerged, sampled })
 
-  // Languages: weight each counted PR by its repo weight, so one popular repo outweighs ten tiny ones.
-  const langWeight = new Map()
-  for (const pr of evidence) {
-    if (!pr.language) continue
-    langWeight.set(pr.language, (langWeight.get(pr.language) || 0) + Math.log10(pr.stars + 10))
-  }
-  const languages = [...langWeight.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, full ? 12 : 6)
-    .map(([name, w]) => ({ name, weight: Math.round(w * 10) / 10 }))
+  const languages = computeLanguages({ evidence, repoLangs, own: ownLangs, limit: full ? 16 : 6 })
 
   const lastMergedAt = evidence.map((p) => p.mergedAt).sort().pop() || null
   const { country, code } = countryFromLocation(user.location)
@@ -286,7 +339,7 @@ export function summarize(result) {
     score: result.score,
     grade: result.grade,
     country: result.country,
-    languages: result.languages.slice(0, 3).map((l) => l.name),
+    languages: result.languages.slice(0, 8).map((l) => l.name),
     lastMergedAt: result.lastMergedAt,
     issuedAt: result.issuedAt,
     counted: result.counts.counted,

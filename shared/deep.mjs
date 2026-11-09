@@ -9,6 +9,7 @@ const USER_Q = `query($login:String!,$qTotal:String!,$qRev:String!,$qIss:String!
     followers{ totalCount } following{ totalCount }
     repositories(privacy:PUBLIC, ownerAffiliations:OWNER){ totalCount }
     topOwn: repositories(privacy:PUBLIC, ownerAffiliations:OWNER, isFork:false, orderBy:{field:STARGAZERS,direction:DESC}, first:6){ nodes{ nameWithOwner stargazerCount description primaryLanguage{ name } } }
+    ownLangs: repositories(privacy:PUBLIC, ownerAffiliations:OWNER, isFork:false, orderBy:{field:PUSHED_AT,direction:DESC}, first:100){ nodes{ stargazerCount primaryLanguage{ name color } languages(first:5, orderBy:{field:SIZE,direction:DESC}){ edges{ size node{ name color } } } } }
     organizations(first:100){ nodes{ login name avatarUrl } }
     contributionsCollection{ totalCommitContributions totalIssueContributions totalPullRequestContributions totalPullRequestReviewContributions restrictedContributionsCount } }
   total: search(query:$qTotal, type:ISSUE, first:1){ issueCount }
@@ -24,6 +25,12 @@ const PRS_Q = `query($q:String!,$after:String){ ${RL} search(query:$q,type:ISSUE
 
 // Counts for many date windows in one request: one alias per window.
 const countQuery = (n) => `query(${Array.from({ length: n }, (_, i) => `$q${i}:String!`).join(',')}){ ${RL} ${Array.from({ length: n }, (_, i) => `w${i}: search(query:$q${i}, type:ISSUE, first:1){ issueCount }`).join(' ')} }`
+
+// Language breakdown for many repositories in one request. Names are checked before they are placed in the query text.
+const SAFE = /^[A-Za-z0-9._-]+$/
+const langQuery = (repos) => `query{ ${RL} ${repos.map(([o, n], i) => `r${i}: repository(owner:"${o}", name:"${n}"){ languages(first:5, orderBy:{field:SIZE,direction:DESC}){ edges{ size node{ name color } } } }`).join(' ')} }`
+const LANG_BATCH = 30
+const LANG_REPOS = 90
 
 const EXTERNAL = new Set(['CONTRIBUTOR', 'FIRST_TIME_CONTRIBUTOR', 'FIRST_TIMER', 'NONE'])
 const TEAM = new Set(['MEMBER', 'COLLABORATOR'])
@@ -184,6 +191,32 @@ export async function analyzeDeep(login, { gql: rawGql, now = new Date(), maxPag
     })
   }
 
+  // Every language, not just each project's main one: the breakdown of the projects contributed to (best known first).
+  const repoLangs = new Map()
+  try {
+    const weight = new Map()
+    for (const e of evidence) weight.set(e.repo, (weight.get(e.repo) || 0) + Math.log10((e.stars || 0) + 10))
+    const wanted = [...weight.entries()].sort((a, b) => b[1] - a[1]).map(([r]) => r.split('/')).filter(([o, n]) => o && n && SAFE.test(o) && SAFE.test(n)).slice(0, LANG_REPOS)
+    const chunks = []
+    for (let i = 0; i < wanted.length; i += LANG_BATCH) chunks.push(wanted.slice(i, i + LANG_BATCH))
+    if (chunks.length) onProgress(`Reading languages of ${wanted.length} projects`)
+    await pool(chunks, 2, async (chunk) => {
+      const res = await gql(langQuery(chunk), {})
+      chunk.forEach(([o, n], i) => {
+        const edges = res?.[`r${i}`]?.languages?.edges
+        if (edges?.length) repoLangs.set(`${o}/${n}`, edges.map((x) => ({ name: x.node.name, color: x.node.color, size: x.size })))
+      })
+    })
+  } catch (err) {
+    if (err.rateLimited) throw err
+    onProgress('Language breakdown unavailable, using each project’s main language')
+  }
+  const ownLangs = (user.ownLangs?.nodes || []).map((r) => ({
+    stars: r.stargazerCount || 0,
+    primary: r.primaryLanguage?.name || null,
+    langs: (r.languages?.edges || []).map((x) => ({ name: x.node.name, color: x.node.color, size: x.size })),
+  }))
+
   const cc = user.contributionsCollection || {}
   const result = buildResult({
     mode: 'deep',
@@ -205,6 +238,8 @@ export async function analyzeDeep(login, { gql: rawGql, now = new Date(), maxPag
       issuesOpened: first.issues?.issueCount ?? null,
     },
     full: true,
+    repoLangs,
+    ownLangs,
     orgs: orgNames.size,
     evidence,
     selfMerged,
