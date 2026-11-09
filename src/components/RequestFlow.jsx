@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { hasRepo, REPO, REPO_URL, requestCertificateUrl } from '../lib/config'
+import { hasRepo, installAppUrl, REPO, REPO_URL, requestCertificateUrl } from '../lib/config'
 import { checkSignature, fetchCertificate } from '../lib/verify'
 import { PinPanel } from './cert'
 import { Btn, fmtDate, Icon } from './ui'
@@ -118,6 +118,15 @@ export default function RequestFlow({ login }) {
           )}
         </Step>
 
+        {installAppUrl && (
+          <Step n="+" title="Keep it in your own repository (optional)" state={cert?._store === 'profile' ? 'done' : 'todo'}>
+            <p className="m-0 muted max-w-[62ch]">
+              Install the OSS Proof app on <span className="mono text-ink">{login}/{login}</span> only. The app then writes your signed certificate and badges into a <span className="mono text-ink">.oss-proof</span> folder there, so your data lives with you and reads use your own GitHub rate limit. Skip it and everything still works, stored here.
+            </p>
+            <div><Btn variant="secondary" href={installAppUrl} external>Install on my profile repo <Icon name="external" size={16} /></Btn></div>
+          </Step>
+        )}
+
         <Step n="2" title="Open a certificate request" state={issue || waiting || cert ? 'done' : 'todo'}>
           <p className="m-0 muted max-w-[62ch]">
             The button opens a prefilled form. Tick the box and press <span className="text-ink">Submit new issue</span>. There is nothing to paste, and you must never paste a token into an issue.
@@ -147,7 +156,7 @@ export default function RequestFlow({ login }) {
               <div className="flex flex-wrap gap-3">
                 <Btn href={`#/verify/${p.login}`}>Open certificate page</Btn>
               </div>
-              <PinPanel login={p.login} grade={p.grade} score={p.score} projects={p.counts.repos} />
+              <PinPanel login={p.login} grade={p.grade} score={p.score} projects={p.counts.repos} store={cert._store} />
             </div>
           )}
         </Step>

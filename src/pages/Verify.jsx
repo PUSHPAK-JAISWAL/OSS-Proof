@@ -85,7 +85,7 @@ export default function Verify({ login }) {
         >
           <section className="grid gap-4 rv">
             <h2 className="h3 m-0">Pin it to a README</h2>
-            <PinPanel login={p.login} grade={p.grade} score={p.score} projects={p.counts.repos} />
+            <PinPanel login={p.login} grade={p.grade} score={p.score} projects={p.counts.repos} store={cert._store} />
           </section>
 
           <div className="flex flex-wrap gap-x-6 gap-y-2">

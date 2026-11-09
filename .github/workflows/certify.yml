@@ -47,6 +47,8 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           READ_TOKEN: ${{ secrets.GH_READ_TOKEN }}
           CERT_SIGNING_KEY: ${{ secrets.CERT_SIGNING_KEY }}
+          APP_ID: ${{ vars.GH_APP_ID || secrets.GH_APP_ID }}
+          APP_PRIVATE_KEY: ${{ secrets.GH_APP_PRIVATE_KEY }}
         run: node scripts/certify.mjs
         continue-on-error: true
 
@@ -68,6 +70,9 @@ jobs:
           BRANCH: ${{ github.event.repository.default_branch }}
           NUMBER: ${{ github.event.issue.number }}
           RESTRICTED: ${{ steps.cert.outputs.restricted }}
+          STORE: ${{ steps.cert.outputs.store }}
+          NOTE: ${{ steps.cert.outputs.note }}
+          APP_SLUG: ${{ vars.GH_APP_SLUG || secrets.GH_APP_SLUG }}
           STATUS: ${{ steps.commit.outcome == 'failure' && 'failed' || steps.cert.outputs.status }}
           GRADE: ${{ steps.cert.outputs.grade }}
           SCORE: ${{ steps.cert.outputs.score }}
@@ -80,7 +85,11 @@ jobs:
           SITE="https://${OWNER,,}.github.io/${NAME}/"
           if [ "$STATUS" = "ok" ] || [ "$STATUS" = "recent" ]; then
             F="${FILE:-${LOGIN,,}}"
-            RAW="https://raw.githubusercontent.com/${REPO}/${BRANCH}/data/badges"
+            if [ "$STORE" = "profile" ]; then
+              RAW="https://raw.githubusercontent.com/${LOGIN}/${LOGIN}/HEAD/.oss-proof"; BIG="badge.svg"; MINI="badge-mini.svg"; TH="badge"
+            else
+              RAW="https://raw.githubusercontent.com/${REPO}/${BRANCH}/data/badges"; BIG="${F}.svg"; MINI="${F}-mini.svg"; TH="${F}"
+            fi
             LINK="${SITE}#/verify/${LOGIN}"
             {
               if [ "$STATUS" = "ok" ]; then echo "Certificate ready: grade **$GRADE**, score **$SCORE**."; else echo "A certificate was issued less than an hour ago, so it was kept."; fi
@@ -92,18 +101,28 @@ jobs:
               echo
               echo "**Card badge, Markdown**"
               echo '```markdown'
-              echo "[![OSS Proof](${RAW}/${F}.svg)](${LINK})"
+              echo "[![OSS Proof](${RAW}/${BIG})](${LINK})"
               echo '```'
               echo "**Compact badge, Markdown**"
               echo '```markdown'
-              echo "[![OSS Proof](${RAW}/${F}-mini.svg)](${LINK})"
+              echo "[![OSS Proof](${RAW}/${MINI})](${LINK})"
               echo '```'
               echo "**Card badge, HTML**"
               echo '```html'
-              echo "<a href=\"${LINK}\"><img src=\"${RAW}/${F}.svg\" alt=\"OSS Proof\" width=\"380\" /></a>"
+              echo "<a href=\"${LINK}\"><img src=\"${RAW}/${BIG}\" alt=\"OSS Proof\" width=\"380\" /></a>"
               echo '```'
               echo
-              echo "**Other themes** (change the file name in the link): \`${F}.midnight.svg\`, \`${F}.aurora.svg\`, \`${F}.sunset.svg\`, \`${F}.terminal.svg\`, \`${F}.neon.svg\`, \`${F}.glass.svg\`, \`${F}.paper.svg\`. Preview them on your certificate page."
+              echo "**Other themes** (change the file name in the link): \`${TH}.midnight.svg\`, \`${TH}.aurora.svg\`, \`${TH}.sunset.svg\`, \`${TH}.terminal.svg\`, \`${TH}.neon.svg\`, \`${TH}.glass.svg\`, \`${TH}.paper.svg\`. Preview them on your certificate page."
+              if [ "$STORE" = "profile" ]; then
+                echo
+                echo "Your certificate and badges are stored in your own repository, \`${LOGIN}/${LOGIN}\`, in the \`.oss-proof\` folder, written by the OSS Proof app."
+              elif [ -n "$APP_SLUG" ]; then
+                case "$NOTE" in
+                  not-installed) echo; echo "**Optional:** keep your certificate and badges in your own profile repository instead. Install the OSS Proof app on \`${LOGIN}/${LOGIN}\` only: https://github.com/apps/${APP_SLUG}/installations/new . Then ask for a new certificate." ;;
+                  repo-not-granted) echo; echo "The OSS Proof app is installed but cannot reach \`${LOGIN}/${LOGIN}\`. Add that repository in the app's settings, then ask for a new certificate." ;;
+                  write-failed) echo; echo "The app could not write to \`${LOGIN}/${LOGIN}\`. Check that it exists, is public and has a README, then ask again." ;;
+                esac
+              fi
               echo
               echo "The badge can take a minute to appear because GitHub caches images. Ask for a new certificate any time your work changes (once an hour at most)."
             } > reply.md

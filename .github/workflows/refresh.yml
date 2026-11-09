@@ -32,6 +32,8 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           READ_TOKEN: ${{ secrets.GH_READ_TOKEN }}
           CERT_SIGNING_KEY: ${{ secrets.CERT_SIGNING_KEY }}
+          APP_ID: ${{ vars.GH_APP_ID || secrets.GH_APP_ID }}
+          APP_PRIVATE_KEY: ${{ secrets.GH_APP_PRIVATE_KEY }}
           BATCH: ${{ inputs.batch || '100' }}
           COOLDOWN_MS: "0"
         run: |
