@@ -3,6 +3,7 @@ import { GRADES } from '../../shared/config.mjs'
 import { BADGE_THEMES, THEME_IDS } from '../../shared/badge.mjs'
 import { AppFrame, Badge, Btn, Icon, Mark } from '../components/ui'
 import { REPO_URL, SUPPORT_EMAIL, SUPPORT_URL } from '../lib/config'
+import { Count, useParallax, useReveal } from '../components/fx'
 import { go, scrollToId } from '../lib/router'
 
 const SAMPLE = [
@@ -11,55 +12,6 @@ const SAMPLE = [
   ['rust-lang/rust', '99k', '2 PRs'],
   ['vitejs/vite', '71k', '4 PRs'],
 ]
-
-const reduced = () => typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches
-
-/** Pointer position over an element becomes --px/--py in the range -1..1 for the floating pieces. */
-function useParallax(ref) {
-  useEffect(() => {
-    const el = ref.current
-    if (!el || reduced()) return
-    const move = (e) => {
-      const r = el.getBoundingClientRect()
-      el.style.setProperty('--px', (((e.clientX - r.left) / r.width) * 2 - 1).toFixed(3))
-      el.style.setProperty('--py', (((e.clientY - r.top) / r.height) * 2 - 1).toFixed(3))
-    }
-    el.addEventListener('pointermove', move, { passive: true })
-    return () => el.removeEventListener('pointermove', move)
-  }, [ref])
-}
-
-/** Counts up once to `to`. */
-function Count({ to, ms = 1400 }) {
-  const [n, setN] = useState(reduced() ? to : 0)
-  useEffect(() => {
-    if (reduced()) return
-    let raf
-    const t0 = performance.now()
-    const tick = (t) => {
-      const k = Math.min(1, (t - t0) / ms)
-      setN(Math.round(to * (1 - Math.pow(1 - k, 3))))
-      if (k < 1) raf = requestAnimationFrame(tick)
-    }
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
-  }, [to, ms])
-  return <>{n}</>
-}
-
-/** Marks elements with .rv as visible once, when they first scroll into view. Without JS everything stays visible. */
-function useReveal() {
-  useEffect(() => {
-    if (reduced() || !('IntersectionObserver' in window)) return
-    const root = document.documentElement
-    root.classList.add('rv-on')
-    const io = new IntersectionObserver((entries) => {
-      for (const en of entries) if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target) }
-    }, { threshold: 0.12 })
-    document.querySelectorAll('.rv').forEach((n) => io.observe(n))
-    return () => { io.disconnect(); root.classList.remove('rv-on') }
-  }, [])
-}
 
 function Hero() {
   const heroRef = useRef(null)
