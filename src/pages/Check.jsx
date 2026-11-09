@@ -5,7 +5,7 @@ import { Breakdown, Btn, GradeMark, Icon } from '../components/ui'
 import { EvidenceList, RepoList } from '../components/cert'
 import RequestFlow from '../components/RequestFlow'
 import { getToken, makeApi, makeGql, setToken } from '../lib/github'
-import { authAvailable, beginSignIn, finishSignIn, signOut } from '../lib/auth'
+import { authAvailable, beginSignIn, finishSignIn, signInMode, signOut, startRedirectSignIn } from '../lib/auth'
 import { go } from '../lib/router'
 
 function SignIn({ token, onToken }) {
@@ -25,6 +25,7 @@ function SignIn({ token, onToken }) {
   const begin = async () => {
     setError('')
     try {
+      if ((await signInMode()) === 'web') return startRedirectSignIn()
       const f = await beginSignIn()
       setFlow(f)
       window.open(f.verificationUri, '_blank', 'noopener')
