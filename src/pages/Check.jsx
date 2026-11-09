@@ -5,6 +5,7 @@ import { Breakdown, Btn, GradeMark, Icon } from '../components/ui'
 import { EvidenceList, RepoList } from '../components/cert'
 import RequestFlow from '../components/RequestFlow'
 import { getToken, makeApi, makeGql, setToken } from '../lib/github'
+import { TROUBLESHOOTING_URL } from '../lib/config'
 import { go } from '../lib/router'
 
 function TokenBox({ token, onChange }) {
@@ -161,6 +162,10 @@ export default function Check({ username }) {
               {r.counts.truncated && (
                 <p className="m-0 text-warn text-[15px] max-w-[64ch]">Your history is very large, so the newest {r.counts.mergedFound} merged pull requests were read.</p>
               )}
+              <p className="m-0 muted text-[15px] max-w-[64ch]">
+                Grade lower than you expected? The <a className="link" href={TROUBLESHOOTING_URL} target="_blank" rel="noreferrer noopener">troubleshooting page</a> explains
+                the common reasons — self-merged pull requests, your own repositories, private activity, token limits — and shows what to do about each one.
+              </p>
 
               <section className="grid gap-4">
                 <h2 className="h3 m-0">

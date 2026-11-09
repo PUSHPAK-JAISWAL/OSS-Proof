@@ -14,6 +14,8 @@ export const SITE_URL = hasRepo
     : ''
 
 export const REPO_URL = hasRepo ? `https://github.com/${REPO}` : 'https://github.com'
+// Plain-language explanations for low grades and slow badges live in the repository docs.
+export const TROUBLESHOOTING_URL = hasRepo ? `${REPO_URL}/blob/${BRANCH}/docs/TROUBLESHOOTING.md` : 'https://github.com'
 export const PUBLIC_KEY = pubkey.publicKey
 export const KEY_ID = pubkey.keyId
 
