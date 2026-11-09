@@ -254,7 +254,7 @@ body::after {
 }
 /* Reading progress, a thin gradient line under the header. */
 .progress { position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 50; transform-origin: 0 50%; transform: scaleX(var(--p, 0)); background: linear-gradient(90deg, var(--aurora-1), var(--aurora-2), var(--aurora-3), var(--aurora-4)); }
-header, main, section { position: relative; z-index: 2; }
+main, section { position: relative; z-index: 2; }
 header { z-index: 40; }
 
 @layer components {
