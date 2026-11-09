@@ -141,7 +141,7 @@ export default function Check({ username }) {
                     ['Checked for who merged them', r.counts.sampled],
                     ['Merged PRs counted', r.counts.counted],
                     ['Merged by yourself (not counted)', r.counts.selfMerged],
-                    ['Open source projects', r.counts.repos],
+                    ['Open source projects found', r.counts.foundProjects],
                     ['Active months, last 24', r.counts.activeMonths24],
                   ].map(([k, v]) => (
                     <div key={k} className="flex items-baseline justify-between gap-4 border-b border-line pb-2">
@@ -154,7 +154,7 @@ export default function Check({ username }) {
 
               {r.mode !== 'deep' && r.counts.sampled < r.counts.outsideOwnRepos && (
                 <p className="m-0 muted text-[15px] max-w-[64ch]">
-                  This quick preview checked {r.counts.sampled} of your {r.counts.outsideOwnRepos} pull requests outside your own repositories.
+                  This quick preview checked {r.counts.sampled} of your {r.counts.outsideOwnRepos} pull requests, at least one in each project it could.
                   Add your own token above to read all of them. The signed certificate always reads all of them.
                 </p>
               )}
@@ -163,8 +163,24 @@ export default function Check({ username }) {
               )}
 
               <section className="grid gap-4">
-                <h2 className="h3 m-0">{r.counts.repos} open source {r.counts.repos === 1 ? 'project' : 'projects'} contributed to</h2>
+                <h2 className="h3 m-0">
+                  {r.counts.foundProjects} open source {r.counts.foundProjects === 1 ? 'project' : 'projects'} contributed to
+                  {r.counts.foundProjects > r.counts.repos && <span className="muted text-base font-normal"> · {r.counts.repos} checked</span>}
+                </h2>
                 <RepoList repos={r.repos} login={r.login} />
+                {r.unchecked?.length > 0 && (
+                  <details className="card p-4" open>
+                    <summary className="cursor-pointer font-medium">{r.unchecked.length} more {r.unchecked.length === 1 ? 'project' : 'projects'} found, not checked in this preview</summary>
+                    <p className="muted text-[15px] mt-2 mb-3">GitHub only allows 60 anonymous requests an hour, so these were found but not checked for who merged them. Add your token above to check all of them. A certificate always does.</p>
+                    <ul className="m-0 p-0 list-none flex flex-wrap gap-2">
+                      {r.unchecked.map((u) => (
+                        <li key={u.repo}>
+                          <a className="chip hover:text-ink" href={`https://github.com/${u.repo}/pulls?q=${encodeURIComponent(`is:pr is:merged author:${r.login}`)}`} target="_blank" rel="noreferrer noopener">{u.repo} · {u.prs}</a>
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                )}
               </section>
 
               <section className="grid gap-4">
