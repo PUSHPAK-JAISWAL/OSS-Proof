@@ -1,0 +1,45 @@
+{
+  "alg": "ed25519",
+  "keyId": "197498a7",
+  "payload": {
+    "schema": 1,
+    "scoringVersion": "1.2.0",
+    "mode": "deep",
+    "login": "mursalhayat1",
+    "githubId": 325261834,
+    "name": "Mursal Hayat",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/325261834?u=7ae49a52c75b131b5e0df4381e3cfd52099373bd&v=4",
+    "profileUrl": "https://github.com/mursalhayat1",
+    "location": "Lahore",
+    "country": "Pakistan",
+    "countryCode": "PK",
+    "accountCreatedAt": "2026-09-05T11:36:35Z",
+    "issuedAt": "2026-11-09T05:17:12.023Z",
+    "score": 0,
+    "grade": "-",
+    "gradeLabel": "Unrated",
+    "breakdown": {
+      "impact": 0,
+      "breadth": 0,
+      "consistency": 0,
+      "trust": 0
+    },
+    "counts": {
+      "mergedFound": 0,
+      "outsideOwnRepos": 0,
+      "sampled": 0,
+      "counted": 0,
+      "selfMerged": 0,
+      "unverifiable": 0,
+      "repos": 0,
+      "activeMonths24": 0,
+      "orgs": 0,
+      "truncated": false
+    },
+    "languages": [],
+    "lastMergedAt": null,
+    "repos": [],
+    "evidence": []
+  },
+  "signature": "2ca548378934d22d47a31290669c23ee791d6615e369721989858f61384d4c83366daaf59b4c8b734151b0233fbb05ade661f8c6de4d435627bde891560fa304"
+}
