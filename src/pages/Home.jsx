@@ -161,10 +161,30 @@ function How() {
 
 const POINTS = [['Impact', 50], ['Breadth', 20], ['Consistency', 20], ['Trust', 10]]
 
-function Grading() {
+function Points({ name, value, go }) {
+  const n = useCountUp(value, go)
   return (
-    <section id="grading" className="screen">
-      <div className="wrap grid lg:grid-cols-[1fr_1.1fr] gap-12 lg:gap-16 items-center">
+    <div className="flex items-baseline justify-between border-b border-line pb-2">
+      <dt className="font-medium">{name}</dt>
+      <dd className="m-0 mono text-sm">{n} points</dd>
+    </div>
+  )
+}
+
+function Grading() {
+  const [ref, p] = useScrollProgress()
+  const [seenRef, seen] = useInView({ threshold: 0.35 })
+  // The disc opens over the first part of the scroll, then the panel is fully open.
+  const open = Math.min(1, p / 0.7)
+  const vw = typeof window === 'undefined' ? 1200 : window.innerWidth
+  const vh = typeof window === 'undefined' ? 800 : window.innerHeight
+  const radius = open * Math.hypot(vw, vh) * 0.6
+  const content = Math.min(1, Math.max(0, (open - 0.55) / 0.35))
+  return (
+    <section id="grading" ref={ref} className="screen iris" style={{ '--iris': `${radius}px`, '--iris-px': `${radius}px`, '--ring-o': open > 0 && open < 0.98 ? 0.9 : 0 }}>
+      <div className="iris__panel" aria-hidden="true" />
+      <div className="iris__ring" aria-hidden="true" />
+      <div ref={seenRef} className="wrap relative grid lg:grid-cols-[1fr_1.1fr] gap-12 lg:gap-16 items-center" style={{ opacity: content, transform: `translateY(${(1 - content) * 14}px)` }}>
         <div>
           <h2 className="h2 m-0">Five grades, set high</h2>
           <p className="lead mt-5 mb-0">
@@ -172,23 +192,18 @@ function Grading() {
             Quiet accounts and self-merged work do not get there.
           </p>
           <dl className="mt-8 mb-0 grid grid-cols-2 gap-x-6 gap-y-3 max-w-md">
-            {POINTS.map(([n, p]) => (
-              <div key={n} className="flex items-baseline justify-between border-b border-line pb-2">
-                <dt className="font-medium">{n}</dt>
-                <dd className="m-0 mono text-sm">{p} points</dd>
-              </div>
-            ))}
+            {POINTS.map(([n, v]) => <Points key={n} name={n} value={v} go={seen} />)}
           </dl>
         </div>
 
         <AppFrame title="Grade ladder, scoring version 1.0.0">
-          <ol className="m-0 p-0 list-none divide-y divide-line">
-            {GRADES.filter((g) => g.grade !== '-').map((g) => (
+          <ol className={`ladder m-0 p-0 list-none divide-y divide-line ${seen ? 'in' : ''}`}>
+            {GRADES.filter((g) => g.grade !== '-').map((g, i) => (
               <li key={g.grade} className="grid grid-cols-[56px_1fr_auto] items-center gap-4 px-5 py-4 hover:bg-surface transition-colors">
                 <span className="text-[34px] leading-none tracking-tighter">{g.grade}</span>
                 <div>
                   <div className="font-medium">{g.label}</div>
-                  <div className="bar mt-2"><i style={{ width: `${g.min}%` }} /></div>
+                  <div className="bar mt-2"><i style={{ '--w': `${g.min}%`, '--i': i }} /></div>
                 </div>
                 <span className="mono text-sm">{g.min}+</span>
               </li>
@@ -200,29 +215,37 @@ function Grading() {
   )
 }
 
+const SLIDE = ['S', 'A', 'B', 'C', 'D', 'A', 'S', 'B']
+
 function Pin() {
   return (
     <section id="pin" className="screen">
       <div className="wrap grid lg:grid-cols-[1fr_1.1fr] gap-12 lg:gap-16 items-center">
         <div>
-          <h2 className="h2 m-0">A badge for your profile README</h2>
-          <p className="lead mt-5 mb-0">
-            Each certificate comes with an SVG badge in your grade’s colour. It links back to the signed record,
-            so a visitor can check it in one click.
-          </p>
-          <div className="mt-8"><Btn href="#/check" className="btn--block-sm">Get a certificate</Btn></div>
+          <Reveal><h2 className="h2 m-0">A badge for your profile README</h2></Reveal>
+          <Reveal i={1}>
+            <p className="lead mt-5 mb-0">
+              Each certificate comes with an SVG badge in your grade’s colour. It links back to the signed record,
+              so a visitor can check it in one click.
+            </p>
+          </Reveal>
+          <Reveal i={2}><div className="mt-8"><Btn href="#/check" className="btn--block-sm">Get a certificate</Btn></div></Reveal>
         </div>
 
-        <AppFrame title="README.md">
-          <div className="p-5 sm:p-6 grid gap-5">
-            <div className="flex flex-wrap gap-3">
-              {['S', 'A', 'B', 'C', 'D'].map((g) => (
-                <Badge key={g} grade={g} score={GRADES.find((x) => x.grade === g).min} height={26} />
-              ))}
+        <Reveal i={2}>
+          <AppFrame title="README.md">
+            <div className="p-5 sm:p-6 grid gap-5">
+              <div className="overflow-hidden -mx-5 sm:-mx-6" style={{ WebkitMaskImage: 'linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent)', maskImage: 'linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent)' }}>
+                <div className="slide-row px-5">
+                  {[...SLIDE, ...SLIDE].map((g, i) => (
+                    <Badge key={i} grade={g} score={GRADES.find((x) => x.grade === g).min} height={26} />
+                  ))}
+                </div>
+              </div>
+              <pre className="mono text-[13px] leading-relaxed m-0 p-4 border border-line rounded-md bg-surface overflow-x-auto whitespace-pre-wrap break-all">{`[![OSS Proof](…/badges/you.svg)](…/#/verify/you)`}</pre>
             </div>
-            <pre className="mono text-[13px] leading-relaxed m-0 p-4 border border-line rounded-md bg-surface overflow-x-auto whitespace-pre-wrap break-all">{`[![OSS Proof](…/badges/you.svg)](…/#/verify/you)`}</pre>
-          </div>
-        </AppFrame>
+          </AppFrame>
+        </Reveal>
       </div>
     </section>
   )
