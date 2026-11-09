@@ -33,8 +33,8 @@ function Hero() {
             ))}
           </h1>
           <p className="lead mt-6 mb-0">
-            OSS Proof reads every pull request that another maintainer merged into a repository you do not own,
-            grades it out of 100, and signs the result. An S needs 85.
+            OSS Proof counts how many open source projects accepted your work, and what you did in each one.
+            Only pull requests that another maintainer merged into a repository you do not own count.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Btn href="#/check" className="btn--block-sm">Get a certificate</Btn>
@@ -83,7 +83,7 @@ function Hero() {
 }
 
 const STEPS = [
-  { icon: 'search', title: 'Every merged pull request', body: 'One GraphQL query returns each PR with the person who merged it, so nothing is sampled.' },
+  { icon: 'search', title: 'Every project you worked on', body: 'One GraphQL query returns each merged PR with the person who merged it, grouped by project, so nothing is sampled.' },
   { icon: 'sign', title: 'A signed certificate', body: 'A GitHub Action signs your score. Any browser can check the signature against the public key in this repo.' },
   { icon: 'pin', title: 'A README badge', body: 'Paste one line of Markdown. The badge links to your certificate and shows your current grade.' },
 ]
@@ -92,7 +92,7 @@ const PIPELINE = {
   layout: 'timeline',
   alt: 'Merged pull requests are filtered, scored out of 100 and signed into a certificate.',
   steps: [
-    { label: 'PRs', sub: 'Merged' },
+    { label: 'Projects', sub: 'Merged PRs' },
     { label: 'Filter', sub: 'Not yours' },
     { label: 'Score', sub: 'Of 100' },
     { label: 'Sign', sub: 'Ed25519' },
@@ -134,8 +134,8 @@ function Grading() {
         <div>
           <h2 className="h2 m-0">OSS Proof grades, S to D</h2>
           <p className="lead mt-5 mb-0">
-            An S needs dozens of merged pull requests in busy repositories, spread over about 18 months.
-            Quiet accounts and self-merged work do not get there.
+            An S needs merged work in many different, well-used projects over about 18 months.
+            Ten pull requests in ten projects beat thirty in one.
           </p>
           <dl className="mt-8 mb-0 grid grid-cols-2 gap-x-6 gap-y-3 max-w-md">
             {POINTS.map(([n, v]) => (
@@ -147,7 +147,7 @@ function Grading() {
           </dl>
         </div>
 
-        <AppFrame title="Grade ladder, scoring version 1.1.0">
+        <AppFrame title="Grade ladder, scoring version 1.2.0">
           <ol className="m-0 p-0 list-none divide-y divide-line">
             {GRADES.filter((g) => g.grade !== '-').map((g) => (
               <li key={g.grade} className="grid grid-cols-[56px_1fr_auto] items-center gap-4 px-5 py-4 hover:bg-surface transition-colors">

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Breakdown, Btn, fmtDate, GradeMark, Icon } from '../components/ui'
-import { EvidenceList, PinPanel } from '../components/cert'
+import { EvidenceList, PinPanel, RepoList } from '../components/cert'
 import RequestFlow from '../components/RequestFlow'
 import { KEY_ID, RAW_BASE } from '../lib/config'
 import { checkSignature, fetchCertificate } from '../lib/verify'
@@ -86,8 +86,8 @@ export default function Verify({ login }) {
                 ['Last merged PR', fmtDate(p.lastMergedAt)],
                 ['Country (self-declared)', p.country || 'Not stated'],
                 ['Top languages', p.languages.slice(0, 3).map((l) => l.name).join(', ') || '—'],
-                ['Counted pull requests', p.counts.counted],
-                ['Different repositories', p.counts.repos],
+                ['Open source projects', p.counts.repos],
+                ['Merged PRs counted', p.counts.counted],
                 ['Active months, last 24', p.counts.activeMonths24],
                 ['Merged by themselves', p.counts.selfMerged],
               ].map(([k, v]) => (
@@ -107,14 +107,19 @@ export default function Verify({ login }) {
 
           <div className="grid gap-10 min-w-0">
             <section className="grid gap-4">
-              <h2 className="h3 m-0">Pull requests that counted</h2>
+              <h2 className="h3 m-0">{p.counts.repos} open source {p.counts.repos === 1 ? 'project' : 'projects'} contributed to</h2>
+              <RepoList repos={p.repos} login={p.login} />
+              <p className="label m-0">Each row opens that project's merged pull requests by this developer on GitHub.</p>
+            </section>
+
+            <section className="grid gap-4">
+              <h2 className="h3 m-0">Top merged pull requests</h2>
               <EvidenceList items={p.evidence} />
-              <p className="label m-0">Each one links to GitHub. Check who merged it and which repository it went to.</p>
             </section>
 
             <section className="grid gap-4">
               <h2 className="h3 m-0">Pin it to a README</h2>
-              <PinPanel login={p.login} grade={p.grade} score={p.score} />
+              <PinPanel login={p.login} grade={p.grade} score={p.score} projects={p.counts.repos} />
             </section>
 
             <div className="flex flex-wrap gap-x-6 gap-y-2">

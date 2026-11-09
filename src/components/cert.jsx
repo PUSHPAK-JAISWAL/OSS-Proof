@@ -26,7 +26,33 @@ export function EvidenceList({ items }) {
   )
 }
 
-export function PinPanel({ login, grade, score }) {
+export function RepoList({ repos, login }) {
+  if (!repos?.length) return <p className="muted">No projects counted yet.</p>
+  return (
+    <ul className="m-0 p-0 list-none border border-line rounded-lg divide-y divide-line">
+      {repos.map((r) => (
+        <li key={r.repo}>
+          <a
+            href={`https://github.com/${r.repo}/pulls?q=${encodeURIComponent(`is:pr is:merged author:${login}`)}`}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-4 gap-y-1 px-4 py-3 hover:bg-surface transition-colors"
+          >
+            <span className="font-medium truncate">{r.repo}</span>
+            <span className="muted inline-flex items-center justify-end gap-1 text-sm mono"><Icon name="star" size={14} />{fmtStars(r.stars)}</span>
+            <span className="label truncate">
+              {r.prs} merged {r.prs === 1 ? 'PR' : 'PRs'}{r.language ? ` · ${r.language}` : ''}
+              {r.first ? ` · ${r.first === r.last ? fmtDate(r.first) : `${fmtDate(r.first)} to ${fmtDate(r.last)}`}` : ''}
+            </span>
+            <span className="label text-right whitespace-nowrap">{CLASS_LABEL[r.class] || ''}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+export function PinPanel({ login, grade, score, projects }) {
   const link = certificateLink(login)
   const big = badgeUrl(login)
   const mini = badgeUrl(login, true)
@@ -36,7 +62,7 @@ export function PinPanel({ login, grade, score }) {
   return (
     <div className="grid gap-4">
       <div className="card px-4 py-5 grid gap-4 justify-items-start">
-        <Badge grade={grade} score={score} login={login} height={120} />
+        <Badge grade={grade} score={score} login={login} projects={projects} height={120} />
         <div className="flex items-center gap-3 flex-wrap">
           <Badge grade={grade} score={score} login={login} height={24} mini />
           <span className="label">Card and compact versions. Both link to your certificate.</span>
