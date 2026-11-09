@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Badge, Btn, fmtDate } from '../components/ui'
-import { Aurora } from '../components/fx'
+import { Aurora, useReveal } from '../components/fx'
 import { fetchIndex } from '../lib/verify'
 import { go } from '../lib/router'
 
@@ -57,6 +57,8 @@ export default function Explore() {
     })
   }, [state.entries, q, country, language, activity, grade])
 
+  useReveal(`${state.phase}|${rows.length}|${q}|${country}|${language}|${activity}|${grade}`)
+
   return (
     <main className="page page-ground">
       <Aurora />
@@ -94,7 +96,11 @@ export default function Explore() {
           <Select label="Grade" value={grade} onChange={setGrade} options={[['all', 'Any grade'], ['S', 'S only'], ['A', 'A and above'], ['B', 'B and above'], ['C', 'C and above']]} />
         </div>
 
-        {state.phase === 'loading' && <p className="muted" role="status">Loading…</p>}
+        {state.phase === 'loading' && (
+          <div className="grid gap-3" role="status" aria-label="Loading developers">
+            {[0, 1, 2, 3, 4].map((i) => <div key={i} className="skel h-[66px]" style={{ opacity: 1 - i * 0.15 }} />)}
+          </div>
+        )}
         {state.phase === 'error' && <div className="card p-6" role="alert"><p className="m-0 muted">{state.message}</p></div>}
 
         {state.phase === 'done' && state.entries.length === 0 && (
@@ -116,9 +122,10 @@ export default function Explore() {
                   <div className="podium">
                     {rows.slice(0, 3).map((e, i) => (
                       <a key={e.login} href={`#/verify/${e.login}`} className={`podium__c podium__c--${i + 1} rv`} style={{ '--i': i }}>
+                        {i === 0 && <svg className="crown" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M3 19h18l-1.6-10.5-4.7 4.2L12 5.5 9.3 12.7 4.6 8.5z" /></svg>}
                         <span className="rank">#{i + 1}</span>
                         <div className="float" style={{ '--d': `${6 + i}s`, '--dl': `${-i * 1.3}s`, '--amp': '6px' }}>
-                          <Badge grade={e.grade} score={e.score} login={e.login} projects={e.projects} height={78} />
+                          <div className="tilt"><Badge grade={e.grade} score={e.score} login={e.login} projects={e.projects} height={78} /></div>
                         </div>
                         <span className="min-w-0 w-full"><span className="block font-medium truncate">{e.name || e.login}</span><span className="block label truncate">@{e.login}{e.country ? ` · ${e.country}` : ''}</span></span>
                       </a>
@@ -127,7 +134,7 @@ export default function Explore() {
                 )}
                 <ul className="m-0 p-0 list-none border border-line rounded-xl divide-y divide-line overflow-hidden">
                   {rows.map((e, i) => (
-                    <li key={e.login}>
+                    <li key={e.login} className="rv" style={{ '--i': Math.min(i, 10) }}>
                       <a href={`#/verify/${e.login}`} className="lb-row grid-cols-[28px_40px_1fr_auto] sm:grid-cols-[28px_40px_1.2fr_1fr_1fr_auto]">
                         <span className="rank">{i + 1}</span>
                         <img src={e.avatarUrl} alt="" width="40" height="40" className="rounded-md border border-line" loading="lazy" />
@@ -135,7 +142,11 @@ export default function Explore() {
                           <span className="block font-medium truncate">{e.name || e.login}</span>
                           <span className="block label truncate">@{e.login}{e.country ? ` · ${e.country}` : ''}</span>
                         </span>
-                        <span className="hidden sm:block text-[15px] truncate">{e.languages.join(', ') || '—'}</span>
+                        <span className="hidden sm:flex items-center gap-1.5 min-w-0 text-[15px]">
+                          {e.languages.slice(0, 3).map((l) => <span key={l} className="lchip lchip--sm"><i />{l}</span>)}
+                          {e.languages.length > 3 && <span className="label">+{e.languages.length - 3}</span>}
+                          {!e.languages.length && '—'}
+                        </span>
                         <span className="hidden sm:block label">{e.projects ? `${e.projects} ${e.projects === 1 ? 'project' : 'projects'} · ` : ''}Last merged {fmtDate(e.lastMergedAt)}</span>
                         <span className="flex items-baseline gap-3 justify-end">
                           <span className="mono text-sm">{e.score.toFixed(1)}</span>
