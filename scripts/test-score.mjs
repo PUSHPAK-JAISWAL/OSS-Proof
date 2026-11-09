@@ -1,7 +1,7 @@
 // Offline checks for the scoring rules, the signature round trip and the badge. Run: npm test
 import assert from 'node:assert/strict'
 import { ed25519 } from '@noble/curves/ed25519.js'
-import { makeBadgeSvg } from '../shared/badge.mjs'
+import { makeBadgeSvg, makeMiniBadgeSvg } from '../shared/badge.mjs'
 import { bytesToHex, hexToBytes, stableStringify } from '../shared/canonical.mjs'
 import { countryFromLocation } from '../shared/country.mjs'
 import { gradeFor, scoreEvidence } from '../shared/score.mjs'
@@ -52,8 +52,11 @@ const forged = { ...payload, login: 'someone-else' }
 assert.ok(!ed25519.verify(hexToBytes(sig), new TextEncoder().encode(stableStringify(forged)), pub))
 
 // Badge and country mapping.
-assert.match(makeBadgeSvg({ grade: 'A', score: 72.44, login: 'x' }), /A · 72\.4/)
+assert.match(makeMiniBadgeSvg({ grade: 'A', score: 72.44, login: 'x' }), /A · 72\.4/)
+assert.match(makeBadgeSvg({ grade: 'S', score: 88.04, login: 'x' }), /88\.0/)
+assert.equal(makeBadgeSvg({ grade: 'zz', score: 5, login: 'x' }).includes('Unrated'.toUpperCase()), true)
 assert.equal(makeBadgeSvg({ grade: 'A', score: 1, login: '<script>' }).includes('<script>'), false)
+assert.equal(makeMiniBadgeSvg({ grade: 'A', score: 1, login: '<script>' }).includes('<script>'), false)
 assert.equal(countryFromLocation('Aurangabad, Maharashtra').country, 'India')
 assert.equal(countryFromLocation('Berlin').country, 'Germany')
 assert.equal(countryFromLocation('Pune, IN').country, 'India')
