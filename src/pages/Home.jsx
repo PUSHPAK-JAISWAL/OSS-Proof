@@ -21,14 +21,14 @@ function Hero() {
   }
   return (
     <section className="screen screen--hero relative overflow-hidden">
-      <div className="mesh" aria-hidden="true"><i /><i /><i /></div>
+      <div className="mesh" aria-hidden="true"><i /><i /><i /><i /></div>
       <div className="ground-dots absolute inset-0 pointer-events-none" aria-hidden="true" />
       <div className="wrap relative grid lg:grid-cols-[1.05fr_1fr] gap-12 lg:gap-16 items-center">
         <div>
           <p className="chip mb-6">Scored from public GitHub data only</p>
           <h1 className="h1 m-0" aria-label="Contribution certificates for open source developers">
             {'Contribution certificates for open source developers'.split(' ').map((w, i) => (
-              <span key={i} aria-hidden="true"><span className="hw" style={{ '--w': i }}>{w}</span>{' '}</span>
+              <span key={i} aria-hidden="true"><span className="hw" style={{ '--w': i }}><span className={i >= 3 ? 'glow-text' : ''}>{w}</span></span>{' '}</span>
             ))}
           </h1>
           <p className="lead mt-6 mb-0">
@@ -42,8 +42,8 @@ function Hero() {
         </div>
 
         <Tilt className="relative">
-          <span className="float absolute -top-5 -left-4 z-10 hidden sm:block" style={{ '--d': 0, '--r': '-3deg' }}><Badge grade="S" score={91.3} login="you" height={84} /></span>
-          <span className="float absolute -bottom-5 -right-3 z-10 hidden sm:block" style={{ '--d': 2, '--r': '3deg' }}><Badge grade="A" score={76.4} login="you" height={84} /></span>
+          <span className="float absolute -top-24 -left-6 z-10 hidden sm:block" style={{ '--d': 0, '--r': '-3deg' }}><Badge grade="S" score={91.3} login="you" height={84} /></span>
+          <span className="float absolute -bottom-24 -right-8 z-10 hidden sm:block" style={{ '--d': 2, '--r': '3deg' }}><Badge grade="A" score={76.4} login="you" height={84} /></span>
         <AppFrame title="Check a GitHub profile">
           <form onSubmit={submit} className="p-5 sm:p-6 grid gap-5">
             <label className="grid gap-2">
@@ -79,15 +79,54 @@ function Hero() {
   )
 }
 
+const LANGS = ['Rust', 'TypeScript', 'Python', 'Go', 'C++', 'Java', 'Kotlin', 'Swift', 'Ruby', 'Zig', 'Elixir', 'Haskell']
+
+function Tape() {
+  const row = [...LANGS, ...LANGS]
+  return (
+    <div className="tape" aria-hidden="true">
+      <div className="tape__row">
+        {row.map((l, i) => (
+          <span key={i} className="tape__w">{l} <b>/</b></span>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function Stat({ to, suffix = '', label, go }) {
+  const n = useCountUp(to, go)
+  return (
+    <div className="stat">
+      <div className="stat__n">{n}{suffix}</div>
+      <div className="label mt-2">{label}</div>
+    </div>
+  )
+}
+
+function Stats() {
+  const [ref, seen] = useInView({ threshold: 0.4 })
+  return (
+    <section className="py-20 sm:py-28">
+      <div ref={ref} className="wrap grid grid-cols-2 lg:grid-cols-4 gap-y-12 gap-x-6">
+        <Stat go={seen} to={100} label="points, split four ways" />
+        <Stat go={seen} to={85} suffix="+" label="needed for an S" />
+        <Stat go={seen} to={0} label="databases to run" />
+        <Stat go={seen} to={1} label="signed file per developer" />
+      </div>
+    </section>
+  )
+}
+
 function Tilt({ children, className = '' }) {
-  const [t, setT] = useState({ rx: 0, ry: 0 })
+  const [t, setT] = useState({ rx: 0, ry: 0, mx: 50, my: 50 })
   const move = (e) => {
     if (prefersReduced() || e.pointerType === 'touch') return
     const r = e.currentTarget.getBoundingClientRect()
-    setT({ rx: -((e.clientY - r.top) / r.height - 0.5) * 6, ry: ((e.clientX - r.left) / r.width - 0.5) * 8 })
+    setT({ rx: -((e.clientY - r.top) / r.height - 0.5) * 8, ry: ((e.clientX - r.left) / r.width - 0.5) * 10, mx: ((e.clientX - r.left) / r.width) * 100, my: ((e.clientY - r.top) / r.height) * 100 })
   }
   return (
-    <div className={`tilt ${className}`} style={{ '--rx': `${t.rx}deg`, '--ry': `${t.ry}deg` }} onPointerMove={move} onPointerLeave={() => setT({ rx: 0, ry: 0 })}>
+    <div className={`tilt holo ${className}`} style={{ '--rx': `${t.rx}deg`, '--ry': `${t.ry}deg`, '--mx': `${t.mx}%`, '--my': `${t.my}%` }} onPointerMove={move} onPointerLeave={() => setT({ rx: 0, ry: 0, mx: 50, my: 50 })}>
       {children}
     </div>
   )
@@ -144,7 +183,7 @@ function How() {
         <Reveal i={2}><div className="mt-10 card px-4 py-5 sm:px-8"><Pipeline /></div></Reveal>
         <ul className="mt-6 m-0 p-0 list-none grid md:grid-cols-3 gap-6">
           {STEPS.map((s, i) => (
-            <Reveal as="li" i={i + 3} key={s.title} className="card card--lift p-6 flex flex-col gap-4">
+            <Reveal as="li" i={i + 3} key={s.title} className="card card--lift spot p-6 flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <span className="grid place-items-center h-11 w-11 rounded-md bg-surface border border-line"><Icon name={s.icon} size={22} /></span>
                 <span className="mono label">0{i + 1}</span>
@@ -282,6 +321,8 @@ export default function Home() {
   return (
     <main>
       <Hero />
+      <Tape />
+      <Stats />
       <How />
       <Grading />
       <Pin />
