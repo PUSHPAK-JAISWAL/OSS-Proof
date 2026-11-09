@@ -9,6 +9,11 @@ import { getToken, makeApi, makeGql, setToken } from '../lib/github'
 import { authAvailable, beginSignIn, finishSignIn, signInMode, signOut, startRedirectSignIn } from '../lib/auth'
 import { go } from '../lib/router'
 
+function progressPct(meta) {
+  if (!meta?.total) return 12
+  return Math.max(6, Math.min(96, Math.round((meta.found / meta.total) * 100)))
+}
+
 function SignIn({ token, onToken }) {
   const [flow, setFlow] = useState(null)
   const [error, setError] = useState('')
@@ -80,22 +85,32 @@ function TokenBox({ token, onChange }) {
   )
 }
 
+const EARLY_STOP_SCORE = 88 // S starts at 85. A little margin, because the last pages can only add or nudge a few points.
+
 export default function Check({ username }) {
   const [input, setInput] = useState(username || '')
   const [token, setTok] = useState(getToken())
   const [state, setState] = useState({ phase: 'idle' })
   const run = useRef(0)
+  const stop = useRef({ now: false, auto: false })
 
   const start = async (login, tk) => {
     const id = ++run.current
+    stop.current = { now: false, auto: false }
     setState({ phase: 'loading', step: 'Starting' })
     try {
-      const onProgress = (step) => run.current === id && setState({ phase: 'loading', step })
+      const onProgress = (step, meta) => run.current === id && setState((s) => ({ ...s, phase: 'loading', step, meta: meta || s.meta }))
+      // A first answer shows after a few pages and sharpens as more arrives. A clear top grade ends the read early.
+      const onPartial = (partial, meta) => {
+        if (run.current !== id) return
+        if (partial.score >= EARLY_STOP_SCORE) stop.current.auto = true
+        setState((s) => ({ ...s, phase: 'loading', partial, meta }))
+      }
       // With a token every merged PR is read through GraphQL. Without one, a small REST sample.
       const result = tk
-        ? await analyzeDeep(login, { gql: makeGql(tk), onProgress })
+        ? await analyzeDeep(login, { gql: makeGql(tk), onProgress, onPartial, shouldStop: () => stop.current.now || stop.current.auto })
         : await analyzeUser(login, { api: makeApi(tk), mode: 'anonymous', onProgress })
-      if (run.current === id) setState({ phase: 'done', result })
+      if (run.current === id) setState({ phase: 'done', result, stopped: stop.current.auto ? 'auto' : stop.current.now ? 'manual' : null })
     } catch (err) {
       if (run.current === id) setState({ phase: 'error', message: err.message })
     }
@@ -141,7 +156,12 @@ export default function Check({ username }) {
       {r.restrictedOrgs?.length > 0 && (
         <div className="card p-5 text-[15px] rv" role="note">Some pull requests could not be read because {r.restrictedOrgs.join(', ')} blocks this token. The grade may be slightly low.</div>
       )}
-      {r.counts.truncated && (
+      {state.stopped && (
+        <div className="card p-5 text-[15px] rv" role="note">
+          {state.stopped === 'auto' ? 'The top grade was already clear, so reading stopped early.' : 'You stopped the read early.'} The newest {r.counts.mergedFound} merged pull requests were counted; older ones could only add to the score. A certificate always reads everything.
+        </div>
+      )}
+      {!state.stopped && r.counts.truncated && (
         <p className="m-0 text-warn text-[15px] max-w-[64ch]">Your history is very large, so only the newest {r.counts.mergedFound} merged pull requests were read.</p>
       )}
     </>
@@ -182,15 +202,31 @@ export default function Check({ username }) {
           </div>
         )}
 
-        {state.phase === 'loading' && (
+        {state.phase === 'loading' && !state.partial && (
           <div className="term" role="status" aria-live="polite">
             <div className="term__bar"><i /><i /><i /><span className="ml-2">reading {input}</span></div>
             <div className="term__body">
               <div><span className="prompt">$</span> <span className="tok-f">oss-proof</span> <span className="tok-k">check</span> {input}</div>
               <div className="flex items-center gap-3"><span className="h-3 w-3 rounded-full border-2 border-[#3a4e57] border-t-[var(--accent)] animate-spin" /><span>{state.step}</span></div>
-              <div className="bar mt-3"><i style={{ width: '35%' }} /></div>
+              <div className="bar mt-3"><i style={{ width: `${progressPct(state.meta)}%` }} /></div>
             </div>
           </div>
+        )}
+
+        {state.phase === 'loading' && state.partial && (
+          <Report
+            p={state.partial}
+            notices={
+              <div className="card p-5 grid gap-3 border-accent/50" role="status" aria-live="polite">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <p className="m-0 font-medium flex items-center gap-3"><span className="h-3 w-3 rounded-full border-2 border-[#3a4e57] border-t-[var(--accent)] animate-spin" />Still reading, this is the grade so far</p>
+                  <button type="button" className="btn btn--secondary" onClick={() => { stop.current.now = true }}>Stop and use this</button>
+                </div>
+                <div className="bar"><i style={{ width: `${progressPct(state.meta)}%` }} /></div>
+                <p className="m-0 label">{state.step}. Newest work is read first, so the score only sharpens from here. It stops by itself once the top grade is clear.</p>
+              </div>
+            }
+          />
         )}
 
         {state.phase === 'error' && (

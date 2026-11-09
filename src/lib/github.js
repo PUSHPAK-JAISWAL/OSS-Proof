@@ -43,11 +43,26 @@ export function makeApi(token = getToken()) {
 /** GraphQL needs a token even for public data, so deep reading in the browser uses the person's own. */
 export function makeGql(token) {
   return async function gql(query, variables) {
-    const res = await fetch('https://api.github.com/graphql', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query, variables }),
-    })
+    // A request that hangs would freeze the whole check, so each one has a time limit and gets one retry.
+    let res
+    for (let attempt = 1; ; attempt++) {
+      const ctl = new AbortController()
+      const timer = setTimeout(() => ctl.abort(), 40000)
+      try {
+        res = await fetch('https://api.github.com/graphql', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query, variables }),
+          signal: ctl.signal,
+        })
+        if (![502, 503, 504].includes(res.status) || attempt >= 2) break
+      } catch (err) {
+        if (attempt >= 2) throw new Error(err.name === 'AbortError' ? 'GitHub took too long to answer. Try again in a minute.' : 'Could not reach GitHub. Check your connection and try again.')
+      } finally {
+        clearTimeout(timer)
+      }
+      await new Promise((r) => setTimeout(r, 1200))
+    }
     if (res.status === 401) throw new Error('GitHub rejected that token. Remove it or paste a new one.')
     if (res.status === 403 || res.status === 429) {
       const err = new Error("GitHub's rate limit is used up. Try again in a few minutes.")
