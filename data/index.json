@@ -21,7 +21,8 @@
    "issuedAt": "2026-11-08T06:41:33.503Z",
    "counted": 47,
    "projects": 20,
-   "store": "central"
+   "store": "central",
+   "refreshFailedAt": "2026-11-14T10:33:43.168Z"
   }
  ],
  "updatedAt": "2026-11-08T06:41:33.503Z"
